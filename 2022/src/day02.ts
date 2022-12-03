@@ -1,4 +1,4 @@
-const ord = (c: string, start: string, offset: number = 1) =>
+const ord = (c: string, start: string, offset: number = 1): number =>
   c.charCodeAt(0) - start.charCodeAt(0) + offset;
 
 const parse = (s: string) => s
