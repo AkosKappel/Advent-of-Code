@@ -22,19 +22,23 @@ export const part1 = (s: string) => parse(s)
 
 exports.first = part1;
 
-export const part2 = (s: string) => {
-  const lines = parse(s);
-  // split elves into groups of three
-  const groups = [];
-  while (lines.length) groups.push(lines.splice(0, 3));
-  return groups.map((group) => {
-    const elf1: Set<string> = new Set<string>(group[0]);
-    const elf2: Set<string> = new Set<string>(group[1]);
-    const elf3: Set<string> = new Set<string>(group[2]);
-    // find the intersection of the three sets
-    const badge = [...elf1].filter(x => elf2.has(x) && elf3.has(x))[0];
-    return isLowerCase(badge) ? ord(badge, 'a') : ord(badge, 'A', 27);
-  }).reduce(sum, 0);
+const groupify = (lines: string[], groupSize: number): string[][] => {
+  return lines.reduce((acc: string[][], line: string, index: number) => {
+    if (index % groupSize === 0) acc.push([]);
+    acc[acc.length - 1].push(line);
+    return acc;
+  }, []);
 };
+
+export const part2 = (s: string) =>
+  groupify(parse(s), 3) // split elves into groups of three
+    .map((group: string[]) => {
+      const elf1: Set<string> = new Set<string>(group[0]);
+      const elf2: Set<string> = new Set<string>(group[1]);
+      const elf3: Set<string> = new Set<string>(group[2]);
+      // find the intersection of the three sets
+      const badge: string = [...elf1].filter(x => elf2.has(x) && elf3.has(x))[0];
+      return isLowerCase(badge) ? ord(badge, 'a') : ord(badge, 'A', 27);
+    }).reduce(sum, 0);
 
 exports.second = part2;
