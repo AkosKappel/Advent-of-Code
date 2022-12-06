@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'fs';
 import { part1, part2 } from '../src/day07';
-import { input, answer1, answer2 } from '../exampleInput/day07';
+import { input, answer1, answer2 } from '../exampleInput/day07.input';
 
 const puzzleAnswer1 = 0;
 const puzzleAnswer2 = 0;
