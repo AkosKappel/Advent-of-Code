@@ -1,58 +1,50 @@
-import { existsSync, readFileSync } from 'fs';
-
-const inputFile: string = `input/day07.in`;
-const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
-
-
-interface BaseEntity {
-  type: 'file' | 'directory';
-}
-
-interface FileEntity {
+interface File {
   type: 'file';
   size: number;
 }
 
-interface DirectoryEntity {
-  type: 'directory';
-  children: Record<string, FullEntity>;
+interface Directory {
+  type: 'dir';
+  children: Record<string, Entity>;
 }
 
-type FullEntity = FileEntity | DirectoryEntity;
+type Entity = File | Directory;
 
 interface CommandProps {
   args: string[];
   output: string[];
 }
 
-
-function buildFilesystem(data: string): DirectoryEntity {
-  const root: DirectoryEntity = {
-    type: 'directory',
+function buildFilesystem(data: string): Directory {
+  const root: Directory = {
+    type: 'dir',
     children: {},
   };
-  let workPath: string[] = [];
+  let path: string[] = [];
 
-  function getDirectoryEntity(entity: DirectoryEntity, path: string[]): DirectoryEntity {
+  function getCwd(entity: Directory, path: string[]): Directory {
     if (!path.length) return entity;
     const [dir, ...rest] = path;
-    return getDirectoryEntity(entity.children[dir] as DirectoryEntity, rest);
+    return getCwd(entity.children[dir] as Directory, rest);
   }
 
   function cd({ args: [destination] }: CommandProps) {
-    if (destination === '/') workPath = [];
-    else if (destination === '..') workPath.pop();
-    else workPath.push(destination);
+    if (destination === '/') path = [];
+    else if (destination === '..') path.pop();
+    else path.push(destination);
   }
 
   function ls({ output }: CommandProps) {
-    const cwd = getDirectoryEntity(root, workPath);
+    const cwd = getCwd(root, path);
+
     for (const line of output) {
-      if (line.startsWith('dir')) cwd.children[line.slice(4)] = {
-        type: 'directory',
-        children: {},
-      };
-      else {
+      if (line.startsWith('dir')) {
+        const dir = line.slice(4);
+        cwd.children[dir] = {
+          type: 'dir',
+          children: {},
+        };
+      } else {
         const [size, name] = line.split(' ');
         cwd.children[name] = {
           type: 'file',
@@ -62,13 +54,13 @@ function buildFilesystem(data: string): DirectoryEntity {
     }
   }
 
-  for (const command of data.split(/^\$ /gm).slice(1)) {
-    const [line, ...output] = command
-      .split('\n')
-      .map(line => line.trim())
-      .filter(Boolean);
-    const [cmd, ...args] = line.split(' ');
-    switch (cmd) {
+  for (const entry of data.split(/^\$ /gm)) {
+    if (!entry) continue;
+
+    const [input, ...output] = entry.split('\n').map(line => line.trim()).filter(Boolean);
+    const [command, ...args] = input.split(' ');
+
+    switch (command) {
       case 'cd':
         cd({ args, output });
         break;
@@ -77,42 +69,49 @@ function buildFilesystem(data: string): DirectoryEntity {
         break;
     }
   }
+
   return root;
 }
 
-function getSize(entity: FullEntity): number {
-  return entity.type === 'directory'
-    ? Object.values(entity.children)
-      .reduce((size, child) => size + getSize(child), 0)
-    : entity.size;
+function getSize(entity: Entity): number {
+  return entity.type === 'dir' ?
+    Object.values(entity.children)
+      .reduce((size: number, child: Entity) => size + getSize(child), 0) :
+    entity.size;
 }
 
-function solveOne(data: string, maximumDirectorySize = 100000): any {
-  const root = buildFilesystem(data);
+export const part1 = (s: string) => {
+  const MAX_DIR_SIZE: number = 100_000;
 
+  const root = buildFilesystem(s.trim());
   const foundSizes: number[] = [];
 
-  const stack: DirectoryEntity[] = [root];
+  const stack: Directory[] = [root];
   while (stack.length) {
     const entity = stack.pop()!;
 
     let size = 0;
     for (const child of Object.values(entity.children)) {
       size += getSize(child);
-      if (child.type === 'directory') stack.push(child);
+      if (child.type === 'dir') stack.push(child);
     }
-    if (size <= maximumDirectorySize) foundSizes.push(size);
+    if (size <= MAX_DIR_SIZE) foundSizes.push(size);
   }
 
-  return foundSizes.reduce((a, b) => a + b, 0);
-}
+  return foundSizes.reduce((a: number, b: number) => a + b, 0);
+};
 
-function solveTwo(data: string, totalSpace = 70000000, neededSpace = 30000000): any {
-  const root = buildFilesystem(data);
+exports.first = part1;
+
+export const part2 = (s: string) => {
+  const TOTAL_SPACE: number = 70_000_000;
+  const NEEDED_SPACE: number = 30_000_000;
+
+  const root = buildFilesystem(s.trim());
   const used = getSize(root);
-  const needToDelete = used - totalSpace + neededSpace;
+  const needToDelete = used - TOTAL_SPACE + NEEDED_SPACE;
 
-  function recur(entity: FullEntity): number[] {
+  function recur(entity: Entity): number[] {
     if (entity.type === 'file') return [];
 
     const size = getSize(entity);
@@ -125,8 +124,6 @@ function solveTwo(data: string, totalSpace = 70000000, neededSpace = 30000000): 
   }
 
   return Math.min(...recur(root));
-}
+};
 
-
-console.log(solveOne(puzzleInput));
-console.log(solveTwo(puzzleInput));
+exports.second = part2;
