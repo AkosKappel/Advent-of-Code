@@ -1,6 +1,6 @@
 const parse = (s: string) => s.trim()
-  .split('\n',
-  ).map(row => row.split(''));
+  .split('\n')
+  .map(row => row.split(''));
 
 const DIR = {
   UP: [0, -1],
