@@ -2,8 +2,8 @@ import { existsSync, readFileSync } from 'fs';
 import { part1, part2 } from '../src/day08';
 import { input, answer1, answer2 } from '../examples/day08.input';
 
-const puzzleAnswer1 = 0;
-const puzzleAnswer2 = 0;
+const puzzleAnswer1 = 1851;
+const puzzleAnswer2 = 574080;
 
 const inputFile: string = `input/day08.in`;
 const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
