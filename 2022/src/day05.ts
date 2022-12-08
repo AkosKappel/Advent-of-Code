@@ -21,7 +21,7 @@ const parse = (s: string) => {
   return { stacks, instructions };
 };
 
-export const part1 = (s: string) => {
+export const part1 = (s: string): string => {
   const { stacks, instructions } = parse(s);
   instructions.forEach(([n, from, to]) => {
     const crates = stacks[from - 1].splice(-n, n).reverse();
@@ -32,7 +32,7 @@ export const part1 = (s: string) => {
 
 exports.first = part1;
 
-export const part2 = (s: string) => {
+export const part2 = (s: string): string => {
   const { stacks, instructions } = parse(s);
   instructions.forEach(([n, from, to]) => {
     const crates = stacks[from - 1].splice(-n, n);

@@ -6,10 +6,10 @@ const findMessageStart = (message: string, markerLength: number) => message
   .filter((chunk: string) => chunk.length === markerLength)
   .findIndex((chunk: string) => allUniqueChars(chunk)) + markerLength;
 
-export const part1 = (s: string) => findMessageStart(s.trim(), 4);
+export const part1 = (s: string): number => findMessageStart(s.trim(), 4);
 
 exports.first = part1;
 
-export const part2 = (s: string) => findMessageStart(s.trim(), 14);
+export const part2 = (s: string): number => findMessageStart(s.trim(), 14);
 
 exports.second = part2;

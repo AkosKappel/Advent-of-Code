@@ -9,7 +9,7 @@ const parse = (s: string) => s
     return [ord(a, 'A'), ord(b, 'X')];
   });
 
-export const part1 = (s: string) => parse(s)
+export const part1 = (s: string): number => parse(s)
   .reduce((acc: number, [opponent, me]) => {
     if (opponent === me) { // draw
       return acc + me + 3;
@@ -22,7 +22,7 @@ export const part1 = (s: string) => parse(s)
 
 exports.first = part1;
 
-export const part2 = (s: string) => parse(s)
+export const part2 = (s: string): number => parse(s)
   .reduce((acc: number, [opponent, result]) => {
     switch (result) {
       case 1: // lose

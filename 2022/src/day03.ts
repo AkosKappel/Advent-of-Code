@@ -10,7 +10,7 @@ const isLowerCase = (c: string): boolean => {
 
 const sum = (a: number, b: number): number => a + b;
 
-export const part1 = (s: string) => parse(s)
+export const part1 = (s: string): number => parse(s)
   .map((line: string) => {
     const half: number = Math.ceil(line.length / 2);
     const firstHalf: Set<string> = new Set<string>(line.slice(0, half));
@@ -30,7 +30,7 @@ const groupify = (lines: string[], groupSize: number): string[][] => {
   }, []);
 };
 
-export const part2 = (s: string) =>
+export const part2 = (s: string): number =>
   groupify(parse(s), 3) // split elves into groups of three
     .map((group: string[]) => {
       const elf1: Set<string> = new Set<string>(group[0]);

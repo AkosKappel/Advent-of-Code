@@ -30,14 +30,14 @@ const getFoldersSize = (s: string) => {
   return folders;
 };
 
-export const part1 = (s: string) => Object
+export const part1 = (s: string): number => Object
   .values(getFoldersSize(s))
   .filter(size => size <= MAX_DIR_SIZE)
   .reduce((a: number, b: number) => a + b, 0);
 
 exports.first = part1;
 
-export const part2 = (s: string) => {
+export const part2 = (s: string): number => {
   const folders = getFoldersSize(s);
   const FREE_SPACE: number = TOTAL_SPACE - folders[ROOT];
   return Object

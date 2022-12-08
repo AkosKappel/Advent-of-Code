@@ -3,14 +3,14 @@ const parse = (s: string) => s
   .split('\n\n')
   .map((elf: string) => elf.split('\n').map(Number));
 
-export const part1 = (s: string) =>
+export const part1 = (s: string): number =>
   parse(s)
     .map((elf: number[]) => elf.reduce((a: number, b: number) => a + b))
     .reduce((a: number, b: number) => Math.max(a, b));
 
 exports.first = part1;
 
-export const part2 = (s: string) =>
+export const part2 = (s: string): number =>
   parse(s)
     .map((elf: number[]) => elf.reduce((a: number, b: number) => a + b))
     .sort((a: number, b: number) => b - a)
