@@ -32,10 +32,10 @@ const isTallest = (dir: number[], i: number, j: number, forest: string[][]): boo
 
 export const part1 = (s: string): number => {
   const trees = parse(s);
-  let n = 0;
+  let n = (trees.length + trees[0].length - 2) * 2;
 
-  for (let i = 0; i < trees.length; i++) {
-    for (let j = 0; j < trees[i].length; j++) {
+  for (let i = 1; i < trees.length - 1; i++) {
+    for (let j = 1; j < trees[i].length - 1; j++) {
       if (isTallest(DIR.UP, i, j, trees) ||
         isTallest(DIR.DOWN, i, j, trees) ||
         isTallest(DIR.LEFT, i, j, trees) ||
@@ -58,35 +58,44 @@ const getDirScore = (dir: number[], i: number, j: number, forest: string[][]): n
   let tallest = true;
   let scenicScore = 0;
 
-  while (forest[y] && forest[y][x]) {
+  while (tallest && forest[y] && forest[y][x]) {
     const nextTree = forest[y][x];
 
     if (nextTree >= tree) {
       tallest = false;
-      if (dir === DIR.UP) {
-        scenicScore = i - y;
-      } else if (dir === DIR.DOWN) {
-        scenicScore = y - i;
-      } else if (dir === DIR.LEFT) {
-        scenicScore = j - x;
-      } else if (dir === DIR.RIGHT) {
-        scenicScore = x - j;
+      switch (dir) {
+        case DIR.UP:
+          scenicScore = i - y;
+          break;
+        case DIR.DOWN:
+          scenicScore = y - i;
+          break;
+        case DIR.LEFT:
+          scenicScore = j - x;
+          break;
+        case DIR.RIGHT:
+          scenicScore = x - j;
+          break;
       }
-      break;
     }
 
     [x, y] = [x + dx, y + dy];
   }
 
   if (tallest) {
-    if (dir === DIR.UP) {
-      scenicScore = i;
-    } else if (dir === DIR.DOWN) {
-      scenicScore = forest.length - i - 1;
-    } else if (dir === DIR.LEFT) {
-      scenicScore = j;
-    } else if (dir === DIR.RIGHT) {
-      scenicScore = forest[i].length - j - 1;
+    switch (dir) {
+      case DIR.UP:
+        scenicScore = i;
+        break;
+      case DIR.DOWN:
+        scenicScore = forest.length - i - 1;
+        break;
+      case DIR.LEFT:
+        scenicScore = j;
+        break;
+      case DIR.RIGHT:
+        scenicScore = forest[i].length - j - 1;
+        break;
     }
   }
 
