@@ -1,3 +1,5 @@
+import * as day from '../examples/day09.input';
+
 const DIRECTION = {
   U: [0, -1],
   D: [0, 1],
