@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'fs';
 import { part1, part2 } from '../src/day10';
 import * as day from '../examples/day10.input';
 
-const puzzleAnswer1 = 0;
+const puzzleAnswer1 = 13440;
 const puzzleAnswer2 = 0;
 
 const inputFile: string = `input/day10.in`;
