@@ -1,5 +1,4 @@
 interface Monkey {
-  id: number;
   items: number[];
   op: (old: number) => number;
   divisibleBy: number;
@@ -7,38 +6,26 @@ interface Monkey {
   nInspected: number;
 }
 
-enum WORRY_LEVEL {LOW, HIGH}
-
 const NUMBER_REGEX = /\d+/g;
 
 const parse = (s: string): Monkey[] => s.trim()
   .split('\n\n')
-  .map((block: string, i: number) => {
-    const [_, items, oper, divBy, isTrue, isFalse] = block.split('\n');
-    return {
-      id: i,
-      items: items.match(NUMBER_REGEX)?.map(Number) || [],
-      op: (old: number) => eval(oper.split('= ')[1]),
-      divisibleBy: divBy.match(NUMBER_REGEX)?.map(Number)[0] || 1,
-      passTo: [isTrue, isFalse].map((x: string) => x.match(NUMBER_REGEX)?.[0]).map(Number),
-      nInspected: 0,
-    };
-  });
+  .map((block: string) => block.split('\n'))
+  .map(([_, items, oper, divBy, ifTrue, ifFalse]) => ({
+    items: items.match(NUMBER_REGEX)?.map(Number) || [],
+    op: (old: number) => eval(oper.split('=')[1].trim()),
+    divisibleBy: divBy.match(NUMBER_REGEX)?.map(Number)[0] || 1,
+    passTo: [ifTrue, ifFalse].map((x: string) => x.match(NUMBER_REGEX)?.[0]).map(Number),
+    nInspected: 0,
+  }));
 
-const inspect = (item: number, op: (old: number) => number, level: WORRY_LEVEL) => {
-  switch (level) {
-    case WORRY_LEVEL.LOW:
-      return Math.floor(op(item) / 3);
-    case WORRY_LEVEL.HIGH:
-      return op(item);
-  }
-  throw new Error('Invalid worry level');
-};
-
-const keepAway = (monkeys: Monkey[], nRounds: number, worryLevel: WORRY_LEVEL): number => {
+const keepAway = (monkeys: Monkey[], nRounds: number, divisor: number = 1): number => {
   const product = monkeys
     .map(({ divisibleBy }) => divisibleBy)
-    .reduce((acc, n) => acc * n);
+    .reduce((acc: number, n: number) => acc * n);
+
+  const inspect = (x: number, func: (old: number) => number) =>
+    Math.floor(func(x) / divisor) % product;
 
   for (let round = 0; round < nRounds; round++) {
     for (const monkey of monkeys) {
@@ -47,7 +34,7 @@ const keepAway = (monkeys: Monkey[], nRounds: number, worryLevel: WORRY_LEVEL): 
 
       let item = items.shift();
       while (item) {
-        const inspectedItem = inspect(item, op, worryLevel) % product;
+        const inspectedItem = inspect(item, op);
         const j = passTo[+!!(inspectedItem % divisibleBy)];
         monkeys[j].items.push(inspectedItem);
         item = items.shift();
@@ -61,10 +48,10 @@ const keepAway = (monkeys: Monkey[], nRounds: number, worryLevel: WORRY_LEVEL): 
     .reduce((a: number, b: number) => a * b);
 };
 
-export const part1 = (s: string): number => keepAway(parse(s), 20, WORRY_LEVEL.LOW);
+export const part1 = (s: string): number => keepAway(parse(s), 20, 3);
 
 exports.first = part1;
 
-export const part2 = (s: string): number => keepAway(parse(s), 10_000, WORRY_LEVEL.HIGH);
+export const part2 = (s: string): number => keepAway(parse(s), 10_000);
 
 exports.second = part2;
