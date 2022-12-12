@@ -8,12 +8,12 @@ const DIRECTION: { [dir: string]: number[] } = {
 const ord = (c: string, start: string = 'a', offset: number = 0): number =>
   c.charCodeAt(0) - start.charCodeAt(0) + offset;
 
-const getCoordsOf = (char: string, s: string): number[] => s
+const getAllCoordsOf = (char: string, s: string): number[][] => s
   .split('\n')
-  .reduce((acc: number[], line: string, y: number) => {
+  .reduce((acc: number[][], line: string, y: number) => {
     const x: number = line.indexOf(char);
-    return x >= 0 ? [x, y] : acc;
-  }, [0, 0]);
+    return x >= 0 ? [...acc, [x, y]] : acc;
+  }, []);
 
 interface Map {
   start: number[];
@@ -24,8 +24,8 @@ interface Map {
 }
 
 const parse = (s: string): Map => ({
-  start: getCoordsOf('S', s),
-  end: getCoordsOf('E', s),
+  start: getAllCoordsOf('S', s)[0],
+  end: getAllCoordsOf('E', s)[0],
   grid: s
     .replace('S', 'a')
     .replace('E', 'z')
@@ -47,7 +47,7 @@ const dijkstra = (map: Map, start: number[], end: number[]): number => {
 
   dist[sy][sx] = 0;
 
-  while (queue.length > 0) {
+  loop: while (queue.length > 0) {
     const [x, y] = queue.shift()!;
     const d = dist[y][x];
 
@@ -63,7 +63,7 @@ const dijkstra = (map: Map, start: number[], end: number[]): number => {
         queue.push([nx, ny]);
       }
 
-      if ([nx, ny] === end) return d + 1;
+      if ([nx, ny] === end) break loop;
     }
   }
 
@@ -77,11 +77,19 @@ export const part1 = (s: string): number => {
 
 exports.first = part1;
 
+const hasIncreasedNeighbour = ([x, y]: number[], grid: number[][], increase: number = 1): boolean =>
+  Object.values(DIRECTION).some(([dx, dy]: number[]) => {
+    const [nx, ny] = [x + dx, y + dy];
+    return grid[ny] && grid[ny][nx] === grid[y][x] + increase;
+  });
+
 export const part2 = (s: string): number => {
   const map = parse(s.trim());
   return map.grid
     .flatMap((line: number[], y: number) => line.map((height: number, x: number) =>
-      height === 0 ? dijkstra(map, [x, y], map.end) : Infinity))
+      height === 0 && hasIncreasedNeighbour([x, y], map.grid) ?
+        dijkstra(map, [x, y], map.end) :
+        Infinity))
     .reduce((acc: number, d: number) => Math.min(acc, d));
 };
 
