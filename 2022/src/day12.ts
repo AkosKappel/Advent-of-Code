@@ -5,12 +5,13 @@ const DIRECTION: { [dir: string]: number[] } = {
   R: [1, 0],
 };
 
-const ord = (c: string, start: string, offset: number = 0): number =>
+const ord = (c: string, start: string = 'a', offset: number = 0): number =>
   c.charCodeAt(0) - start.charCodeAt(0) + offset;
 
-const getCoordsOf = (char: string, map: string): number[] => map
-  .split('\n').reduce((acc, line, y) => {
-    const x = line.indexOf(char);
+const getCoordsOf = (char: string, s: string): number[] => s
+  .split('\n')
+  .reduce((acc: number[], line: string, y: number) => {
+    const x: number = line.indexOf(char);
     return x >= 0 ? [x, y] : acc;
   }, [0, 0]);
 
@@ -29,7 +30,7 @@ const parse = (s: string): Map => ({
     .replace('S', 'a')
     .replace('E', 'z')
     .split('\n')
-    .map(line => line.split('').map(c => ord(c, 'a'))),
+    .map(line => line.split('').map(c => ord(c))),
   height: s.split('\n').length,
   width: s.split('\n')[0].length,
 });
@@ -40,9 +41,9 @@ const dijkstra = (map: Map, start: number[], end: number[]): number => {
   const [w, h] = [map.width, map.height];
   const grid = map.grid;
 
-  const dist = Array(h).fill(0).map(() => Array(w).fill(Infinity));
-  const prev = Array(h).fill(0).map(() => Array(w).fill(null));
-  const queue = [[sx, sy]];
+  const dist: number[][] = Array(h).fill(0).map(() => Array(w).fill(Infinity));
+  const prev: number[][][] = Array(h).fill(0).map(() => Array(w).fill(null));
+  const queue: number[][] = [start];
 
   dist[sy][sx] = 0;
 
@@ -52,13 +53,17 @@ const dijkstra = (map: Map, start: number[], end: number[]): number => {
 
     for (const [dx, dy] of Object.values(DIRECTION)) {
       const [nx, ny] = [x + dx, y + dy];
-      if (nx < 0 || nx >= w || ny < 0 || ny >= h || grid[ny][nx] > grid[y][x] + 1) continue;
+
+      if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue; // out of bounds
+      if (grid[ny][nx] > grid[y][x] + 1) continue; // too high to climb
 
       if (d + 1 < dist[ny][nx]) {
         dist[ny][nx] = d + 1;
         prev[ny][nx] = [x, y];
         queue.push([nx, ny]);
       }
+
+      if ([nx, ny] === end) return d + 1;
     }
   }
 
