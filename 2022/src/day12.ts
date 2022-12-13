@@ -35,17 +35,16 @@ const parse = (s: string): Map => ({
   width: s.split('\n')[0].length,
 });
 
-const dijkstra = (map: Map, start: number[], end: number[]): number => {
-  const [sx, sy] = start;
+const bfs = (map: Map, start: number[], end: number[], queue: number[][] = [start]): number => {
   const [ex, ey] = end;
   const [w, h] = [map.width, map.height];
   const grid = map.grid;
 
   const dist: number[][] = Array(h).fill(0).map(() => Array(w).fill(Infinity));
   const prev: number[][][] = Array(h).fill(0).map(() => Array(w).fill(null));
-  const queue: number[][] = [start];
 
-  dist[sy][sx] = 0;
+  // set every starting point to 0
+  queue.forEach(([x, y]: number[]) => dist[y][x] = 0);
 
   loop: while (queue.length > 0) {
     const [x, y] = queue.shift()!;
@@ -57,13 +56,13 @@ const dijkstra = (map: Map, start: number[], end: number[]): number => {
       if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue; // out of bounds
       if (grid[ny][nx] > grid[y][x] + 1) continue; // too high to climb
 
-      if (d + 1 < dist[ny][nx]) {
+      if (d + 1 < dist[ny][nx]) { // found a shorter path
         dist[ny][nx] = d + 1;
         prev[ny][nx] = [x, y];
         queue.push([nx, ny]);
       }
 
-      if ([nx, ny] === end) break loop;
+      if ([nx, ny] === end) break loop; // found the end point
     }
   }
 
@@ -72,7 +71,7 @@ const dijkstra = (map: Map, start: number[], end: number[]): number => {
 
 export const part1 = (s: string): number => {
   const map = parse(s.trim());
-  return dijkstra(map, map.start, map.end);
+  return bfs(map, map.start, map.end);
 };
 
 exports.first = part1;
@@ -84,13 +83,20 @@ const hasIncreasedNeighbour = ([x, y]: number[], grid: number[][], increase: num
   });
 
 export const part2 = (s: string): number => {
-  const map = parse(s.trim());
-  return map.grid
-    .flatMap((line: number[], y: number) => line.map((height: number, x: number) =>
-      height === 0 && hasIncreasedNeighbour([x, y], map.grid) ?
-        dijkstra(map, [x, y], map.end) :
-        Infinity))
-    .reduce((acc: number, d: number) => Math.min(acc, d));
+  s = s.trim();
+  const map = parse(s);
+
+  const startingPoints = getAllCoordsOf('a', s)
+    .filter((point: number[]) => hasIncreasedNeighbour(point, map.grid));
+  return bfs(map, map.start, map.end, startingPoints);
+
+  // NOTE: old solution where BFS is run for every starting point
+  // return map.grid
+  //   .flatMap((line: number[], y: number) => line.map((height: number, x: number) =>
+  //     height === 0 && hasIncreasedNeighbour([x, y], map.grid) ?
+  //       bfs(map, [x, y], map.end) :
+  //       Infinity))
+  //   .reduce((acc: number, d: number) => Math.min(acc, d));
 };
 
 exports.second = part2;
