@@ -1,3 +1,8 @@
+import { existsSync, readFileSync } from 'fs';
+
+const dayNumber = 'day10.input.ts'.match(/\d+/)?.filter(Number)[0];
+const inputFile: string = `input/day${dayNumber}.in`;
+
 export const input: string = `
 addx 15
 addx -11
@@ -155,3 +160,14 @@ export const answer2 = `
 ######......######......######......####
 #######.......#######.......#######.....
 `;
+
+export const puzzleAnswer1 = 13440;
+export const puzzleAnswer2 = `
+###..###..####..##..###...##..####..##..
+#..#.#..#....#.#..#.#..#.#..#....#.#..#.
+#..#.###....#..#....#..#.#..#...#..#..#.
+###..#..#..#...#.##.###..####..#...####.
+#....#..#.#....#..#.#.#..#..#.#....#..#.
+#....###..####..###.#..#.#..#.####.#..#.
+`;
+export const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
