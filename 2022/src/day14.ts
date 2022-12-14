@@ -43,11 +43,11 @@ const buildCave = (input: string, addFloor: boolean) => {
       const [x1, y1] = start;
       const [x2, y2] = end;
 
-      if (x1 === x2) { // vertical line
+      if (x1 === x2) { // draw vertical line
         for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
           cave[y - minY][x1 - minX] = ROCK;
         }
-      } else if (y1 === y2) { // horizontal line
+      } else if (y1 === y2) { // draw horizontal line
         for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
           cave[y1 - minY][x - minX] = ROCK;
         }
@@ -88,8 +88,13 @@ const pourSand = (s: string, addFloor: boolean = false) => {
         sand = [x + 1, y + 1];
       }
     }
+    // sand has covered the entry point
+    else if (sand === SPAWN) {
+      numSandTiles++;
+      keepSpawning = false;
+    }
     // fell out of bounds
-    else if (sand === SPAWN || X_DIRS.some(dx => !cave[y + 1][x + dx])) {
+    else if (X_DIRS.some(dx => !cave[y + 1][x + dx])) {
       keepSpawning = false;
     }
     // can't move any further down, spawn new sand particle
@@ -107,6 +112,6 @@ export const part1 = (s: string): number => pourSand(s);
 
 exports.first = part1;
 
-export const part2 = (s: string): number => pourSand(s, true) + 1;
+export const part2 = (s: string): number => pourSand(s, true);
 
 exports.second = part2;
