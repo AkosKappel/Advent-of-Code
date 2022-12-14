@@ -1,9 +1,11 @@
 const SPAWN_POINT: number[] = [500, 0];
 
-const EMPTY: string = '.';
-const ROCK: string = '#';
-const SAND: string = 'o';
-const HOLE: string = '+';
+enum Block {
+  EMPTY = '.',
+  ROCK = '#',
+  SAND = 'o',
+  HOLE = '+',
+}
 
 const parse = (s: string) => s.trim()
   .split('\n')
@@ -35,7 +37,7 @@ const buildCave = (input: string, addFloor: boolean) => {
 
   // build grid for the cave
   const cave = new Array(maxY - minY + 1).fill(0)
-    .map(() => new Array(maxX - minX + 1).fill(EMPTY));
+    .map(() => new Array(maxX - minX + 1).fill(Block.EMPTY));
 
   // fill in the cave with lines of rock
   lines.concat(floor).forEach(line => {
@@ -45,11 +47,11 @@ const buildCave = (input: string, addFloor: boolean) => {
 
       if (x1 === x2) { // draw vertical line
         for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-          cave[y - minY][x1 - minX] = ROCK;
+          cave[y - minY][x1 - minX] = Block.ROCK;
         }
       } else if (y1 === y2) { // draw horizontal line
         for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-          cave[y1 - minY][x - minX] = ROCK;
+          cave[y1 - minY][x - minX] = Block.ROCK;
         }
       }
 
@@ -58,7 +60,7 @@ const buildCave = (input: string, addFloor: boolean) => {
   });
 
   // display spawn point
-  cave[spawnY - minY][spawnX - minX] = HOLE;
+  cave[spawnY - minY][spawnX - minX] = Block.HOLE;
 
   // console.log(cave.map(line => line.join('')).join('\n'));
   // console.log('width:', cave[0].length, 'height:', cave.length);
@@ -79,12 +81,12 @@ const pourSand = (s: string, addFloor: boolean = false) => {
     const [x, y] = sand;
 
     // can move down
-    if (X_DIRS.some(dx => cave[y + 1][x + dx] === EMPTY)) {
-      if (cave[y + 1][x] === EMPTY) { // move straight down
+    if (X_DIRS.some(dx => cave[y + 1][x + dx] === Block.EMPTY)) {
+      if (cave[y + 1][x] === Block.EMPTY) { // move straight down
         sand = [x, y + 1];
-      } else if (cave[y + 1][x - 1] === EMPTY) { // move down left
+      } else if (cave[y + 1][x - 1] === Block.EMPTY) { // move down left
         sand = [x - 1, y + 1];
-      } else if (cave[y + 1][x + 1] === EMPTY) { // move down right
+      } else if (cave[y + 1][x + 1] === Block.EMPTY) { // move down right
         sand = [x + 1, y + 1];
       }
     }
@@ -100,7 +102,7 @@ const pourSand = (s: string, addFloor: boolean = false) => {
     // can't move any further down, spawn new sand particle
     else {
       sand = SPAWN;
-      cave[y][x] = SAND;
+      cave[y][x] = Block.SAND;
       numSandTiles++;
     }
   }
