@@ -1,5 +1,4 @@
 const SPAWN_POINT: number[] = [500, 0];
-const X_DIRS: number[] = [-1, 0, 1];
 
 const EMPTY: string = '.';
 const ROCK: string = '#';
@@ -11,7 +10,7 @@ const parse = (s: string) => s.trim()
   .map(line => line.split(' -> ')
     .map(s => s.split(',').map(Number)));
 
-const buildCave = (input: string, addFloor: boolean = false) => {
+const buildCave = (input: string, addFloor: boolean) => {
   const lines: number[][][] = parse(input);
   const [spawnX, spawnY] = SPAWN_POINT;
 
@@ -67,11 +66,13 @@ const buildCave = (input: string, addFloor: boolean = false) => {
   return { cave, minX, minY, maxX, maxY };
 };
 
-export const part1 = (s: string): number => {
-  const { cave, minX, minY } = buildCave(s);
+const pourSand = (s: string, addFloor: boolean = false) => {
+  const { cave, minX, minY } = buildCave(s, addFloor);
+  const SPAWN = [SPAWN_POINT[0] - minX, SPAWN_POINT[1] - minY];
+  const X_DIRS: number[] = [-1, 0, 1];
 
   let numSandTiles = 0;
-  let sand = [SPAWN_POINT[0] - minX, SPAWN_POINT[1] - minY];
+  let sand = SPAWN;
 
   let keepSpawning: boolean = true;
   while (keepSpawning) {
@@ -88,12 +89,12 @@ export const part1 = (s: string): number => {
       }
     }
     // fell out of bounds
-    else if (X_DIRS.some(dx => !cave[y + 1][x + dx])) {
+    else if (sand === SPAWN || X_DIRS.some(dx => !cave[y + 1][x + dx])) {
       keepSpawning = false;
     }
     // can't move any further down, spawn new sand particle
     else {
-      sand = [SPAWN_POINT[0] - minX, SPAWN_POINT[1] - minY];
+      sand = SPAWN;
       cave[y][x] = SAND;
       numSandTiles++;
     }
@@ -101,44 +102,11 @@ export const part1 = (s: string): number => {
 
   return numSandTiles;
 };
+
+export const part1 = (s: string): number => pourSand(s);
 
 exports.first = part1;
 
-export const part2 = (s: string): number => {
-  const { cave, minX, minY } = buildCave(s, true);
-  const spawn = [SPAWN_POINT[0] - minX, SPAWN_POINT[1] - minY];
-
-  let numSandTiles = 0;
-  let sand = spawn;
-
-  let keepSpawning: boolean = true;
-  while (keepSpawning) {
-    const [x, y] = sand;
-
-    // can move down
-    if (X_DIRS.some(dx => cave[y + 1][x + dx] === EMPTY)) {
-      if (cave[y + 1][x] === EMPTY) { // move straight down
-        sand = [x, y + 1];
-      } else if (cave[y + 1][x - 1] === EMPTY) { // move down left
-        sand = [x - 1, y + 1];
-      } else if (cave[y + 1][x + 1] === EMPTY) { // move down right
-        sand = [x + 1, y + 1];
-      }
-    }
-    // fell out of bounds
-    else if (sand === spawn || X_DIRS.some(dx => !cave[y + 1][x + dx])) {
-      numSandTiles++;
-      keepSpawning = false;
-    }
-    // can't move any further down, spawn new sand particle
-    else {
-      sand = spawn;
-      cave[y][x] = SAND;
-      numSandTiles++;
-    }
-  }
-
-  return numSandTiles;
-};
+export const part2 = (s: string): number => pourSand(s, true) + 1;
 
 exports.second = part2;
