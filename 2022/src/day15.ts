@@ -66,11 +66,12 @@ export const part2 = (s: string): number => {
 
     // check if there is a gap in the coverage
     if (coverage.length > 1) {
-      const [start, end] = coverage[0];
+      const [, end] = coverage[0];
       return (end + 1) * 4_000_000 + targetY;
     }
   }
 
+  // no gap found
   return -1;
 };
 

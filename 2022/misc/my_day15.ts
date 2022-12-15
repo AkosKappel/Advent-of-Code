@@ -1,3 +1,5 @@
+const DIRECTIONS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+
 const manhattanDistance = (a: number[], b: number[]): number =>
   a.reduce((sum: number, num: number, i: number) => sum + Math.abs(num - b[i]), 0);
 
@@ -22,12 +24,10 @@ const exploreTunnelRec = (tunnel: string[][], start: number[], distance: number)
   if (tunnel[y][x] === '.') tunnel[y][x] = '#';
 
   // explore each direction from current position
-  const DIRECTIONS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
   DIRECTIONS.forEach(([dx, dy]: number[]) => exploreTunnelRec(tunnel, [x + dx, y + dy], distance - 1));
 };
 
 const exploreTunnel = (tunnel: string[][], start: number[], distance: number) => {
-  const DIRECTIONS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
   // depth first search
   const stack: number[][] = [start];
@@ -94,8 +94,21 @@ export const part1 = (s: string, targetY: number): number => {
 exports.first = part1;
 
 export const part2 = (s: string): number => {
-  parse(s);
-  return 0;
+  const { tunnel, minX, minY } = buildTunnel(s);
+
+  for (let i = 0; i < tunnel.length; i++) {
+    for (let j = 0; j < tunnel[0].length; j++) {
+      if (tunnel[i][j] === '.' && DIRECTIONS
+        .every(([dx, dy]: number[]) =>
+          !outOfBounds(tunnel, j + dx, i + dy) && tunnel[i + dy][j + dx] === '#')) {
+        const [x, y] = [j + minX, i + minY];
+        return x * 4_000_000 + y;
+      }
+    }
+  }
+
+  // no solution found
+  return -1;
 };
 
 exports.second = part2;
@@ -104,8 +117,8 @@ import * as day from '../examples/day15.input';
 
 console.log(part1(day.input, day.param1));
 console.log(day.answer1);
-// console.log(part2(day.input));
-// console.log(day.answer2);
+console.log(part2(day.input));
+console.log(day.answer2);
 // console.log(part1(day.puzzleInput, day.puzzleParam1));
 // console.log(day.puzzleAnswer1);
 // console.log(part2(day.puzzleInput));
