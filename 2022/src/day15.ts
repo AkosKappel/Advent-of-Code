@@ -1,73 +1,71 @@
 const manhattanDistance = (a: number[], b: number[]): number =>
   a.reduce((sum: number, num: number, i: number) => sum + Math.abs(num - b[i]), 0);
 
-const parse = (s: string): number[][] => s.trim()
+const parse = (s: string) => s.trim()
   .split('\n')
   .map(line => line.match(/(-?\d+)/g)!.map(Number))
-  .map(([sx, sy, bx, by]: number[]) => [sx, sy, bx, by, manhattanDistance([sx, sy], [bx, by])]);
+  .map(([x, y, bx, by]: number[]) => ({ x, y, bx, by, dist: manhattanDistance([x, y], [bx, by]) }));
 
-const mergeIntervals = (intervals: number[][]): number[][] => {
-  // sort intervals by start position
-  intervals.sort((a: number[], b: number[]) => a[0] - b[0]);
+export const part1 = (s: string, targetY: number): number => {
+  const data = parse(s);
+  const ranges: number[][] = [];
 
-  const mergedIntervals: number[][] = [];
-
-  // merge overlapping intervals
-  let previous: number[] = intervals[0];
-  for (let i = 1; i < intervals.length; i++) {
-    const current: number[] = intervals[i];
-
-    const [previousStart, previousEnd] = previous;
-    const [currentStart, currentEnd] = current;
-
-    if (previousEnd >= currentStart) {
-      previous = [previousStart, Math.max(previousEnd, currentEnd)];
-    } else {
-      mergedIntervals.push(previous);
-      previous = current;
-    }
-  }
-  mergedIntervals.push(previous);
-
-  return mergedIntervals;
-};
-
-const getLineCoverageOfSensor = (sensor: number[], targetY: number): number[] | null => {
-  const [sx, sy, , , dist] = sensor;
-  const coverageWidth = dist - Math.abs(sy - targetY);
-
-  // sensor is not in range
-  if (coverageWidth <= 0) return null;
-  return [sx - coverageWidth, sx + coverageWidth];
-};
-
-const getLineCoverage = (data: number[][], targetY: number): number[][] => {
-  const coverageIntervals: number[][] = [];
-
-  data.forEach((sensorData: number[]) => {
-    const sensorCoverage = getLineCoverageOfSensor(sensorData, targetY);
-    if (sensorCoverage) coverageIntervals.push(sensorCoverage);
+  data.forEach((sensor) => {
+    const dy = sensor.dist - Math.abs(targetY - sensor.y);
+    if (dy > 0) ranges.push([sensor.x - dy, sensor.x + dy]);
   });
 
-  return mergeIntervals(coverageIntervals);
+  const ranges2: number[] = ranges.flat().sort((a, b) => a - b);
+  return Math.abs(ranges2[0] - ranges2.pop()!);
 };
-
-export const part1 = (s: string, targetY: number): number => getLineCoverage(parse(s), targetY)
-  .reduce((sum: number, [start, end]: number[]) => sum + (end - start), 0);
 
 exports.first = part1;
 
+const intersect = (p1: number[], p2: number[], p3: number[], p4: number[]): number[] => {
+  const [x1, y1] = p1;
+  const [x2, y2] = p2;
+  const [x3, y3] = p3;
+  const [x4, y4] = p4;
+
+  const denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+  const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
+  const x = x1 + ua * (x2 - x1);
+  const y = y1 + ua * (y2 - y1);
+  return [~~x, ~~y];
+};
+
 export const part2 = (s: string): number => {
   const data = parse(s);
-  const maxY = 4_000_000;
 
-  for (let targetY = 0; targetY < maxY; targetY++) {
-    const coverage = getLineCoverage(data, targetY);
+  const maxY = data.length == 14 ? 20 : 4000000;
+  const targetY = data.length == 14 ? 20 : 2000000;
 
-    // check if there is a gap in the coverage
-    if (coverage.length > 1) {
-      const [, end] = coverage[0];
-      return (end + 1) * 4_000_000 + targetY;
+  const diamonds: number[][][] = data.map((sensor) => {
+    const d = sensor.dist + 1;
+    return [
+      [sensor.x + d, sensor.y],
+      [sensor.x, sensor.y + d],
+      [sensor.x - d, sensor.y],
+      [sensor.x, sensor.y - targetY],
+    ];
+  });
+
+  for (let i = 0; i < diamonds.length; i++) {
+    const d1: number[][] = diamonds[i];
+
+    for (let j = i + 1; j < diamonds.length; j++) {
+      const d2: number[][] = diamonds[j];
+
+      for (let s1 = 0; s1 < 4; s1++) {
+        for (let s2 = 0; s2 < 4; s2++) {
+
+          const [x, y] = intersect(d1[s1], d1[(s1 + 1) % 4], d2[s2], d2[(s2 + 1) % 4]);
+          if (x >= 0 && x <= maxY && y >= 0 && y <= maxY &&
+            data.every((s) => manhattanDistance([s.x, s.y], [x, y]) > s.dist)) {
+            return x * 4_000_000 + y;
+          }
+        }
+      }
     }
   }
 
