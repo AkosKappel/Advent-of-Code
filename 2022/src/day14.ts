@@ -36,7 +36,7 @@ const buildCave = (input: string, addFloor: boolean) => {
   }
 
   // build grid for the cave
-  const cave = new Array(maxY - minY + 1).fill(0)
+  const cave: string[][] = new Array(maxY - minY + 1).fill(0)
     .map(() => new Array(maxX - minX + 1).fill(Block.EMPTY));
 
   // fill in the cave with lines of rock
@@ -68,7 +68,51 @@ const buildCave = (input: string, addFloor: boolean) => {
   return { cave, minX, minY, maxX, maxY };
 };
 
+const isWithinBounds = (cave: string[][], pos: number[]) => {
+  const [x, y] = pos;
+  return y >= 0 && y < cave.length && x >= 0 && x < cave[y].length;
+};
+
+const dfs = (cave: string[][], pos: number[],
+             result: { numSandTiles: number, counting: boolean },
+             visited: Set<string> = new Set()): number => {
+  if (!isWithinBounds(cave, pos)) return -1;
+
+  const [x, y] = pos;
+  const key = `${x},${y}`;
+
+  if (visited.has(key)) return 0;
+  visited.add(key);
+
+  if (cave[y][x] === Block.ROCK) return 0;
+
+  const recur = [0, -1, 1].map((xDir: number) => dfs(cave, [x + xDir, y + 1], result, visited));
+  if (recur.some(x => x === -1)) {
+    result.counting = false;
+    return -1;
+  }
+
+  if (cave[y][x] === Block.EMPTY) cave[y][x] = Block.SAND;
+
+  if (result.counting) result.numSandTiles++;
+
+  return 1 + recur.reduce((a: number, b: number) => a + b, 0);
+};
+
+// IDEA: when a sand particle's x coordinate gets away from the lines (as in
+//       part 1 is out of bounds) there is no need to continue DFS for that
+//       area, just add the area of the triangle that will be created by the
+//       falling sand particles
 const pourSand = (s: string, addFloor: boolean = false) => {
+  const { cave, minX, minY } = buildCave(s, addFloor);
+  const SPAWN = [SPAWN_POINT[0] - minX, SPAWN_POINT[1] - minY];
+  const result = { numSandTiles: 0, counting: true };
+  dfs(cave, SPAWN, result);
+  return result.numSandTiles;
+};
+
+// NOTE: original solution simulated every sand particle falling down (inefficient)
+const simulateSand = (s: string, addFloor: boolean = false) => {
   const { cave, minX, minY } = buildCave(s, addFloor);
   const SPAWN = [SPAWN_POINT[0] - minX, SPAWN_POINT[1] - minY];
   const X_DIRS: number[] = [-1, 0, 1];
