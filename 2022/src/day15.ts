@@ -6,17 +6,20 @@ const parse = (s: string) => s.trim()
   .map(line => line.match(/(-?\d+)/g)!.map(Number))
   .map(([x, y, bx, by]: number[]) => ({ x, y, bx, by, dist: manhattanDistance([x, y], [bx, by]) }));
 
-export const part1 = (s: string, targetY: number): number => {
+export const part1 = (s: string): number => {
   const data = parse(s);
-  const ranges: number[][] = [];
 
-  data.forEach((sensor) => {
+  const targetY: number = data.length == 14 ? 10 : 2_000_000;
+
+  const ranges: number[][] = data.map((sensor) => {
     const dy = sensor.dist - Math.abs(targetY - sensor.y);
-    if (dy > 0) ranges.push([sensor.x - dy, sensor.x + dy]);
-  });
+    return dy > 0 ? [sensor.x - dy, sensor.x + dy] : [];
+  }).filter(Boolean);
 
-  const ranges2: number[] = ranges.flat().sort((a, b) => a - b);
-  return Math.abs(ranges2[0] - ranges2.pop()!);
+  const sortedRanges: number[] = ranges.flat().sort((a, b) => a - b);
+  const start: number = sortedRanges[0];
+  const end: number = sortedRanges[sortedRanges.length - 1];
+  return Math.abs(start - end);
 };
 
 exports.first = part1;
@@ -37,8 +40,8 @@ const intersect = (p1: number[], p2: number[], p3: number[], p4: number[]): numb
 export const part2 = (s: string): number => {
   const data = parse(s);
 
-  const maxY = data.length == 14 ? 20 : 4000000;
-  const targetY = data.length == 14 ? 20 : 2000000;
+  const maxY = data.length == 14 ? 20 : 4_000_000;
+  const targetY = data.length == 14 ? 20 : 2_000_000;
 
   const diamonds: number[][][] = data.map((sensor) => {
     const d = sensor.dist + 1;
