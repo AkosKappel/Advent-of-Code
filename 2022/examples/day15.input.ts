@@ -19,11 +19,9 @@ Sensor at x=16, y=7: closest beacon is at x=15, y=3
 Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3
 `;
-export const param1 = 10;
 export const answer1 = 26;
 export const answer2 = 56000011;
 
-export const puzzleParam1 = 2000000;
 export const puzzleAnswer1 = 4724228;
 export const puzzleAnswer2 = 13622251246513;
 export const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
