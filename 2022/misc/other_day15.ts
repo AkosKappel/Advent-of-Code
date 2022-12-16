@@ -1,3 +1,5 @@
+// working solution for day 15, but later switched to a more efficient solution
+
 const manhattanDistance = (a: number[], b: number[]): number =>
   a.reduce((sum: number, num: number, i: number) => sum + Math.abs(num - b[i]), 0);
 

@@ -1,3 +1,5 @@
+// NOTE: valid solution only for small grids
+//       otherwise the heap limit is exceeded
 const DIRECTIONS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 const manhattanDistance = (a: number[], b: number[]): number =>
@@ -119,6 +121,8 @@ console.log(part1(day.input, day.param1));
 console.log(day.answer1);
 console.log(part2(day.input));
 console.log(day.answer2);
+
+// WARNING: takes too much memory
 // console.log(part1(day.puzzleInput, day.puzzleParam1));
 // console.log(day.puzzleAnswer1);
 // console.log(part2(day.puzzleInput));
