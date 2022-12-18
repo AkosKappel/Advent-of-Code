@@ -1,8 +1,12 @@
+const START_VALVE_NAME: string = 'AA';
+
 interface Node {
   name: string;
   flowRate: number;
   neighbours: string[];
 }
+
+type Table = Record<string, Record<string, number>>;
 
 const parse = (s: string): Node[] => s.trim()
   .split('\n')
@@ -10,73 +14,78 @@ const parse = (s: string): Node[] => s.trim()
   .filter(Boolean)
   .map(match => ({
     name: match![1],
-    flowRate: Number(match![2]),
+    flowRate: +match![2],
     neighbours: match![3].split(', '),
   }));
 
-// TODO: maybe BFS is enough instead of Dijkstra
-const dijkstra = (nodes: Node[], start: Node) => {
-  // create a priority queue
-  const queue = new Set(nodes);
+const nameToNumber = (name: string, coef: number = 26) => name
+  .toUpperCase()
+  .split('')
+  .reduce((acc: number, c: string, i: number) =>
+    acc + (c.charCodeAt(0) - 'A'.charCodeAt(0)) * coef ** (name.length - i - 1), 0);
 
-  // initialize all distances to infinity except start
-  const distances: Record<string, number> = {};
-  for (const node of nodes) {
-    distances[node.name] = Infinity;
+const filterDistances = (nodes: Node[], allDistances: Table): Table => {
+  // starting node is always relevant
+  const start: Node = nodes.find(n => n.name === START_VALVE_NAME)!;
+
+  // select all nodes with positive flow rate
+  const relevantNodes: Node[] = [start, ...nodes.filter(n => n.flowRate > 0)];
+
+  // create new table with only relevant nodes
+  const relevantDistances: Table = {};
+  for (const v of relevantNodes.map(n => n.name)) {
+    relevantDistances[v] = {};
+    for (const u of relevantNodes.map(n => n.name)) {
+      relevantDistances[v][u] = allDistances[v][u];
+    }
   }
-  distances[start.name] = 0;
 
-  // repeat while queue is not empty
-  while (queue.size > 0) {
-    // remove node with smallest distance from queue
-    const node = [...queue].reduce((a, b) => distances[a.name] < distances[b.name] ? a : b);
-    queue.delete(node);
+  return relevantDistances;
+};
 
-    // update distances to neighbours
-    for (const neighbour of node.neighbours) {
-      const alt = distances[node.name] + 1; // edge weight is always 1
-      if (alt < distances[neighbour]) {
-        distances[neighbour] = alt;
+const floydWarshall = (nodes: Node[]): Table => {
+  const distances: Table = {};
+
+  // initialize distance matrix
+  for (const u of nodes.map(n => n.name)) {
+    distances[u] = {};
+    for (const v of nodes.map(n => n.name)) {
+      distances[u][v] = Infinity;
+    }
+  }
+
+  // initialize distance matrix with known distances
+  for (const node of nodes) {
+    const u = node.name;
+    for (const v of node.neighbours) {
+      distances[u][v] = 1; // edge weight is always 1
+    }
+  }
+
+  // initialize distance matrix with self distances
+  for (const u of nodes.map(n => n.name)) {
+    distances[u][u] = 0; // distance from node to itself is 0
+  }
+
+  // floyd-warshall
+  for (const k of nodes.map(n => n.name)) {
+    for (const i of nodes.map(n => n.name)) {
+      for (const j of nodes.map(n => n.name)) {
+        distances[i][j] = Math.min(distances[i][j], distances[i][k] + distances[k][j]);
       }
     }
   }
 
-  return distances;
+  return filterDistances(nodes, distances);
 };
 
 export const part1 = (s: string): number => {
-  const valves = parse(s);
-  const start = valves.find(v => v.name === 'AA')!;
+  const valves: Node[] = parse(s);
 
-  let remainingTime: number = 30;
-  let releasedPressure: number = 0;
-  let currentValve: Node = start;
+  const distances: Table = floydWarshall(valves);
+  console.log(distances);
 
-  while (remainingTime > 0) {
-    // console.log('currentValve:', currentValve);
-    const distances = dijkstra(valves, currentValve);
-    // console.log('distances:', distances);
-    const gains = valves
-      .filter(v => v.flowRate > 0)
-      .map(v => [v.name, distances[v.name] + 1, v.flowRate / (distances[v.name] + 1)]); // 1 is the time to open the valve
-    if (gains.length === 0) break; // no more valves to open
-
-    // console.log('gains:', gains);
-    const maxGainValve = gains.reduce((a, b) => a[2] > b[2] ? a : b);
-    console.log('maxGainValve:', maxGainValve);
-
-    const [name, distance, cost] = maxGainValve;
-    currentValve = valves.find(v => v.name === name)!;
-    remainingTime -= distance as number;
-    // console.log('remainingTime:', remainingTime);
-    // console.log(nextValve.flowRate, remainingTime);
-    releasedPressure += remainingTime * currentValve.flowRate;
-    // console.log('releasedPressure:', remainingTime, '*', currentValve.flowRate, '=', releasedPressure);
-    currentValve.flowRate = 0;
-    // console.log('-----------------------------------------');
-  }
-
-  return releasedPressure;
+  return 0;
 };
 
 exports.first = part1;
@@ -90,11 +99,15 @@ exports.second = part2;
 
 import * as day from '../examples/day16.input';
 
+console.time('run');
+
 console.log(part1(day.input));
 console.log(day.answer1);
 // console.log(part2(day.input));
 // console.log(day.answer2);
-console.log(part1(day.puzzleInput));
-console.log(day.puzzleAnswer1);
+// console.log(part1(day.puzzleInput));
+// console.log(day.puzzleAnswer1);
 // console.log(part2(day.puzzleInput));
 // console.log(day.puzzleAnswer2);
+
+console.timeEnd('run');
