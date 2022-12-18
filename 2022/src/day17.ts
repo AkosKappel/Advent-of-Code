@@ -1,24 +1,24 @@
 const WIDTH: number = 7;
 
-const ROCKS: Uint32Array[] = [
+const ROCKS: number[][] = [
   // ..####.
-  new Uint32Array([2, 3, 4, 5]),
+  [2, 3, 4, 5],
   // ...#...
   // ..###..
   // ...#...
-  new Uint32Array([3, 9, 10, 11, 17]),
+  [3, 9, 10, 11, 17],
   // ....#..
   // ....#..
   // ..###..
-  new Uint32Array([2, 3, 4, 11, 18]),
+  [2, 3, 4, 11, 18],
   // ..#....
   // ..#....
   // ..#....
   // ..#....
-  new Uint32Array([2, 9, 16, 23]),
+  [2, 9, 16, 23],
   // ..##...
   // ..##...
-  new Uint32Array([2, 3, 9, 10]),
+  [2, 3, 9, 10],
 ];
 
 const sum = (a: number, b: number) => a + b;
@@ -27,7 +27,7 @@ const sum = (a: number, b: number) => a + b;
 const range = (start: number, end: number): number[] =>
   new Array(end - start).fill(0).map((_, i: number) => start + i);
 
-const canMoveHorizontal = (rock: Uint32Array, offset: number, blocked: Set<number>): boolean => {
+const canMoveHorizontal = (rock: number[], offset: number, blocked: Set<number>): boolean => {
   if (offset > 0) {
     return rock.every(v => v % WIDTH !== WIDTH - 1 && !blocked.has(v + offset));
   } else {
@@ -35,8 +35,8 @@ const canMoveHorizontal = (rock: Uint32Array, offset: number, blocked: Set<numbe
   }
 };
 
-const moveHorizontal = (rock: Uint32Array, offset: number): void =>
-  rock.forEach((v: number, i: number, arr: Uint32Array) => arr[i] = v + offset);
+const moveHorizontal = (rock: number[], offset: number): void =>
+  rock.forEach((v: number, i: number, arr: number[]) => arr[i] = v + offset);
 
 const rockFall = (input: string, numRocks: number): number => {
   input = input.trim();
@@ -50,7 +50,7 @@ const rockFall = (input: string, numRocks: number): number => {
 
   while (numRocks--) {
     // rock starts 4 units above highest column
-    const rock: Uint32Array = ROCKS[i].map(v => v + (highest + 4) * WIDTH);
+    const rock: number[] = ROCKS[i].map(v => v + (highest + 4) * WIDTH);
 
     let rockIsFalling: boolean = true;
     while (rockIsFalling) {
@@ -69,7 +69,7 @@ const rockFall = (input: string, numRocks: number): number => {
 
       // move rock down
       if (rock.every(v => !blocked.has(v - WIDTH))) {
-        rock.forEach((v: number, i: number, arr: Uint32Array) => arr[i] = v - WIDTH);
+        rock.forEach((v: number, i: number, arr: number[]) => arr[i] = v - WIDTH);
       }
       // rock has hit bottom or another rock
       else {
