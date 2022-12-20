@@ -16,8 +16,8 @@ Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II
 `;
 export const answer1 = 1651;
-export const answer2 = 0;
+export const answer2 = 1707;
 
-export const puzzleAnswer1 = 0;
+export const puzzleAnswer1 = 1880;
 export const puzzleAnswer2 = 0;
 export const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
