@@ -1,6 +1,9 @@
+import * as console from 'console';
+
 const START_VALVE_NAME: string = 'AA';
 
 interface Node {
+  hash: number;
   name: string;
   flowRate: number;
   neighbours: string[];
@@ -14,6 +17,7 @@ const parse = (s: string): Node[] => s.trim()
   .map(line => line.match(/Valve (\w+) has flow rate=(\d+); tunnels? leads? to valves? (\w+(?:, \w+)*)/))
   .filter(Boolean)
   .map((match) => ({
+    hash: 0, // will be set later
     name: match![1],
     flowRate: +match![2],
     neighbours: match![3].split(', '),
@@ -69,9 +73,10 @@ const floydWarshall = (nodes: Node[]): Table => {
 
 // construct every possible path that can be taken with the given time limit
 const search = (nodes: Node[], distances: Table, current: Node, time: number, path: Dict = {}): Dict[] => {
-  const res = [path];
+  const paths = [path];
 
   for (const node of nodes) {
+    // subtract time to get to next node and an extra 1 to open it
     const remainingTime: number = time - distances[current.name][node.name] - 1;
 
     // no time left to go to next node and open it
@@ -83,11 +88,12 @@ const search = (nodes: Node[], distances: Table, current: Node, time: number, pa
     // update path with next node's name and the time it will stay open
     const newPath: Dict = { ...path, [node.name]: remainingTime };
 
-    res.push(...search(remainingNodes, distances, node, remainingTime, newPath));
+    paths.push(...search(remainingNodes, distances, node, remainingTime, newPath));
   }
 
-  return res;
+  return paths;
 };
+
 
 // generator function of the above function to iterate over all possible paths
 function* searchGen(nodes: Node[], distances: Table, current: Node, time: number, path: Dict = {}): IterableIterator<Dict> {
@@ -132,31 +138,78 @@ export const part1 = (s: string): number => {
     flowRates[valve.name] = valve.flowRate;
   }
 
-  return search(nonZeroValves, distances, start, time)
-    .reduce((maxScore: number, path: Dict) =>
-      Math.max(maxScore, pathScore(path, flowRates)), 0);
+  const paths = search(nonZeroValves, distances, start, time);
+
+  // console.log('number of paths:', paths.length);
+
+  return paths.reduce((maxScore: number, path: Dict) =>
+    Math.max(maxScore, pathScore(path, flowRates)), 0);
 };
 
 exports.first = part1;
 
+// TODO: optimize this solution
 export const part2 = (s: string): number => {
-  parse(s);
-  return 0;
+  const valves: Node[] = parse(s);
+  const time: number = 26;
+
+  const start: Node = valves.find(v => v.name === START_VALVE_NAME)!;
+  const nonZeroValves: Node[] = valves.filter(v => v.flowRate > 0);
+
+  const allDistances: Table = floydWarshall(valves);
+  const distances: Table = filterDistances([start, ...nonZeroValves], allDistances);
+
+  // mapping of valve names to its flow rate
+  const flowRates: Dict = {};
+  for (const valve of nonZeroValves) {
+    flowRates[valve.name] = valve.flowRate;
+  }
+
+  const paths = search(nonZeroValves, distances, start, time);
+  nonZeroValves.forEach((valve: Node, i: number) => valve.hash = 1 << i);
+
+  const maxScores: Record<number, number> = {};
+
+  // find max score for given set of visited valves
+  for (const path of paths) {
+    const score = pathScore(path, flowRates);
+
+    const hash = nonZeroValves
+      .filter((valve: Node) => path[valve.name])
+      .reduce((hash: number, valve: Node) => hash | valve.hash, 0);
+
+    if (score > (maxScores[hash] ?? 0)) {
+      maxScores[hash] = score;
+    }
+  }
+
+  let maxScore: number = 0;
+
+  // find the largest sum of combinations of 2 max scores with a unique set of valves
+  for (const [hash1, score1] of Object.entries(maxScores)) {
+    for (const [hash2, score2] of Object.entries(maxScores)) {
+      if ((+hash1 & +hash2) === 0) {
+        maxScore = Math.max(maxScore, score1 + score2);
+      }
+    }
+  }
+
+  // console.log('number of paths:', paths.length);
+  // console.log('number of scores:', Object.keys(maxScores).length);
+
+  return maxScore;
 };
 
 exports.second = part2;
 
-import * as day from '../examples/day16.input';
-
-console.time('run');
-
-console.log(part1(day.input));
-console.log(day.answer1);
+// import * as day from '../examples/day16.input';
+// console.time('run');
+// console.log(part1(day.input));
+// console.log(day.answer1);
+// console.log(part1(day.puzzleInput));
+// console.log(day.puzzleAnswer1);
 // console.log(part2(day.input));
 // console.log(day.answer2);
-console.log(part1(day.puzzleInput));
-console.log(day.puzzleAnswer1);
 // console.log(part2(day.puzzleInput));
 // console.log(day.puzzleAnswer2);
-
-console.timeEnd('run');
+// console.timeEnd('run');
