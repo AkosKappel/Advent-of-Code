@@ -6,7 +6,7 @@ const inputFile: string = `input/day${dayNumber}.in`;
 export const input: string = `
 
 `;
-export const answer1 = 0;
+export const answer1 = 3;
 export const answer2 = 0;
 
 export const puzzleAnswer1 = 0;
