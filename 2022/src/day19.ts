@@ -22,7 +22,7 @@ const search = (blueprint: number[], time: number) => {
   ]: number[] = blueprint;
 
   let best: number = 0;
-  const visited: Set<State> = new Set();
+  const visited: { [key: string]: boolean } = {};
 
   // calculate the maximum needed amounts of minerals
   const maxOreNeeded: number = Math.max(oreRobotCostOre, clayRobotCostOre, obsidianRobotCostOre, geodeRobotCostOre);
@@ -37,8 +37,9 @@ const search = (blueprint: number[], time: number) => {
     // last item in tmp is not part of the state
     const state: State = tmp.slice(0, -1) as State;
 
-    if (visited.has(state)) continue;
-    visited.add(state);
+    const key = state.join(',');
+    if (visited[key]) continue;
+    visited[key] = true;
 
     // unpack item from queue
     const [
