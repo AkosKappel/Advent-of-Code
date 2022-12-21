@@ -15,9 +15,9 @@ const harvest = (costs: number[][], minutes: number) => {
     ((material[GEODE] + (minutes - time) * robots[GEODE]) << 16) +
     (robots[OBSIDIAN] << 8) +
     (robots[CLAY] << 4) +
-    robots[ORE];
+    (robots[ORE]);
 
-  let prioq = [[
+  let prioq: [number[], number[]][] = [[
     [0, 0, 0, 0],
     [1, 0, 0, 0],
   ]];
@@ -30,7 +30,6 @@ const harvest = (costs: number[][], minutes: number) => {
 
   let time: number = 0;
   while (time++ < minutes) {
-    // @ts-ignore
     prioq = prioq
       .reduce((next, [resources, robots]: number[][]) => {
         [GEODE, OBSIDIAN, CLAY, ORE]
