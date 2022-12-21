@@ -1,5 +1,3 @@
-import * as console from 'console';
-
 const START_VALVE_NAME: string = 'AA';
 
 interface Node {
