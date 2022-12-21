@@ -21,8 +21,8 @@ drzm: hmdt - zczc
 hmdt: 32
 `;
 export const answer1 = 152;
-export const answer2 = 302; // 301 works too
+export const answer2 = 301;
 
 export const puzzleAnswer1 = 41857219607906;
-export const puzzleAnswer2 = 3916936880448; // 3916936880449 is also correct
+export const puzzleAnswer2 = 3916936880448;
 export const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';

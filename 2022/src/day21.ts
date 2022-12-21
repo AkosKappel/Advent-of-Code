@@ -17,8 +17,8 @@ const evaluateExpression = (number1: number, operator: string, number2: number):
     case '*':
       return number1 * number2;
     case '/':
-      return Math.floor(number1 / number2);
-    case '==':
+      return number1 / number2;
+    case '=':
       return +(number1 === number2);
     default:
       throw new Error(`Unknown operator: ${operator}`);
@@ -59,7 +59,7 @@ export const part2 = (s: string): number => {
   const [ROOT, HUMN]: string[] = ['root', 'humn'];
 
   // update input constraints
-  monkeys[ROOT] = monkeys[ROOT].map((v: string) => v.replace(/[-+*/]/, '=='));
+  monkeys[ROOT] = monkeys[ROOT].map((v: string) => v.replace(/[-+*/]/, '='));
   monkeys[HUMN] = ['0'];
 
   // divide root into left and right branches
@@ -77,53 +77,39 @@ export const part2 = (s: string): number => {
   let low: number = 0; // assumption: the answer is >= 0
   let high: number = 1;
 
+  // Direct Proportion: increasing the 'humn' value will increase the changingNum
+  // Inverse Proportion: increasing the 'humn' value will decrease the changingNum
+  let directProportion: boolean = changingNum < constantNum;
+
   // first find the upper bound
-  if (changingNum < constantNum) {
-    // direct proportionality:
-    //     increasing the 'humn' value will increase the branch's root value
-    while (changingNum < constantNum) {
-      high *= 2;
-      monkeys[HUMN] = [high.toString()];
-      changingNum = computeNumber(monkey, monkeys);
-    }
-  } else if (changingNum > constantNum) {
-    // inverse proportionality:
-    //     increasing the 'humn' value will decrease the branch's root value
-    while (changingNum > constantNum) {
-      high *= 2;
-      monkeys[HUMN] = [high.toString()];
-      changingNum = computeNumber(monkey, monkeys);
-    }
+  while (directProportion ? changingNum < constantNum : changingNum > constantNum) {
+    high *= 2;
+    monkeys[HUMN] = [high.toString()];
+    changingNum = computeNumber(monkey, monkeys);
   }
-  // console.log('lower bound:', low, 'upper bound:', high);
+
+  // switch proportion, because now we will be reducing the [low, high] range
+  directProportion = changingNum > constantNum;
 
   // binary search
-  if (changingNum > constantNum) {
-    // direct proportionality
-    while (low < high) {
-      const mid: number = low + Math.floor((high - low) / 2);
-      monkeys[HUMN] = [mid.toString()];
-      changingNum = computeNumber(monkey, monkeys);
+  while (low < high) {
+    const mid: number = low + Math.floor((high - low) / 2);
+    monkeys[HUMN] = [mid.toString()];
+    changingNum = computeNumber(monkey, monkeys);
 
+    if (directProportion) {
       if (changingNum < constantNum) {
-        low = mid + 1;
+        low = mid;
       } else if (changingNum > constantNum) {
-        high = mid - 1;
+        high = mid;
       } else {
         return mid;
       }
-    }
-  } else if (changingNum < constantNum) {
-    // inverse proportionality
-    while (low < high) {
-      const mid: number = low + Math.floor((high - low) / 2);
-      monkeys[HUMN] = [mid.toString()];
-      changingNum = computeNumber(monkey, monkeys);
-
+    } else {
       if (changingNum < constantNum) {
-        high = mid - 1;
+        high = mid;
       } else if (changingNum > constantNum) {
-        low = mid + 1;
+        low = mid;
       } else {
         return mid;
       }
