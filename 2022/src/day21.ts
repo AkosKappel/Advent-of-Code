@@ -52,6 +52,8 @@ const branchIncludes = (target: string, root: string, tree: Record<string, strin
   return branchIncludes(target, left, tree) || branchIncludes(target, right, tree);
 };
 
+// NOTE: alternative solution: create linear equation from tree with 'humn' as unknown
+//       and invert the operations in the equation to get the value of 'humn'
 export const part2 = (s: string): number => {
   const monkeys: Record<string, string[]> = parse(s);
   const [ROOT, HUMN]: string[] = ['root', 'humn'];
