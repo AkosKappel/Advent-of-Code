@@ -8,8 +8,8 @@ Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsid
 Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
 `;
 export const answer1 = 33;
-export const answer2 = 0;
+export const answer2 = 3472;
 
-export const puzzleAnswer1 = 0;
-export const puzzleAnswer2 = 0;
+export const puzzleAnswer1 = 1349;
+export const puzzleAnswer2 = 21840;
 export const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
