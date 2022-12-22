@@ -35,6 +35,11 @@ const parse = (s: string) => {
   return { board, instructions, width, height };
 };
 
+const getForwardMove = (facing: number): number[] => [
+  facing === Facing.Right ? 1 : facing === Facing.Left ? -1 : 0,
+  facing === Facing.Down ? 1 : facing === Facing.Up ? -1 : 0,
+];
+
 const outOfBounds = (x: number, y: number, width: number, height: number) =>
   x < 0 || x >= width || y < 0 || y >= height;
 
@@ -60,10 +65,7 @@ export const part1 = (s: string): number => {
     } else if (ins === 'L') {
       facing = (facing + 3) % 4;
     } else {
-      const [dx, dy] = [
-        facing === Facing.Right ? 1 : facing === Facing.Left ? -1 : 0,
-        facing === Facing.Down ? 1 : facing === Facing.Up ? -1 : 0,
-      ];
+      const [dx, dy] = getForwardMove(facing);
 
       // move forward the given number of steps
       moving: for (let i = 0; i < +ins; i++) {
@@ -128,22 +130,218 @@ export const part1 = (s: string): number => {
 
 exports.first = part1;
 
+const hash = (nums: number[]) => nums.join(',');
+
+// Hardcoded mapping of the cube's net to 3D transitions
+//   Example Input Net    Puzzle Input Net
+//         ..1.                .12
+//         234.                .3.
+//         ..56                45.
+//                             6..
+const getCubeNetMapping = (net: string[][]): Map<string, number[]> => {
+  // calculate length of an edge of the cube as the square-root of number of tiles divided by 6 sides
+  const edgeLength = Math.sqrt(net.flat().filter(c => c !== Tile.None).length / 6);
+  const mapping = new Map<string, number[]>();
+
+  if (edgeLength === 4) { // example input
+    // coordinates of left top tile of each face
+    //
+    // Faces: ..1.
+    //        234.
+    //        ..56
+    const [x1, y1] = [2 * edgeLength, 0];
+    const [x2, y2] = [0, edgeLength];
+    const [x3, y3] = [edgeLength, edgeLength];
+    const [x4, y4] = [2 * edgeLength, edgeLength];
+    const [x5, y5] = [2 * edgeLength, 2 * edgeLength];
+    const [x6, y6] = [3 * edgeLength, 2 * edgeLength];
+
+    // map top side of tile 1 to top side of tile 2
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x1 + i, y1];
+      const [nx, ny] = [x2 + edgeLength - 1 - i, y2];
+      mapping.set(hash([x, y, Facing.Up]), [nx, ny, Facing.Down]);
+      mapping.set(hash([nx, ny, Facing.Up]), [x, y, Facing.Down]);
+    }
+
+    // map right side of tile 1 to right side of tile 6
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x1 + edgeLength - 1, y1 + i];
+      const [nx, ny] = [x6 + edgeLength - 1, y6 + edgeLength - 1 - i];
+      mapping.set(hash([x, y, Facing.Right]), [nx, ny, Facing.Left]);
+      mapping.set(hash([nx, ny, Facing.Right]), [x, y, Facing.Left]);
+    }
+
+    // map right side of tile 4 to top side of tile 6
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x4 + edgeLength - 1, y4 + i];
+      const [nx, ny] = [x6 + edgeLength - 1 - i, y6];
+      mapping.set(hash([x, y, Facing.Right]), [nx, ny, Facing.Down]);
+      mapping.set(hash([nx, ny, Facing.Up]), [x, y, Facing.Left]);
+    }
+
+    // map bottom side of tile 6 to left side of tile 2
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x6 + edgeLength - 1 - i, y6 + edgeLength - 1];
+      const [nx, ny] = [x2, y2 + i];
+      mapping.set(hash([x, y, Facing.Down]), [nx, ny, Facing.Right]);
+      mapping.set(hash([nx, ny, Facing.Left]), [x, y, Facing.Up]);
+    }
+
+    // map bottom side of tile 5 to bottom side of tile 2
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x5 + i, y5 + edgeLength - 1];
+      const [nx, ny] = [x2 + edgeLength - 1 - i, y2 + edgeLength - 1];
+      mapping.set(hash([x, y, Facing.Down]), [nx, ny, Facing.Up]);
+      mapping.set(hash([nx, ny, Facing.Down]), [x, y, Facing.Up]);
+    }
+
+    // map left side of tile 5 to bottom side of tile 3
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x5, y5 + i];
+      const [nx, ny] = [x3 + edgeLength - 1 - i, y3 + edgeLength - 1];
+      mapping.set(hash([x, y, Facing.Left]), [nx, ny, Facing.Up]);
+      mapping.set(hash([nx, ny, Facing.Down]), [x, y, Facing.Right]);
+    }
+
+    // map top side of tile 3 to left side of tile 1
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x3 + i, y3];
+      const [nx, ny] = [x1, y1 + i];
+      mapping.set(hash([x, y, Facing.Up]), [nx, ny, Facing.Right]);
+      mapping.set(hash([nx, ny, Facing.Left]), [x, y, Facing.Down]);
+    }
+  } else if (edgeLength === 50) { // puzzle input
+    // coordinates of left top tile of each face
+    //
+    // Faces: .12
+    //        .3.
+    //        45.
+    //        6..
+    const [x1, y1] = [edgeLength, 0];
+    const [x2, y2] = [2 * edgeLength, 0];
+    const [x3, y3] = [edgeLength, edgeLength];
+    const [x4, y4] = [0, 2 * edgeLength];
+    const [x5, y5] = [edgeLength, 2 * edgeLength];
+    const [x6, y6] = [0, 3 * edgeLength];
+
+    // map top side of tile 1 to left side of tile 6
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x1 + i, y1];
+      const [nx, ny] = [x6, y6 + i];
+      mapping.set(hash([x, y, Facing.Up]), [nx, ny, Facing.Right]);
+      mapping.set(hash([nx, ny, Facing.Left]), [x, y, Facing.Down]);
+    }
+
+    // map top side of tile 2 to bottom side of tile 6
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x2 + i, y2];
+      const [nx, ny] = [x6 + i, y6 + edgeLength - 1];
+      mapping.set(hash([x, y, Facing.Up]), [nx, ny, Facing.Up]);
+      mapping.set(hash([nx, ny, Facing.Down]), [x, y, Facing.Down]);
+    }
+
+    // map right side of tile 2 to right side of tile 5
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x2 + edgeLength - 1, y2 + i];
+      const [nx, ny] = [x5 + edgeLength - 1, y5 + edgeLength - 1 - i];
+      mapping.set(hash([x, y, Facing.Right]), [nx, ny, Facing.Left]);
+      mapping.set(hash([nx, ny, Facing.Right]), [x, y, Facing.Left]);
+    }
+
+    // map bottom side of tile 2 to right side of tile 3
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x2 + i, y2 + edgeLength - 1];
+      const [nx, ny] = [x3 + edgeLength - 1, y3 + i];
+      mapping.set(hash([x, y, Facing.Down]), [nx, ny, Facing.Left]);
+      mapping.set(hash([nx, ny, Facing.Right]), [x, y, Facing.Up]);
+    }
+
+    // map bottom side of tile 5 to right side of tile 6
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x5 + i, y5 + edgeLength - 1];
+      const [nx, ny] = [x6 + edgeLength - 1, y6 + i];
+      mapping.set(hash([x, y, Facing.Down]), [nx, ny, Facing.Left]);
+      mapping.set(hash([nx, ny, Facing.Right]), [x, y, Facing.Up]);
+    }
+
+    // map left side of tile 4 to left side of tile 1
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x4, y4 + i];
+      const [nx, ny] = [x1, y1 + edgeLength - 1 - i];
+      mapping.set(hash([x, y, Facing.Left]), [nx, ny, Facing.Right]);
+      mapping.set(hash([nx, ny, Facing.Left]), [x, y, Facing.Right]);
+    }
+
+    // map top side of tile 4 to left side of tile 3
+    for (let i = 0; i < edgeLength; i++) {
+      const [x, y] = [x4 + i, y4];
+      const [nx, ny] = [x3, y3 + i];
+      mapping.set(hash([x, y, Facing.Up]), [nx, ny, Facing.Right]);
+      mapping.set(hash([nx, ny, Facing.Left]), [x, y, Facing.Down]);
+    }
+  }
+
+  // console.log('faces', faces);
+  // console.log('mapping', mapping);
+  // console.log('mapping size', mapping.size);
+
+  return mapping;
+};
+
 export const part2 = (s: string): number => {
-  parse(s);
-  return 0;
+  // board is a flattened cube
+  const { board, instructions } = parse(s);
+
+  // begin the path in the leftmost open tile of the top row of tiles (facing to the right)
+  const start = [board[0].findIndex(c => c === Tile.Empty), 0]; // [x, y]
+  let facing = Facing.Right;
+  let [x, y] = [...start];
+
+  const mapping: Map<string, number[]> = getCubeNetMapping(board);
+
+  // create second board for visualisation
+  const visualBoard: string[][] = JSON.parse(JSON.stringify(board));
+  // display starting position and direction
+  visualBoard[y][x] = [Tile.Right, Tile.Down, Tile.Left, Tile.Up][facing];
+
+  for (const ins of instructions) {
+    if (ins === 'R') {
+      facing = (facing + 1) % 4;
+    } else if (ins === 'L') {
+      facing = (facing + 3) % 4;
+    } else {
+      let [dx, dy]: number[] = getForwardMove(facing);
+
+      // move forward the given number of steps
+      for (let i = 0; i < +ins; i++) {
+        let [nx, ny]: number[] = [x + dx, y + dy];
+
+        // if you are crossing the edge of the cube, apply pre-calculated mapping
+        if (mapping.has(hash([x, y, facing]))) {
+          let tmpFacing; // don't change facing until after we know the new position doesn't contain a wall
+          [nx, ny, tmpFacing] = mapping.get(hash([x, y, facing]))!;
+          if (board[ny][nx] === Tile.Wall) break;
+          facing = tmpFacing;
+          [dx, dy] = getForwardMove(facing);
+        }
+        // if you hit the wall, stop moving
+        else if (board[ny][nx] === Tile.Wall) break;
+
+        // update position
+        [x, y] = [nx, ny];
+
+        // display position and direction on the visualisation board
+        visualBoard[y][x] = [Tile.Right, Tile.Down, Tile.Left, Tile.Up][facing];
+      }
+    }
+    // visualise position and facing
+    visualBoard[y][x] = [Tile.Right, Tile.Down, Tile.Left, Tile.Up][facing];
+  }
+  visualBoard[y][x] = Tile.Final;
+
+  // console.log(visualBoard.map(row => row.join('')).join('\n'));
+  return getPassword(x, y, facing);
 };
 
 exports.second = part2;
-
-import * as day from '../examples/day22.input';
-
-console.time('Time');
-console.log(part1(day.input));
-console.log(day.answer1);
-console.log(part1(day.puzzleInput));
-console.log(day.puzzleAnswer1);
-// console.log(part2(day.input));
-// console.log(day.answer2);
-// console.log(part2(day.puzzleInput));
-// console.log(day.puzzleAnswer2);
-console.timeEnd('Time');

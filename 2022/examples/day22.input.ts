@@ -23,5 +23,5 @@ export const answer1 = 6032;
 export const answer2 = 5031;
 
 export const puzzleAnswer1 = 43466;
-export const puzzleAnswer2 = 0;
+export const puzzleAnswer2 = 162155;
 export const puzzleInput: string = existsSync(inputFile) ? readFileSync(inputFile, 'utf8') : '0';
