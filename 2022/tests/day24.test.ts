@@ -5,8 +5,16 @@ test(`day 24-1 example`, () => {
   expect(part1(day.input)).toBe(day.answer1);
 });
 
+test(`day 24-1-2 example`, () => {
+  expect(part1(day.input2)).toBe(day.answer1_2);
+});
+
 test(`day 24-2 example`, () => {
   expect(part2(day.input)).toBe(day.answer2);
+});
+
+test(`day 24-2-2 example`, () => {
+  expect(part2(day.input2)).toBe(day.answer2_2);
 });
 
 test(`day 24-1 puzzle`, () => {
