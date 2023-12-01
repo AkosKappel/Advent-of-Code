@@ -21,10 +21,8 @@ const parseWithWords = (input) => input.trim()
   .map(line => [findFirstDigit(line), findLastDigit(line)]
     .map(n => words2numbers[n] || parseInt(n, 10)));
 
-
-const decode = (rows) => rows
-  .map((row) => 10 * row[0] + row[row.length - 1])
-  .reduce((a, b) => a + b, 0);
+const decode = (rows) =>
+  rows.reduce((acc, row) => acc + 10 * row[0] + row[row.length - 1], 0);
 
 const part1 = (input) => decode(parse(input));
 
