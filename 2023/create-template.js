@@ -5,11 +5,11 @@ const solutionPath = `src/day${day}.js`;
 const testPath = `tests/day${day}.test.js`;
 const inputPath = `inputs/input${day}.txt`;
 
-const solutionContent = `function part1(input) {
+const solutionContent = `const part1 = (input) => {
   return 0;
 }
 
-function part2(input) {
+const part2 = (input) => {
   return 0;
 }
 
@@ -20,6 +20,7 @@ const testContent = `const fs = require('fs');
 const { part1, part2 } = require('../src/day${day}');
 
 const example1 = \`\`;
+
 const input = fs.readFileSync('inputs/input${day}.txt', 'utf8');
 
 test('example part 1', () => {
