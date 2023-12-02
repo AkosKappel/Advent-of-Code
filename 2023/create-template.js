@@ -14,6 +14,9 @@ const part2 = (input) => {
 }
 
 module.exports = { part1, part2 };
+
+// console.log(part1(\`\`));
+// console.log(part2(\`\`));
 `;
 
 const testContent = `const fs = require('fs');
