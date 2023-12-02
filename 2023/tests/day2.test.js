@@ -11,18 +11,22 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
 
 const input = fs.readFileSync('inputs/input2.txt', 'utf8');
 
-test('part 1 example', () => {
-  expect(part1(example1)).toBe(8);
+describe('part 1', () => {
+  test('example', () => {
+    expect(part1(example1)).toBe(8);
+  });
+
+  test('solution', () => {
+    expect(part1(input)).toBe(2377);
+  });
 });
 
-test('part 2 example', () => {
-  expect(part2(example1)).toBe(2286);
-});
+describe('part 2', () => {
+  test('example', () => {
+    expect(part2(example1)).toBe(2286);
+  });
 
-test('part 1 solution', () => {
-  expect(part1(input)).toBe(2377);
-});
-
-test('part 2 solution', () => {
-  expect(part2(input)).toBe(71220);
+  test('solution', () => {
+    expect(part2(input)).toBe(71220);
+  });
 });

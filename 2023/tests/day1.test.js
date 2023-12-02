@@ -20,18 +20,22 @@ zoneight234
 
 const input = fs.readFileSync('inputs/input1.txt', 'utf8');
 
-test('part 1 example 1', () => {
-  expect(part1(example1)).toBe(142);
+describe('part 1', () => {
+  test('example 1', () => {
+    expect(part1(example1)).toBe(142);
+  });
+
+  test('solution', () => {
+    expect(part1(input)).toBe(55123);
+  });
 });
 
-test('part 2 example 2', () => {
-  expect(part2(example2)).toBe(281);
-});
+describe('part 2', () => {
+  test('example 2', () => {
+    expect(part2(example2)).toBe(281);
+  });
 
-test('part 1 solution', () => {
-  expect(part1(input)).toBe(55123);
-});
-
-test('part 2 solution', () => {
-  expect(part2(input)).toBe(55260);
+  test('solution', () => {
+    expect(part2(input)).toBe(55260);
+  });
 });

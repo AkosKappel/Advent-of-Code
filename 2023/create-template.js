@@ -19,24 +19,28 @@ module.exports = { part1, part2 };
 const testContent = `const fs = require('fs');
 const { part1, part2 } = require('../src/day${day}');
 
-const example1 = \`\`;
+const example1 = \`\`.trim();
 
 const input = fs.readFileSync('inputs/input${day}.txt', 'utf8');
 
-test('part 1 example', () => {
-  expect(part1(example1)).toBe(0);
+describe('part 1', () => {
+  test('example', () => {
+    expect(part1(example1)).toBe(0);
+  });
+
+  test('solution', () => {
+    expect(part1(input)).toBe(0);
+  });
 });
 
-test('part 2 example', () => {
-  expect(part2(example1)).toBe(0);
-});
+describe('part 2', () => {
+  test('example', () => {
+    expect(part2(example1)).toBe(0);
+  });
 
-test('part 1 solution', () => {
-  expect(part1(input)).toBe(0);
-});
-
-test('part 2 solution', () => {
-  expect(part2(input)).toBe(0);
+  test('solution', () => {
+    expect(part2(input)).toBe(0);
+  });
 });
 `;
 
