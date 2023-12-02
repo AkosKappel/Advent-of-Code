@@ -6,21 +6,16 @@ const parse = (games) => games.trim()
       id: parseInt(gameNumber.replace('Game', '').trim()),
       sets: gameHistory.flatMap(line => line.split(';')
         .map(round => ({
-            red: /(\d+) red/.test(round) ? parseInt(/(\d+) red/.exec(round)[1]) : 0,
-            blue: /(\d+) blue/.test(round) ? parseInt(/(\d+) blue/.exec(round)[1]) : 0,
-            green: /(\d+) green/.test(round) ? parseInt(/(\d+) green/.exec(round)[1]) : 0,
+            red: parseInt((/(\d+) red/.exec(round) || [0, 0])[1], 10),
+            blue: parseInt((/(\d+) blue/.exec(round) || [0, 0])[1], 10),
+            green: parseInt((/(\d+) green/.exec(round) || [0, 0])[1], 10),
           }),
         )),
     };
   });
 
 const part1 = (input) => {
-  const bag = {
-    red: 12,
-    green: 13,
-    blue: 14,
-  };
-
+  const bag = { red: 12, green: 13, blue: 14 };
   const allGames = parse(input);
   const validGames = allGames.filter(game =>
     game.sets.every(set =>
@@ -29,7 +24,6 @@ const part1 = (input) => {
       set.blue <= bag.blue,
     ),
   );
-
   return validGames.reduce((acc, game) => acc + game.id, 0);
 };
 
