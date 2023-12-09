@@ -26,15 +26,8 @@ const part1 = (input) => parse(input)
 
 const predictPrevious = (array) => {
   const differences = getDifferences(array);
-
-  // base case
-  if (differences.every(d => d === 0)) {
-    return array[0] - differences[0];
-  }
-
-  // recursive case
-  const predicted = predictPrevious(differences);
-  return array[0] - predicted;
+  if (differences.every(d => d === 0)) return array[0];
+  return array[0] - predictPrevious(differences);
 };
 
 const part2 = (input) => parse(input)
