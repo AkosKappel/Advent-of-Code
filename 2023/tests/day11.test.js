@@ -28,10 +28,10 @@ describe('part 1', () => {
 
 describe('part 2', () => {
   test('example', () => {
-    expect(part2(example1)).toBe(0);
+    expect(part2(example1)).toBe(82000210);
   });
 
   test('solution', () => {
-    expect(part2(input)).toBe(0);
+    expect(part2(input)).toBe(635832237682);
   });
 });
