@@ -5,68 +5,63 @@ const UNKNOWN = '?';
 const parse = (input) => input
   .split('\n')
   .map(line => {
-    const [spring, sizes] = line.split(' ');
+    const [springs, counts] = line.split(' ');
     return {
-      spring,
-      sizes: sizes.split(',').map(Number),
-      unknowns: spring.split('').reduce((acc, char, i) => {
-        if (char === UNKNOWN) {
-          acc.push(i);
-        }
-        return acc;
-      }, []),
+      springs,
+      counts: counts.split(',').map(Number),
     };
   });
 
-const validArrangement = (arrangement, sizes) => {
-  const arr = arrangement
-    .split('')
-    .reduce((acc, char) => {
-      if (char === DAMAGED) {
-        if (acc.length === 0) acc.push(1);
-        else acc[acc.length - 1] += 1;
-      } else {
-        acc.push(0);
-      }
-      return acc;
-    }, [])
-    .filter(Boolean);
-  return sizes.every((size, i) => size === arr[i])
-    && sizes.length === arr.length;
-};
+const countPossibilities = (springs, counts) => {
+  const memo = {};
 
-const generatePossibleArrangements = (arrangement, unknowns) => {
-  const stack = [{ arrangement, unknowns }];
-  const possibilities = [];
+  const dp = (springIndex, countIndex, total = 0) => {
+    const key = `${springIndex},${countIndex}`;
+    if (memo[key] !== undefined) return memo[key];
 
-  while (stack.length > 0) {
-    const { arrangement, unknowns } = stack.pop();
-
-    if (unknowns.length === 0) {
-      possibilities.push(arrangement);
-      continue;
+    if (springIndex >= springs.length) {
+      memo[key] = countIndex === counts.length;
+      return memo[key];
     }
 
-    const [first, ...rest] = unknowns;
-    const before = arrangement.slice(0, first);
-    const after = arrangement.slice(first + 1);
+    const char = springs[springIndex];
+    const count = counts[countIndex];
 
-    stack.push({ arrangement: before + OPERATIONAL + after, unknowns: rest });
-    stack.push({ arrangement: before + DAMAGED + after, unknowns: rest });
-  }
+    if (char === OPERATIONAL || char === UNKNOWN) {
+      total += dp(springIndex + 1, countIndex);
+    }
 
-  return possibilities;
+    if (
+      (char === DAMAGED || char === UNKNOWN) &&
+      countIndex < counts.length &&
+      springIndex + count <= springs.length &&
+      !springs.slice(springIndex, springIndex + count).includes(OPERATIONAL) &&
+      (springIndex + count === springs.length || springs[springIndex + count] !== DAMAGED)
+    ) {
+      total += dp(springIndex + count + 1, countIndex + 1);
+    }
+
+    memo[key] = total;
+    return memo[key];
+  };
+
+  return dp(0, 0);
 };
 
 const part1 = (input) => parse(input)
-  .reduce((acc, { spring, sizes, unknowns }) =>
-    acc + generatePossibleArrangements(spring, unknowns)
-      .filter(arrangement => validArrangement(arrangement, sizes))
-      .length, 0);
+  .reduce((acc, { springs, counts }) => acc + countPossibilities(springs, counts), 0);
 
-const part2 = (input) => {
-  return 0;
+const unfold = (record, times) => {
+  const { springs, counts } = record;
+  return {
+    springs: [...Array(times).fill(springs)].join(UNKNOWN),
+    counts: [...Array(times).fill(counts)].flat(),
+  };
 };
+
+const part2 = (input) => parse(input)
+  .map(record => unfold(record, 5))
+  .reduce((acc, { springs, counts }) => acc + countPossibilities(springs, counts), 0);
 
 module.exports = { part1, part2 };
 
@@ -79,4 +74,4 @@ const example1 = `
 ?###???????? 3,2,1
 `.trim();
 console.log(part1(example1));
-// console.log(part2(example1));
+console.log(part2(example1));
