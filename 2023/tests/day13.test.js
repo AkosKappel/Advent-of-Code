@@ -37,6 +37,6 @@ describe('part 2', () => {
   });
 
   test('solution', () => {
-    expect(part2(input)).toBe(0);
+    expect(part2(input)).toBe(34224);
   });
 });

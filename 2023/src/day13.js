@@ -10,77 +10,36 @@ const parse = (input) => input
 
 const transpose = (matrix) => matrix[0].map((col, i) => matrix.map(row => row[i]));
 
-const arrayEquals = (a, b) => {
-  if (!Array.isArray(a) || !Array.isArray(b)) return false;
-  if (a.length !== b.length) return false;
-  return a.every((val, i) => val === b[i]);
-};
+const compareMirrored = (block, allowedDifferences) => {
+  const binary = block.map(row => row.map(c => c === ROCK ? 1 : 0)
+    .join(''))
+    .map(n => parseInt(n, 2));
 
-const countMirroredRows = (block) => {
-  for (let rowIndex = 0; rowIndex < block.length - 1; rowIndex++) {
-    if (rowIndex < block.length - 1) {
-      const row1 = block[rowIndex];
-      const row2 = block[rowIndex + 1];
+  for (let i = 1; i < binary.length; i++) {
+    const reflectionSize = Math.min(i, binary.length - i);
+    const left = binary.slice(i - reflectionSize, i);
+    const right = binary.slice(i, i + reflectionSize).reverse();
+    const numDifferences = left
+      // get difference between a pair of numbers each representing a row
+      .map((n, i) => n ^ right[i])
+      // count number of different bits
+      .map(n => n.toString(2).split('').filter(c => c === '1').length)
+      // get total number of different bits between mirrored halves
+      .reduce((a, b) => a + b, 0);
 
-      if (arrayEquals(row1, row2)) {
-        let mirrored = true;
-        let i = rowIndex, j = rowIndex + 1;
-
-        while (i >= 0 && j < block.length) {
-          const prevRow = block[i];
-          const nextRow = block[j];
-          if (arrayEquals(prevRow, nextRow)) {
-            i--;
-            j++;
-          } else {
-            mirrored = false;
-            break;
-          }
-        }
-
-        if (mirrored) {
-          return rowIndex + 1;
-        }
-      }
-    }
+    if (numDifferences === allowedDifferences) return i;
   }
-
   return 0;
 };
 
-const countMirrored = (block) => {
-  const nRows = countMirroredRows(block);
-  const nCols = countMirroredRows(transpose(block));
-  return 100 * nRows + nCols;
-};
-
-const part1 = (input) => parse(input)
-  .map(countMirrored)
+const solve = (input, numMismatches = 0) => parse(input)
+  .map(block =>
+    100 * compareMirrored(block, numMismatches) +
+    compareMirrored(transpose(block), numMismatches))
   .reduce((a, b) => a + b, 0);
 
-const part2 = (input) => {
-  const blocks = parse(input);
-  return 0;
-};
+const part1 = (input) => solve(input);
+
+const part2 = (input) => solve(input, 1);
 
 module.exports = { part1, part2 };
-
-const example1 = `
-#.##..##.
-..#.##.#.
-##......#
-##......#
-..#.##.#.
-..##..##.
-#.#.##.#.
-
-#...##..#
-#....#..#
-..##..###
-#####.##.
-#####.##.
-..##..###
-#....#..#
-`.trim();
-console.log(part1(example1));
-// console.log(part2(example1));
