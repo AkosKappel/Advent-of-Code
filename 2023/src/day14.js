@@ -23,7 +23,15 @@ class Platform {
   }
 
   cycle(numCycles) {
+    const hashes = new Map();
     for (let i = 0; i < numCycles; i++) {
+      const hash = this.toString();
+      if (hashes.has(hash)) {
+        const cycleLength = i - hashes.get(hash);
+        const remainingCycles = (numCycles - i) % cycleLength;
+        return this.cycle(remainingCycles);
+      }
+      hashes.set(hash, i);
       this.tiltNorth();
       this.tiltWest();
       this.tiltSouth();
@@ -148,18 +156,3 @@ const part2 = (input) => new Platform(input)
   .calculateNorthLoad();
 
 module.exports = { part1, part2 };
-
-const example1 = `
-O....#....
-O.OO#....#
-.....##...
-OO.#O....O
-.O.....O#.
-O.#..O.#.#
-..O..#O..O
-.......O..
-#....###..
-#OO..#....
-`.trim();
-console.log(part1(example1));
-console.log(part2(example1));
