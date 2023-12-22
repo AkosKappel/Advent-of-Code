@@ -1,26 +1,29 @@
-const Direction = {
-  RIGHT: [1, 0],
-  DOWN: [0, 1],
-  LEFT: [-1, 0],
-  UP: [0, -1],
-};
-
 class PriorityQueue {
   constructor() {
-    this.queue = [];
+    this.items = [];
   }
 
-  enqueue(item, priority) {
-    this.queue.push({ item, priority });
-    this.queue.sort((a, b) => a.priority - b.priority);
+  enqueue(element, priority) {
+    const newItem = { element, priority };
+    let added = false;
+    for (let i = 0; i < this.items.length; i++) {
+      if (priority < this.items[i].priority) {
+        this.items.splice(i, 0, newItem);
+        added = true;
+        break;
+      }
+    }
+    if (!added) {
+      this.items.push(newItem);
+    }
   }
 
   dequeue() {
-    return this.queue.shift();
+    return this.items.shift();
   }
 
   isEmpty() {
-    return this.queue.length === 0;
+    return this.items.length === 0;
   }
 }
 
@@ -61,17 +64,17 @@ const minimizeHeatLoss = (input, minStraight, maxStraight) => {
   const visited = new Set();
   const queue = new PriorityQueue();
 
-  queue.enqueue(new Crucible(start.x, start.y, ...Direction.DOWN, 0), 0);
-  queue.enqueue(new Crucible(start.x, start.y, ...Direction.RIGHT, 0), 0);
+  queue.enqueue(new Crucible(start.x, start.y, 0, 1, 0), 0);
+  queue.enqueue(new Crucible(start.x, start.y, 1, 0, 0), 0);
 
   while (!queue.isEmpty()) {
-    const { item: crucible, priority: heatLoss } = queue.dequeue();
+    const { element: current, priority: heatLoss } = queue.dequeue();
 
-    if (crucible.x === end.x && crucible.y === end.y && crucible.straight >= minStraight) {
+    if (current.x === end.x && current.y === end.y && current.straight >= minStraight) {
       return heatLoss;
     }
 
-    for (const neighbor of crucible.getNeighbors(minStraight, maxStraight)) {
+    for (const neighbor of current.getNeighbors(minStraight, maxStraight)) {
       if (neighbor.x < 0 || neighbor.x >= width || neighbor.y < 0 || neighbor.y >= height) {
         continue;
       }
