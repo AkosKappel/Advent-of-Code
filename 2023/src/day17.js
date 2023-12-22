@@ -5,21 +5,54 @@ class PriorityQueue {
 
   enqueue(element, priority) {
     const newItem = { element, priority };
-    let added = false;
-    for (let i = 0; i < this.items.length; i++) {
-      if (priority < this.items[i].priority) {
-        this.items.splice(i, 0, newItem);
-        added = true;
+    this.items.push(newItem);
+    this.bubbleUp(this.items.length - 1);
+  }
+
+  bubbleUp(index) {
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this.items[index].priority < this.items[parentIndex].priority) {
+        [this.items[index], this.items[parentIndex]] = [this.items[parentIndex], this.items[index]];
+        index = parentIndex;
+      } else {
         break;
       }
-    }
-    if (!added) {
-      this.items.push(newItem);
     }
   }
 
   dequeue() {
-    return this.items.shift();
+    if (this.items.length === 0) return null;
+    if (this.items.length === 1) return this.items.pop();
+
+    const min = this.items[0];
+    this.items[0] = this.items.pop();
+    this.sinkDown(0);
+    return min;
+  }
+
+  sinkDown(index) {
+    let sinking = true;
+    while (sinking) {
+      const leftChildIdx = 2 * index + 1;
+      const rightChildIdx = 2 * index + 2;
+      let smallestIdx = index;
+
+      if (leftChildIdx < this.items.length && this.items[leftChildIdx].priority < this.items[smallestIdx].priority) {
+        smallestIdx = leftChildIdx;
+      }
+
+      if (rightChildIdx < this.items.length && this.items[rightChildIdx].priority < this.items[smallestIdx].priority) {
+        smallestIdx = rightChildIdx;
+      }
+
+      if (smallestIdx !== index) {
+        [this.items[index], this.items[smallestIdx]] = [this.items[smallestIdx], this.items[index]];
+        index = smallestIdx;
+      } else {
+        sinking = false;
+      }
+    }
   }
 
   isEmpty() {
