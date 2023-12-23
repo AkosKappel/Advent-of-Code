@@ -30,6 +30,30 @@ const parse = (input) => {
   return { flipFlops, conjunctions, graph };
 };
 
+const propagatePulse = (graph, flipFlops, conjunctions, sender, receiver, pulse) => {
+  let nextPulse;
+
+  if (receiver in flipFlops) {
+    if (pulse) return [];
+    flipFlops[receiver] = !flipFlops[receiver];
+    nextPulse = flipFlops[receiver];
+  } else if (receiver in conjunctions) {
+    conjunctions[receiver][sender] = pulse;
+    const allPulses = Object.values(conjunctions[receiver]);
+    nextPulse = !allPulses.every(p => p);
+  } else if (receiver in graph) {
+    nextPulse = pulse;
+  } else {
+    return [];
+  }
+
+  return graph[receiver].map(nextReceiver => ({
+    sender: receiver,
+    receiver: nextReceiver,
+    pulse: nextPulse,
+  }));
+};
+
 const pushButton = (graph, flipFlops, conjunctions) => {
   let nLow = 0, nHigh = 0;
   const queue = [{
@@ -42,30 +66,8 @@ const pushButton = (graph, flipFlops, conjunctions) => {
     const { sender, receiver, pulse } = queue.shift();
     // console.log(sender, pulse ? '-high->' : '-low->', receiver);
     pulse ? nHigh++ : nLow++;
-
-    let nextPulse;
-
-    if (receiver in flipFlops) {
-      if (pulse) continue;
-      flipFlops[receiver] = !flipFlops[receiver];
-      nextPulse = flipFlops[receiver];
-    } else if (receiver in conjunctions) {
-      conjunctions[receiver][sender] = pulse;
-      const allPulses = Object.values(conjunctions[receiver]);
-      nextPulse = !allPulses.every(p => p);
-    } else if (receiver in graph) {
-      nextPulse = pulse;
-    } else {
-      continue;
-    }
-
-    for (const nextReceiver of graph[receiver]) {
-      queue.push({
-        sender: receiver,
-        receiver: nextReceiver,
-        pulse: nextPulse,
-      });
-    }
+    const next = propagatePulse(graph, flipFlops, conjunctions, sender, receiver, pulse);
+    queue.push(...next);
   }
 
   return { nLow, nHigh };
