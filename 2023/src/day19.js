@@ -31,7 +31,7 @@ const parse = (input) => {
   return { workflows, parts };
 };
 
-const evaluate = (part, workflows, start = 'in') => {
+const evaluatePart = (part, workflows, start = 'in') => {
   let current = start;
   while (current !== ACCEPTED && current !== REJECTED) {
     const flow = workflows.get(current);
@@ -48,35 +48,65 @@ const evaluate = (part, workflows, start = 'in') => {
 
 const part1 = (input) => {
   const { workflows, parts } = parse(input);
-  const acceptedParts = parts.filter(part => evaluate(part, workflows) === ACCEPTED);
+  const acceptedParts = parts.filter(p => evaluatePart(p, workflows) === ACCEPTED);
   return acceptedParts.reduce((total, part) => total +
     Object.values(part).reduce((rating, value) => rating + value, 0), 0);
 };
 
+const evaluateRegion = (region, workflows, label = 'in') => {
+  if (label === ACCEPTED) {
+    return Object.values(region)
+      .reduce((volume, [min, max]) => volume * (max - min + 1), 1);
+  }
+
+  if (label === REJECTED) {
+    return 0;
+  }
+
+  const flow = workflows.get(label);
+  let total = 0;
+
+  for (const { letter, operator, value, dst } of flow) {
+    if (!letter && !operator && !value) {
+      total += evaluateRegion(region, workflows, dst);
+      continue;
+    }
+
+    const [min, max] = region[letter];
+
+    if (operator === '<') {
+      if (min < value) {
+        const newRegion = { ...region };
+        newRegion[letter] = [min, value - 1];
+        total += evaluateRegion(newRegion, workflows, dst);
+      }
+      if (max >= value) {
+        region[letter] = [value, max];
+      }
+    } else if (operator === '>') {
+      if (max > value) {
+        const newRegion = { ...region };
+        newRegion[letter] = [value + 1, max];
+        total += evaluateRegion(newRegion, workflows, dst);
+      }
+      if (min <= value) {
+        region[letter] = [min, value];
+      }
+    }
+  }
+
+  return total;
+};
+
 const part2 = (input) => {
-  return 0;
+  const { workflows } = parse(input);
+  const minValue = 1, maxValue = 4000;
+  return evaluateRegion({
+    x: [minValue, maxValue],
+    m: [minValue, maxValue],
+    a: [minValue, maxValue],
+    s: [minValue, maxValue],
+  }, workflows);
 };
 
 module.exports = { part1, part2 };
-
-const example1 = `
-px{a<2006:qkq,m>2090:A,rfg}
-pv{a>1716:R,A}
-lnx{m>1548:A,A}
-rfg{s<537:gd,x>2440:R,A}
-qs{s>3448:A,lnx}
-qkq{x<1416:A,crn}
-crn{x>2662:A,R}
-in{s<1351:px,qqz}
-qqz{s>2770:qs,m<1801:hdj,R}
-gd{a>3333:R,R}
-hdj{m>838:A,pv}
-
-{x=787,m=2655,a=1222,s=2876}
-{x=1679,m=44,a=2067,s=496}
-{x=2036,m=264,a=79,s=2244}
-{x=2461,m=1339,a=466,s=291}
-{x=2127,m=1623,a=2188,s=1013}
-`.trim();
-console.log(part1(example1));
-// console.log(part2(example1));
