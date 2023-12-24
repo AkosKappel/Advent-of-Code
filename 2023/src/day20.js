@@ -86,26 +86,59 @@ const part1 = (input) => {
   return nTotalLow * nTotalHigh;
 };
 
+function* findPeriods(graph, flipFlops, conjunctions) {
+  const periodic = new Set();
+
+  const rxSource = Object.keys(graph)
+    .find(key => {
+      const destinations = graph[key];
+      return JSON.stringify(destinations) === '["rx"]';
+    });
+  console.assert(rxSource in conjunctions);
+
+  for (const [source, destinations] of Object.entries(graph)) {
+    if (destinations.includes(rxSource)) {
+      console.assert(source in conjunctions);
+      periodic.add(source);
+    }
+  }
+
+  // find periods
+  for (let iteration = 1; ; iteration++) {
+    const queue = [{
+      sender: 'button',
+      receiver: 'broadcaster',
+      pulse: false,
+    }];
+
+    while (queue.length) {
+      const { sender, receiver, pulse } = queue.shift();
+
+      if (!pulse) {
+        if (periodic.has(receiver)) {
+          periodic.delete(receiver);
+          yield iteration;
+
+          if (periodic.size === 0) {
+            return;
+          }
+        }
+      }
+
+      const next = propagatePulse(graph, flipFlops, conjunctions, sender, receiver, pulse);
+      queue.push(...next);
+    }
+  }
+}
+
+const gcd = (a, b) => !b ? a : gcd(b, a % b);
+
+const lcm = (a, b) => a * b / gcd(a, b);
+
 const part2 = (input) => {
-  return 0;
+  const { flipFlops, conjunctions, graph } = parse(input);
+  const periods = [...findPeriods(graph, flipFlops, conjunctions)];
+  return periods.reduce(lcm);
 };
 
 module.exports = { part1, part2 };
-
-const example1 = `
-broadcaster -> a, b, c
-%a -> b
-%b -> c
-%c -> inv
-&inv -> a
-`.trim();
-const example2 = `
-broadcaster -> a
-%a -> inv, con
-&inv -> b
-%b -> con
-&con -> output
-`.trim();
-console.log(part1(example1));
-console.log(part1(example2));
-// console.log(part2(example1));

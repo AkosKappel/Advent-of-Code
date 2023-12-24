@@ -33,11 +33,7 @@ describe('part 1', () => {
 });
 
 describe('part 2', () => {
-  test('example', () => {
-    expect(part2(example1)).toBe(0);
-  });
-
   test('solution', () => {
-    expect(part2(input)).toBe(0);
+    expect(part2(input)).toBe(225386464601017);
   });
 });
