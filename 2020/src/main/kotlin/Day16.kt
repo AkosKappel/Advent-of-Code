@@ -3,7 +3,7 @@ class Day16 {
     data class Rule(val name: String, val ranges: List<Pair<Int, Int>>)
 
     private fun parse(input: String): Triple<List<Rule>, List<Int>, List<List<Int>>> {
-        val (rules, myTicket, nearbyTickets) = input.split("\r\n\r\n")
+        val (rules, myTicket, nearbyTickets) = input.split("\n\n")
         val ruleRegex = Regex("([a-z ]+): (\\d+)-(\\d+) or (\\d+)-(\\d+)")
         val rulesList = rules.lines().map { line ->
             ruleRegex.matchEntire(line)!!.destructured.toList().let { (name, a, b, c, d) ->

@@ -3,7 +3,7 @@ import java.util.ArrayDeque
 class Day22 {
 
     private fun parse(input: String): Pair<ArrayDeque<Int>, ArrayDeque<Int>> {
-        val (p1, p2) = input.split("\r\n\r\n")
+        val (p1, p2) = input.split("\n\n")
         val player1 = p1.lines().drop(1).map { it.toInt() }
         val player2 = p2.lines().drop(1).map { it.toInt() }
         return ArrayDeque(player1) to ArrayDeque(player2)

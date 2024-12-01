@@ -1,7 +1,7 @@
 class Day19 {
 
     private fun parse(input: String): Pair<Map<Int, String>, List<String>> {
-        val (rulesPart, messagesPart) = input.split("\r\n\r\n")
+        val (rulesPart, messagesPart) = input.split("\n\n")
         val rules = rulesPart.lines()
             .map { it.split(": ") }
             .associate { it[0].toInt() to it[1] }

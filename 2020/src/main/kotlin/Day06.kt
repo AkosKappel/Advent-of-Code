@@ -1,7 +1,7 @@
 class Day06 {
 
     private fun parse(input: String): List<String> = input
-        .split("\r\n\r\n")
+        .split("\n\n")
         .map { it.replace(Regex("\\s+"), " ").trim() }
 
     fun part1(input: String): Int = parse(input)

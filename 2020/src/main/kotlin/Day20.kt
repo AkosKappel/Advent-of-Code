@@ -84,7 +84,7 @@ class Day20 {
 
     private fun parse(input: String): Map<Long, Tile> = input
         .trim()
-        .split("\r\n\r\n")
+        .split("\n\n")
         .filter { it.isNotBlank() }
         .associate { tile ->
             val lines = tile.lines()

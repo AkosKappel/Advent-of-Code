@@ -40,7 +40,7 @@ class Day04 {
     }
 
     private fun parse(input: String): List<Passport> = input
-        .split("""\s{3,}""".toRegex())
+        .split("""\s{2,}""".toRegex())
         .map { it.replace("""\s+""".toRegex(), " ") }
         .map { Passport(it) }
 
