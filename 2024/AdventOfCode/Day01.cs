@@ -3,7 +3,6 @@
 public class Day01 : BaseDay
 {
     private readonly string _input;
-    // public override string InputFilePath { get; } = "Inputs/01-Example.txt";
 
     public Day01() : this(null) { }
     public Day01(string? filename)

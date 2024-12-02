@@ -15,13 +15,11 @@ public class Day00 : BaseDay
     
     public override ValueTask<string> Solve_1()
     {
-        var value = 0;
-        return new($"{value}");
+        return new(0.ToString());
     }
 
     public override ValueTask<string> Solve_2()
     {
-        var value = 0;
-        return new($"{value}");
+        return new(0.ToString());
     }
 }
