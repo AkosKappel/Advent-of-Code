@@ -24,7 +24,7 @@ public class Day02Test
         var solution = _day.Solve_1();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
-    
+
     [Test]
     public void TestPart2Example()
     {
@@ -33,12 +33,12 @@ public class Day02Test
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
-    
+
     [Test]
     public void TestPart2Input()
     {
         _day = new Day02("Inputs/02.txt");
-        var expected = "";
+        var expected = "476";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
