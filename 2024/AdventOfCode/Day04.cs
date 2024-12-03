@@ -5,11 +5,11 @@ public class Day04 : BaseDay
     private readonly string _input;
     public override string InputFilePath { get; } = "Inputs/04-Example.txt";
 
-    public Day04() : this(null)
+    public Day04() : this("")
     {
     }
 
-    public Day04(string? filename)
+    public Day04(string filename)
     {
         _input = File.ReadAllText(filename ?? InputFilePath);
     }

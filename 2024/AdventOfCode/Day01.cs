@@ -4,11 +4,11 @@ public class Day01 : BaseDay
 {
     private readonly string _input;
 
-    public Day01() : this(null)
+    public Day01() : this("")
     {
     }
 
-    public Day01(string? filename)
+    public Day01(string filename)
     {
         _input = File.ReadAllText(filename ?? InputFilePath);
     }
