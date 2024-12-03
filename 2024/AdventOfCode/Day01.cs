@@ -10,7 +10,7 @@ public class Day01 : BaseDay
 
     public Day01(string filename)
     {
-        _input = File.ReadAllText(filename ?? InputFilePath);
+        _input = File.ReadAllText(string.IsNullOrWhiteSpace(filename) ? InputFilePath : filename);
     }
 
     private (IEnumerable<int>, IEnumerable<int>) ParseInput()
