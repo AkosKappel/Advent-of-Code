@@ -1,43 +1,36 @@
 ﻿namespace AdventOfCode;
 
-public class Day01 : BaseDay
-{
-    private readonly string _input;
+public class Day01 : BaseDay {
+    private readonly IEnumerable<int> _firstColumn;
+    private readonly IEnumerable<int> _secondColumn;
 
-    public Day01() : this("")
-    {
+    public Day01() : this("") { }
+
+    public Day01(string filename) {
+        var inputFile = string.IsNullOrWhiteSpace(filename) ? InputFilePath : filename;
+        (_firstColumn, _secondColumn) = ParseInput(inputFile);
     }
 
-    public Day01(string filename)
-    {
-        _input = File.ReadAllText(string.IsNullOrWhiteSpace(filename) ? InputFilePath : filename);
+    private static (IEnumerable<int>, IEnumerable<int>) ParseInput(string file) {
+        var raw = File.ReadAllText(file);
+        var pairs = raw.Split("\n").Select(line => line.Split("   ").Select(int.Parse)).ToList();
+        var first = pairs.Select(pair => pair.First());
+        var second = pairs.Select(pair => pair.Last());
+        return (first, second);
     }
 
-    private (IEnumerable<int>, IEnumerable<int>) ParseInput()
-    {
-        var pairs = _input.Split("\n").Select(line => line.Split("   ").Select(int.Parse));
-        var firstColumn = pairs.Select(pair => pair.First());
-        var secondColumn = pairs.Select(pair => pair.Last());
-        return (firstColumn, secondColumn);
-    }
-
-    public override ValueTask<string> Solve_1()
-    {
-        var (firstColumn, secondColumn) = ParseInput();
-        var distance = firstColumn.Order().Zip(secondColumn.Order(), (x, y) => Math.Abs(x - y)).Sum();
+    public override ValueTask<string> Solve_1() {
+        var distance = _firstColumn.Order().Zip(_secondColumn.Order(), (x, y) => Math.Abs(x - y)).Sum();
         return new(distance.ToString());
     }
 
-    public override ValueTask<string> Solve_2()
-    {
-        var (firstColumn, secondColumn) = ParseInput();
-
+    public override ValueTask<string> Solve_2() {
         // Count number of times each number appears in the second column
-        var counts = secondColumn
+        var counts = _secondColumn
             .GroupBy(x => x)
             .ToDictionary(x => x.Key, x => x.Count());
 
-        var similarity = firstColumn.Select(item => item * counts.GetValueOrDefault(item, 0)).Sum();
+        var similarity = _firstColumn.Select(item => item * counts.GetValueOrDefault(item, 0)).Sum();
         return new(similarity.ToString());
     }
 }
