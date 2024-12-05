@@ -3,6 +3,7 @@
 public class Day01 : BaseDay {
     private readonly IEnumerable<int> _firstColumn;
     private readonly IEnumerable<int> _secondColumn;
+    // public override string InputFilePath { get; } = "Inputs/01-Example.txt";
 
     public Day01() : this("") { }
 
