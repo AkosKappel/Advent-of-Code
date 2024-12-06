@@ -8,7 +8,6 @@ public class Day06 : BaseDay {
     private readonly HashSet<Vector2> _obstructions;
     private readonly int _width;
     private readonly int _height;
-    // public override string InputFilePath { get; } = "Inputs/06-Example.txt";
 
     public Day06() : this("") { }
 
@@ -35,16 +34,19 @@ public class Day06 : BaseDay {
     private bool IsWithinBounds(Vector2 coord) => 0 <= coord.X && coord.X < _width &&
                                                   0 <= coord.Y && coord.Y < _height;
 
-    private HashSet<(Vector2, Vector2)> WalkPatrol(
+    private List<(Vector2, Vector2)> WalkPatrol(
         Vector2 currentPosition,
         Vector2 currentDirection,
         HashSet<Vector2> obstructions
     ) {
+        var path = new List<(Vector2, Vector2)>();
         var visited = new HashSet<(Vector2, Vector2)>();
 
         while (IsWithinBounds(currentPosition)) {
             var current = (currentPosition, currentDirection);
             if (visited.Contains(current)) return null; // loop detected
+
+            path.Add(current);
             visited.Add(current);
 
             var nextPosition = currentPosition + currentDirection;
@@ -58,7 +60,7 @@ public class Day06 : BaseDay {
             }
         }
 
-        return visited;
+        return path;
     }
 
     public override ValueTask<string> Solve_1() {
@@ -68,16 +70,16 @@ public class Day06 : BaseDay {
     }
 
     public override ValueTask<string> Solve_2() {
-        var visitedTiles = WalkPatrol(_startingPosition, _startingDirection, _obstructions)!;
-        var possibleObstructions = visitedTiles.Select(tile => tile.Item1).Distinct();
+        var visitedTiles = WalkPatrol(_startingPosition, _startingDirection, _obstructions)!
+            .Where(tile => !_obstructions.Contains(tile.Item1 + tile.Item2)) // skip existing obstructions
+            .DistinctBy(tile => tile.Item1 + tile.Item2); // keep only first occurrence of each tile
 
-        var numNewObstructions = possibleObstructions.Count(newObstruction => {
+        var numNewObstructions = visitedTiles.Count(tile => {
+            var newObstruction = tile.Item1 + tile.Item2;
             _obstructions.Add(newObstruction);
-            var newPath = WalkPatrol(_startingPosition, _startingDirection, _obstructions);
+            var newPath = WalkPatrol(tile.Item1, tile.Item2, _obstructions);
             _obstructions.Remove(newObstruction);
-
-            var hasLoop = newPath is null;
-            return hasLoop;
+            return newPath is null;
         });
 
         return new(numNewObstructions.ToString());
