@@ -8,27 +8,28 @@ public class Day05 : BaseDay {
 
     public Day05(string filename) {
         var inputFile = string.IsNullOrWhiteSpace(filename) ? InputFilePath : filename;
-        (var pageOrderingRules, _updates) = ParseInput(inputFile);
-        _ordering = BuildOrderRules(pageOrderingRules);
+        (var pageOrderRules, _updates) = ParseInput(inputFile);
+
+        _ordering = pageOrderRules
+            .GroupBy(rule => rule.First())
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(rule => rule.Last()).ToHashSet()
+            );
     }
 
     private static (List<List<int>>, List<List<int>>) ParseInput(string file) {
-        var raw = File.ReadAllText(file).Split("\r\n\r\n");
+        var raw = File.ReadAllText(file).ReplaceLineEndings("\n").Split("\n\n");
         var rules = raw[0].Split("\n").Select(row => row.Split("|").Select(int.Parse).ToList()).ToList();
         var updates = raw[1].Split("\n").Select(row => row.Split(",").Select(int.Parse).ToList()).ToList();
         return (rules, updates);
     }
 
-    private static Dictionary<int, HashSet<int>> BuildOrderRules(List<List<int>> rules) => rules
-        .GroupBy(rule => rule.First())
-        .ToDictionary(
-            g => g.Key,
-            g => g.Select(rule => rule.Last()).ToHashSet()
-        );
+    private static int GetMiddlePage(List<int> pages) => pages[pages.Count / 2];
 
     private bool IsCorrectlyOrdered(List<int> update) => update
         .Select((value, index) => (
-            ValuesBefore: update.Take(index).ToHashSet(),
+            // ValuesBefore: update.Take(index).ToHashSet(),
             Current: value,
             ValuesAfter: update.Skip(index + 1).ToHashSet()
         ))
@@ -39,7 +40,7 @@ public class Day05 : BaseDay {
 
     public override ValueTask<string> Solve_1() => new(_updates
         .Where(IsCorrectlyOrdered)
-        .Sum(x => x[x.Count / 2])
+        .Sum(GetMiddlePage)
         .ToString()
     );
 
@@ -56,7 +57,7 @@ public class Day05 : BaseDay {
     public override ValueTask<string> Solve_2() => new(_updates
         .Where(x => !IsCorrectlyOrdered(x))
         .Select(FixOrdering)
-        .Sum(x => x[x.Count / 2])
+        .Sum(GetMiddlePage)
         .ToString()
     );
 }

@@ -44,16 +44,14 @@ public class Day04 : BaseDay {
     }
 
     private bool CheckXWord(Vector2 position, string word) {
-        var firstChar = word.First();
-        var lastChar = word.Last();
-        var word1 = $"{firstChar}{lastChar}{firstChar}{lastChar}";
-        var word2 = $"{firstChar}{firstChar}{lastChar}{lastChar}";
-        var word3 = $"{lastChar}{firstChar}{lastChar}{firstChar}";
-        var word4 = $"{lastChar}{lastChar}{firstChar}{firstChar}";
+        var word1 = $"{word.First()}{word.Last()}";
+        var word2 = $"{word.Last()}{word.First()}";
 
-        var cornerChars = Directions.Diagonal.Select(dir => GridAt(position + dir));
-        var targetWord = string.Join("", cornerChars);
-        return targetWord == word1 || targetWord == word2 || targetWord == word3 || targetWord == word4;
+        var diagonal1 = $"{GridAt(position + Directions.UpLeft)}{GridAt(position + Directions.DownRight)}";
+        if (diagonal1 != word1 && diagonal1 != word2) return false;
+
+        var diagonal2 = $"{GridAt(position + Directions.UpRight)}{GridAt(position + Directions.DownLeft)}";
+        return diagonal2 == word1 || diagonal2 == word2;
     }
 
     public override ValueTask<string> Solve_2() {

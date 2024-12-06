@@ -13,7 +13,7 @@ public class Day01 : BaseDay {
     }
 
     private static (IEnumerable<int>, IEnumerable<int>) ParseInput(string file) {
-        var raw = File.ReadAllText(file);
+        var raw = File.ReadAllText(file).ReplaceLineEndings("\n");
         var pairs = raw.Split("\n").Select(line => line.Split("   ").Select(int.Parse)).ToList();
         var first = pairs.Select(pair => pair.First());
         var second = pairs.Select(pair => pair.Last());

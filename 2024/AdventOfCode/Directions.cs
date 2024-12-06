@@ -14,7 +14,34 @@ public static class Directions {
 
     public static readonly Vector2[] Vertical = { Up, Down };
     public static readonly Vector2[] Horizontal = { Left, Right };
-    public static readonly Vector2[] Cardinal = { Up, Down, Left, Right };
-    public static readonly Vector2[] Diagonal = { UpRight, UpLeft, DownRight, DownLeft };
-    public static readonly Vector2[] All = { Up, Down, Left, Right, UpRight, UpLeft, DownRight, DownLeft };
+    public static readonly Vector2[] Cardinal = { Up, Right, Down, Left };
+    public static readonly Vector2[] Diagonal = { UpRight, DownRight, DownLeft, UpLeft };
+    public static readonly Vector2[] All = { Up, UpRight, Right, DownRight, Down, DownLeft, Left, UpLeft };
+
+    public enum RotationMode {
+        Cardinal,
+        Diagonal,
+        All
+    }
+
+    public static Vector2 RotateRight(this Vector2 direction, int times = 1,
+        RotationMode mode = RotationMode.Cardinal) {
+        var directions = mode switch {
+            RotationMode.Cardinal => Cardinal,
+            RotationMode.Diagonal => Diagonal,
+            RotationMode.All => All,
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+        };
+
+        var index = Array.IndexOf(directions, direction);
+        if (index == -1) return Vector2.Zero;
+
+        return directions[(index + times + directions.Length) % directions.Length];
+    }
+
+    public static Vector2 RotateLeft(this Vector2 direction, int times = 1,
+        RotationMode mode = RotationMode.Cardinal) =>
+        RotateRight(direction, -times, mode);
+
+    public static Vector2 Reverse(this Vector2 direction) => direction * -1;
 }
