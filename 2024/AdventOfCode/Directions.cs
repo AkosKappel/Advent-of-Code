@@ -19,14 +19,21 @@ public static class Directions {
     public static readonly Vector2[] All = { Up, UpRight, Right, DownRight, Down, DownLeft, Left, UpLeft };
 
     public enum RotationMode {
+        Vertical,
+        Horizontal,
         Cardinal,
         Diagonal,
         All
     }
 
-    public static Vector2 RotateRight(this Vector2 direction, int times = 1,
-        RotationMode mode = RotationMode.Cardinal) {
+    public static Vector2 RotateRight(
+        this Vector2 direction,
+        int times = 1,
+        RotationMode mode = RotationMode.Cardinal
+    ) {
         var directions = mode switch {
+            RotationMode.Vertical => Vertical,
+            RotationMode.Horizontal => Horizontal,
             RotationMode.Cardinal => Cardinal,
             RotationMode.Diagonal => Diagonal,
             RotationMode.All => All,
@@ -39,21 +46,23 @@ public static class Directions {
         return directions[(index + times + directions.Length) % directions.Length];
     }
 
-    public static Vector2 RotateLeft(this Vector2 direction, int times = 1,
-        RotationMode mode = RotationMode.Cardinal) =>
-        RotateRight(direction, -times, mode);
+    public static Vector2 RotateLeft(
+        this Vector2 direction,
+        int times = 1,
+        RotationMode mode = RotationMode.Cardinal
+    ) => RotateRight(direction, -times, mode);
 
     public static Vector2 Reverse(this Vector2 direction) => direction * -1;
 
-    public static string ToCode(this Vector2 direction) => direction switch {
-        { X: 0, Y: -1 } => "U",
-        { X: 1, Y: -1 } => "UR",
-        { X: 1, Y: 0 } => "R",
-        { X: 1, Y: 1 } => "DR",
-        { X: 0, Y: 1 } => "D",
-        { X: -1, Y: 1 } => "DL",
-        { X: -1, Y: 0 } => "L",
-        { X: -1, Y: -1 } => "UL",
+    public static string ToCode(this Vector2 direction, bool asCompass = false) => direction switch {
+        { X: 0, Y: -1 } => asCompass ? "N" : "U",
+        { X: 1, Y: -1 } => asCompass ? "NE" : "UR",
+        { X: 1, Y: 0 } => asCompass ? "E" : "R",
+        { X: 1, Y: 1 } => asCompass ? "SE" : "DR",
+        { X: 0, Y: 1 } => asCompass ? "S" : "D",
+        { X: -1, Y: 1 } => asCompass ? "SW" : "DL",
+        { X: -1, Y: 0 } => asCompass ? "W" : "L",
+        { X: -1, Y: -1 } => asCompass ? "NW" : "UL",
         _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
     };
 }
