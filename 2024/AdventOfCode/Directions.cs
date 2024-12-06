@@ -44,4 +44,16 @@ public static class Directions {
         RotateRight(direction, -times, mode);
 
     public static Vector2 Reverse(this Vector2 direction) => direction * -1;
+
+    public static string ToCode(this Vector2 direction) => direction switch {
+        { X: 0, Y: -1 } => "U",
+        { X: 1, Y: -1 } => "UR",
+        { X: 1, Y: 0 } => "R",
+        { X: 1, Y: 1 } => "DR",
+        { X: 0, Y: 1 } => "D",
+        { X: -1, Y: 1 } => "DL",
+        { X: -1, Y: 0 } => "L",
+        { X: -1, Y: -1 } => "UL",
+        _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+    };
 }

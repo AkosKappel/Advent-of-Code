@@ -38,7 +38,7 @@ public class Day06Test
     public void TestPart2Input()
     {
         _day = new Day06("Inputs/06.txt");
-        var expected = "21790668";
+        var expected = "1618";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }

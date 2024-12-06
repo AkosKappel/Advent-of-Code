@@ -1,8 +1,8 @@
 ﻿namespace AdventOfCode;
 
 public class Day01 : BaseDay {
-    private readonly IEnumerable<int> _firstColumn;
-    private readonly IEnumerable<int> _secondColumn;
+    private readonly List<int> _firstColumn;
+    private readonly List<int> _secondColumn;
     // public override string InputFilePath { get; } = "Inputs/01-Example.txt";
 
     public Day01() : this("") { }
@@ -12,11 +12,11 @@ public class Day01 : BaseDay {
         (_firstColumn, _secondColumn) = ParseInput(inputFile);
     }
 
-    private static (IEnumerable<int>, IEnumerable<int>) ParseInput(string file) {
+    private static (List<int>, List<int>) ParseInput(string file) {
         var raw = File.ReadAllText(file).ReplaceLineEndings("\n");
-        var pairs = raw.Split("\n").Select(line => line.Split("   ").Select(int.Parse)).ToList();
-        var first = pairs.Select(pair => pair.First());
-        var second = pairs.Select(pair => pair.Last());
+        var pairs = raw.Split("\n").Select(line => line.Split("   ").Select(int.Parse).ToList()).ToList();
+        var first = pairs.Select(pair => pair.First()).ToList();
+        var second = pairs.Select(pair => pair.Last()).ToList();
         return (first, second);
     }
 
