@@ -1,0 +1,30 @@
+import unittest
+from src import day05 as day
+
+DAY = 5
+EXAMPLE = f'../data/day{DAY:02}_example.txt'
+INPUT = f'../data/day{DAY:02}.txt'
+
+
+class TestDay05Part1(unittest.TestCase):
+    def test_example(self):
+        expected = 5
+        result = day.part1(EXAMPLE)
+        self.assertEqual(expected, result)
+
+    def test_solution(self):
+        expected = 4826
+        result = day.part1(INPUT)
+        self.assertEqual(expected, result)
+
+
+class TestDay05Part2(unittest.TestCase):
+    def test_example(self):
+        expected = 12
+        result = day.part2(EXAMPLE)
+        self.assertEqual(expected, result)
+
+    def test_solution(self):
+        expected = 16793
+        result = day.part2(INPUT)
+        self.assertEqual(expected, result)
