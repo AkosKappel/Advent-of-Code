@@ -1,7 +1,7 @@
 const blizzardMovement: { [dir: string]: number[] } = {
   '^': [-1, 0],
   '>': [0, 1],
-  'v': [1, 0],
+  v: [1, 0],
   '<': [0, -1],
 };
 
@@ -10,10 +10,7 @@ interface Solution {
   steps: number;
 }
 
-const humanMovements = [
-  [0, 0],
-  ...Object.values(blizzardMovement),
-];
+const humanMovements = [[0, 0], ...Object.values(blizzardMovement)];
 
 function isPositionOutOfBounds(row: number, col: number, grid: string[][]) {
   return row < 0 || row > grid.length - 1 || col < 0 || col > grid[0].length - 1;
@@ -42,15 +39,26 @@ function wrapAroundGridIfNeeded(row: number, col: number, grid: string[][]) {
 }
 
 function destinationReached(currentPosition: number[], destinationPosition: number[]) {
-  return currentPosition[0] == destinationPosition[0] && currentPosition[1] == destinationPosition[1];
+  return (
+    currentPosition[0] == destinationPosition[0] && currentPosition[1] == destinationPosition[1]
+  );
 }
 
-function getNextBlizzardPosition(blizzardMap: string[][], startRow: number, startCol: number, direction: string) {
+function getNextBlizzardPosition(
+  blizzardMap: string[][],
+  startRow: number,
+  startCol: number,
+  direction: string,
+) {
   const movement = blizzardMovement[direction];
   let newRow = startRow;
   let newCol = startCol;
   do {
-    const newPosition = wrapAroundGridIfNeeded(newRow + movement[0], newCol + movement[1], blizzardMap);
+    const newPosition = wrapAroundGridIfNeeded(
+      newRow + movement[0],
+      newCol + movement[1],
+      blizzardMap,
+    );
     newRow = newPosition[0];
     newCol = newPosition[1];
   } while (blizzardMap[newRow][newCol] == '#');
@@ -68,10 +76,12 @@ function moveBlizzard(blizzardMap: string[][]): string[][] {
           newBlizzardMap[row][col] = ['#'];
         } else {
           const nextPosition = getNextBlizzardPosition(blizzardMap, row, col, blizzard);
-          newBlizzardMap[nextPosition[0]][nextPosition[1]] = [...newBlizzardMap[nextPosition[0]][nextPosition[1]], blizzard];
+          newBlizzardMap[nextPosition[0]][nextPosition[1]] = [
+            ...newBlizzardMap[nextPosition[0]][nextPosition[1]],
+            blizzard,
+          ];
         }
       }
-
     }
   }
   return newBlizzardMap;
@@ -84,7 +94,11 @@ function getNextPositionsForHuman(blizzardMap: string[][], currentPosition: numb
     const newRowPosition = currentPosition[0] + movement[0];
     const newColPosition = currentPosition[1] + movement[1];
 
-    const isNextPositionOutOfBounds = isPositionOutOfBounds(newRowPosition, newColPosition, blizzardMap);
+    const isNextPositionOutOfBounds = isPositionOutOfBounds(
+      newRowPosition,
+      newColPosition,
+      blizzardMap,
+    );
     if (isNextPositionOutOfBounds) {
       continue;
     }
@@ -100,7 +114,11 @@ function getNextPositionsForHuman(blizzardMap: string[][], currentPosition: numb
   return nextPositions;
 }
 
-function solve(blizzardMap: string[][], startPosition: number[], destinationPosition: number[]): Solution {
+function solve(
+  blizzardMap: string[][],
+  startPosition: number[],
+  destinationPosition: number[],
+): Solution {
   let currentPositions = [[...startPosition]];
 
   let steps = 0;
@@ -146,9 +164,7 @@ function solve(blizzardMap: string[][], startPosition: number[], destinationPosi
 
 const parse = (s: string) => {
   const lines = s.trim().split('\n');
-  const grid = lines
-    .map(line => line.split('')
-      .map(value => value == '.' ? '' : value));
+  const grid = lines.map(line => line.split('').map(value => (value == '.' ? '' : value)));
 
   const start: number[] = [0, lines[0].indexOf('.')];
   const end: number[] = [grid.length - 1, lines[grid.length - 1].lastIndexOf('.')];
@@ -176,27 +192,3 @@ const part2 = (s: string): number => {
 
   return path1.steps + path2.steps + path3.steps;
 };
-
-import * as day from '../examples/day24.input';
-
-console.time('Run');
-
-console.log(part1(day.input)); // 10
-console.log(day.answer1);
-
-console.log(part1(day.input2)); // 18
-console.log(day.answer1_2);
-
-console.log(part1(day.puzzleInput)); // 301
-console.log(day.puzzleAnswer1);
-
-console.log(part2(day.input)); // 30
-console.log(day.answer2);
-
-console.log(part2(day.input2)); // 54
-console.log(day.answer2_2);
-
-console.log(part2(day.puzzleInput)); // 859
-console.log(day.puzzleAnswer2);
-
-console.timeEnd('Run');

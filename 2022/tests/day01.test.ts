@@ -1,18 +1,41 @@
+import { readFileSync } from 'fs';
 import { part1, part2 } from '../src/day01';
-import * as day from '../examples/day01.input';
 
-test(`day 01-1 example`, () => {
-  expect(part1(day.input)).toBe(day.answer1);
+const dayNumber = __filename.match(/day(\d+)\.test\.ts/)?.[1];
+const inputFile: string = `input/day${dayNumber}.txt`;
+
+const example: string = `
+1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000
+`.trim();
+const input: string = readFileSync(inputFile, 'utf8');
+
+describe('part 1', () => {
+  test('example', () => {
+    expect(part1(example)).toBe(24000);
+  });
+  test(`solution`, () => {
+    expect(part1(input)).toBe(69626);
+  });
 });
 
-test(`day 01-2 example`, () => {
-  expect(part2(day.input)).toBe(day.answer2);
-});
-
-test(`day 01-1 puzzle`, () => {
-  expect(part1(day.puzzleInput)).toBe(day.puzzleAnswer1);
-});
-
-test(`day 01-2 puzzle`, () => {
-  expect(part2(day.puzzleInput)).toBe(day.puzzleAnswer2);
+describe('part 2', () => {
+  test('example', () => {
+    expect(part2(example)).toBe(45000);
+  });
+  test(`solution`, () => {
+    expect(part2(input)).toBe(206780);
+  });
 });

@@ -1,14 +1,21 @@
-const parse = (s: string) => s.trim()
-  .split('\n')
-  .map(line => line.match(/\d+/g)!.map(Number));
-
+const parse = (s: string) =>
+  s
+    .trim()
+    .split('\n')
+    .map(line => line.match(/\d+/g)!.map(Number));
 
 const solve = (cost: number[], maxTime: number) => {
   let geodeBest = 0;
 
   const mostGeodes = (
-    o: number, c: number, ob: number, g: number,
-    or: number, cr: number, obr: number, gr: number,
+    o: number,
+    c: number,
+    ob: number,
+    g: number,
+    or: number,
+    cr: number,
+    obr: number,
+    gr: number,
     time: number,
   ): number => {
     if (time >= maxTime) {
@@ -55,7 +62,10 @@ const solve = (cost: number[], maxTime: number) => {
     let best = 0;
     //if not too many obsidian bots and enough to make one, make one
     if (obr < cost[5] && o >= cost[2] && c >= cost[3]) {
-      best = Math.max(best, mostGeodes(no - cost[2], nc - cost[3], nob, ng, or, cr, obr + 1, gr, time + 1));
+      best = Math.max(
+        best,
+        mostGeodes(no - cost[2], nc - cost[3], nob, ng, or, cr, obr + 1, gr, time + 1),
+      );
     }
     // if not too many clay bots and enough to make one, make one
     if (cr < cost[3] && o >= cost[1]) {
@@ -73,45 +83,21 @@ const solve = (cost: number[], maxTime: number) => {
     return best;
   };
 
-  return mostGeodes(
-    0, 0, 0, 0,
-    1, 0, 0, 0,
-    0,
-  );
+  return mostGeodes(0, 0, 0, 0, 1, 0, 0, 0, 0);
 };
 
-const part1 = (s: string) => parse(s)
-  .reduce((quantity, blueprint, i) => {
+const part1 = (s: string) =>
+  parse(s).reduce((quantity, blueprint, i) => {
     const geodes = solve(blueprint.slice(1), 24);
     return quantity + (i + 1) * geodes;
   }, 0);
 
-const part2 = (s: string) => parse(s)
-  .slice(0, 3)
-  .reduce((quantity, blueprint) => {
-    const geodes = solve(blueprint.slice(1), 32);
-    return quantity * geodes;
-  }, 1);
+const part2 = (s: string) =>
+  parse(s)
+    .slice(0, 3)
+    .reduce((quantity, blueprint) => {
+      const geodes = solve(blueprint.slice(1), 32);
+      return quantity * geodes;
+    }, 1);
 
-
-import * as day from '../examples/day19.input';
-
-console.time('example part 1');
-console.log(part1(day.input));
-console.log(day.answer1);
-console.timeEnd('example part 1');
-
-console.time('example part 2');
-console.log(part1(day.puzzleInput));
-console.log(day.puzzleAnswer1);
-console.timeEnd('example part 2');
-
-console.time('puzzle part 1');
-console.log(part2(day.input));
-console.log(day.answer2);
-console.timeEnd('puzzle part 1');
-
-console.time('puzzle part 2');
-console.log(part2(day.puzzleInput));
-console.log(day.puzzleAnswer2);
-console.timeEnd('puzzle part 2');
+export { part1, part2 };

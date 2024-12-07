@@ -1,12 +1,23 @@
 // working solution for day 15, but later switched to a more efficient solution
 
 const manhattanDistance = (a: number[], b: number[]): number =>
-  a.reduce((sum: number, num: number, i: number) => sum + Math.abs(num - b[i]), 0);
+  a.reduce(
+    (sum: number, num: number, i: number) => sum + Math.abs(num - b[i]),
+    0,
+  );
 
-const parse = (s: string): number[][] => s.trim()
-  .split('\n')
-  .map(line => line.match(/(-?\d+)/g)!.map(Number))
-  .map(([sx, sy, bx, by]: number[]) => [sx, sy, bx, by, manhattanDistance([sx, sy], [bx, by])]);
+const parse = (s: string): number[][] =>
+  s
+    .trim()
+    .split('\n')
+    .map((line) => line.match(/(-?\d+)/g)!.map(Number))
+    .map(([sx, sy, bx, by]: number[]) => [
+      sx,
+      sy,
+      bx,
+      by,
+      manhattanDistance([sx, sy], [bx, by]),
+    ]);
 
 const mergeIntervals = (intervals: number[][]): number[][] => {
   // sort intervals by start position
@@ -34,7 +45,10 @@ const mergeIntervals = (intervals: number[][]): number[][] => {
   return mergedIntervals;
 };
 
-const getLineCoverageOfSensor = (sensor: number[], targetY: number): number[] | null => {
+const getLineCoverageOfSensor = (
+  sensor: number[],
+  targetY: number,
+): number[] | null => {
   const [sx, sy, , , dist] = sensor;
   const coverageWidth = dist - Math.abs(sy - targetY);
 
@@ -54,8 +68,11 @@ const getLineCoverage = (data: number[][], targetY: number): number[][] => {
   return mergeIntervals(coverageIntervals);
 };
 
-export const part1 = (s: string, targetY: number): number => getLineCoverage(parse(s), targetY)
-  .reduce((sum: number, [start, end]: number[]) => sum + (end - start), 0);
+export const part1 = (s: string, targetY: number): number =>
+  getLineCoverage(parse(s), targetY).reduce(
+    (sum: number, [start, end]: number[]) => sum + (end - start),
+    0,
+  );
 
 exports.first = part1;
 
@@ -78,13 +95,3 @@ export const part2 = (s: string): number => {
 };
 
 exports.second = part2;
-
-// import * as day from '../examples/day15.input';
-// console.log(part1(day.input, day.param1));
-// console.log(day.answer1);
-// console.log(part1(day.puzzleInput, day.puzzleParam1));
-// console.log(day.puzzleAnswer1);
-// console.log(part2(day.input));
-// console.log(day.answer2);
-// console.log(part2(day.puzzleInput));
-// console.log(day.puzzleAnswer2);

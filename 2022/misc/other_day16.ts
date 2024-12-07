@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+
 function part1(input: Valve[], startTime: number): number {
   const score = search(input, startTime);
   // console.log("score:", score);
@@ -57,7 +59,10 @@ function search(input: Valve[], startTime: number) {
 }
 
 // gets the shortest path from each valve to each other valve
-function getShortestPath(valves: Record<string, Valve>, openable: Valve[]): Record<string, Record<string, number>> {
+function getShortestPath(
+  valves: Record<string, Valve>,
+  openable: Valve[],
+): Record<string, Record<string, number>> {
   function findShortestPath(start: string): Record<string, number> {
     const visited: Record<string, number> = {};
     const unvisited: [Valve, number][] = [];
@@ -112,10 +117,7 @@ function getValves(input: Valve[]): Record<string, Valve> {
       if (path.includes(id)) return;
 
       const next = valves[id];
-      const steps =
-        next.rate > 0
-          ? { [id]: 0 }
-          : preprocessInputRowTo(next, [...path, row.from]);
+      const steps = next.rate > 0 ? { [id]: 0 } : preprocessInputRowTo(next, [...path, row.from]);
 
       Object.keys(steps).forEach((id: string) => {
         if (id in to) {
@@ -154,25 +156,37 @@ interface Valve {
   hash?: number;
 }
 
-import * as day from '../examples/day16.input';
-
-const test1: Valve[] = day.input.trim().split('\n').map(parse);
-const test2: Valve[] = day.puzzleInput.trim().split('\n').map(parse);
+const test1: Valve[] = `
+Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+Valve BB has flow rate=13; tunnels lead to valves CC, AA
+Valve CC has flow rate=2; tunnels lead to valves DD, BB
+Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
+Valve EE has flow rate=3; tunnels lead to valves FF, DD
+Valve FF has flow rate=0; tunnels lead to valves EE, GG
+Valve GG has flow rate=0; tunnels lead to valves FF, HH
+Valve HH has flow rate=22; tunnel leads to valve GG
+Valve II has flow rate=0; tunnels lead to valves AA, JJ
+Valve JJ has flow rate=21; tunnel leads to valve II
+`
+  .trim()
+  .split('\n')
+  .map(parse);
+const test2: Valve[] = readFileSync('../input/day16.txt', 'utf8').trim().split('\n').map(parse);
 
 console.time('example part1');
-console.log(part1(test1, 30), '==', day.answer1);
+console.log(part1(test1, 30), '==', 1651);
 console.timeEnd('example part1');
 
 console.time('example part2');
-console.log(part2(test1, 26), '==', day.answer2);
+console.log(part2(test1, 26), '==', 1707);
 console.timeEnd('example part2');
 
 console.time('part1');
-console.log(part1(test2, 30), '==', day.puzzleAnswer1);
+console.log(part1(test2, 30), '==', 1880);
 console.timeEnd('part1');
 
 console.time('part2');
-console.log(part2(test2, 26), '==', day.puzzleAnswer2);
+console.log(part2(test2, 26), '==', 2520);
 console.timeEnd('part2');
 
 // 1639 == 1651

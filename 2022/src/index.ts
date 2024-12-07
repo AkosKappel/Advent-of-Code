@@ -18,7 +18,7 @@ const headers = { cookie };
 
 const inputFile = `${__dirname}/../input/day${day
   .toString()
-  .padStart(2, '0')}.in`;
+  .padStart(2, '0')}.txt`;
 
 try {
   const rawData = fs.readFileSync(inputFile, 'utf8');

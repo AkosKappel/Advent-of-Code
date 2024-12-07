@@ -1,20 +1,40 @@
 // NOTE: valid solution only for small grids
 //       otherwise the heap limit is exceeded
-const DIRECTIONS: number[][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+const DIRECTIONS: number[][] = [
+  [0, -1],
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+];
 
 const manhattanDistance = (a: number[], b: number[]): number =>
-  a.reduce((sum: number, num: number, i: number) => sum + Math.abs(num - b[i]), 0);
+  a.reduce(
+    (sum: number, num: number, i: number) => sum + Math.abs(num - b[i]),
+    0,
+  );
 
 const outOfBounds = (tunnel: string[][], x: number, y: number): boolean =>
   x < 0 || y < 0 || x >= tunnel[0].length || y >= tunnel.length;
 
-const parse = (s: string): number[][] => s.trim()
-  .split('\n')
-  .map(line => line.match(/(-?\d+)/g)!.map(Number))
-  .map(([sx, sy, bx, by]: number[]) => [sx, sy, bx, by, manhattanDistance([sx, sy], [bx, by])]);
+const parse = (s: string): number[][] =>
+  s
+    .trim()
+    .split('\n')
+    .map((line) => line.match(/(-?\d+)/g)!.map(Number))
+    .map(([sx, sy, bx, by]: number[]) => [
+      sx,
+      sy,
+      bx,
+      by,
+      manhattanDistance([sx, sy], [bx, by]),
+    ]);
 
 // NOTE: gives FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
-const exploreTunnelRec = (tunnel: string[][], start: number[], distance: number) => {
+const exploreTunnelRec = (
+  tunnel: string[][],
+  start: number[],
+  distance: number,
+) => {
   // max distance reached
   if (distance < 0) return;
 
@@ -26,11 +46,16 @@ const exploreTunnelRec = (tunnel: string[][], start: number[], distance: number)
   if (tunnel[y][x] === '.') tunnel[y][x] = '#';
 
   // explore each direction from current position
-  DIRECTIONS.forEach(([dx, dy]: number[]) => exploreTunnelRec(tunnel, [x + dx, y + dy], distance - 1));
+  DIRECTIONS.forEach(([dx, dy]: number[]) =>
+    exploreTunnelRec(tunnel, [x + dx, y + dy], distance - 1),
+  );
 };
 
-const exploreTunnel = (tunnel: string[][], start: number[], distance: number) => {
-
+const exploreTunnel = (
+  tunnel: string[][],
+  start: number[],
+  distance: number,
+) => {
   // depth first search
   const stack: number[][] = [start];
   const visited: Set<string> = new Set();
@@ -51,23 +76,32 @@ const exploreTunnel = (tunnel: string[][], start: number[], distance: number) =>
 
     // explore each direction from current position if distance is not exceeded
     DIRECTIONS.map(([dx, dy]: number[]) => [x + dx, y + dy])
-      .filter(([x, y]: number[]) => manhattanDistance(start, [x, y]) <= distance)
+      .filter(
+        ([x, y]: number[]) => manhattanDistance(start, [x, y]) <= distance,
+      )
       .forEach(([x, y]: number[]) => stack.push([x, y]));
   }
 };
 
 const getExtremes = (coords: number[][]): number[] =>
-  coords.reduce(([minX, minY, maxX, maxY], [sensorX, sensorY, beaconX, beaconY, dist]) => [
-    Math.min(minX, sensorX, beaconX, sensorX - dist), Math.min(minY, sensorY, beaconY, sensorY - dist),
-    Math.max(maxX, sensorX, beaconX, sensorX + dist), Math.max(maxY, sensorY, beaconY, sensorY + dist),
-  ], [Infinity, Infinity, -Infinity, -Infinity]);
+  coords.reduce(
+    ([minX, minY, maxX, maxY], [sensorX, sensorY, beaconX, beaconY, dist]) => [
+      Math.min(minX, sensorX, beaconX, sensorX - dist),
+      Math.min(minY, sensorY, beaconY, sensorY - dist),
+      Math.max(maxX, sensorX, beaconX, sensorX + dist),
+      Math.max(maxY, sensorY, beaconY, sensorY + dist),
+    ],
+    [Infinity, Infinity, -Infinity, -Infinity],
+  );
 
 const buildTunnel = (input: string) => {
   const coords: number[][] = parse(input);
   const [minX, minY, maxX, maxY] = getExtremes(coords);
 
   const [width, height]: number[] = [maxX - minX + 1, maxY - minY + 1];
-  const tunnel: string[][] = new Array(height).fill(0).map(() => new Array(width).fill('.'));
+  const tunnel: string[][] = new Array(height)
+    .fill(0)
+    .map(() => new Array(width).fill('.'));
 
   coords.forEach(([sensorX, sensorY, beaconX, beaconY]: number[]) => {
     const [sx, sy] = [sensorX - minX, sensorY - minY];
@@ -90,7 +124,7 @@ export const part1 = (s: string, targetY: number): number => {
   // console.log('width', tunnel[0].length, 'height', tunnel.length);
   // console.log(targetLine.join(''));
 
-  return targetLine.filter(c => c === '#').length;
+  return targetLine.filter((c) => c === '#').length;
 };
 
 exports.first = part1;
@@ -100,9 +134,14 @@ export const part2 = (s: string): number => {
 
   for (let i = 0; i < tunnel.length; i++) {
     for (let j = 0; j < tunnel[0].length; j++) {
-      if (tunnel[i][j] === '.' && DIRECTIONS
-        .every(([dx, dy]: number[]) =>
-          !outOfBounds(tunnel, j + dx, i + dy) && tunnel[i + dy][j + dx] === '#')) {
+      if (
+        tunnel[i][j] === '.' &&
+        DIRECTIONS.every(
+          ([dx, dy]: number[]) =>
+            !outOfBounds(tunnel, j + dx, i + dy) &&
+            tunnel[i + dy][j + dx] === '#',
+        )
+      ) {
         const [x, y] = [j + minX, i + minY];
         return x * 4_000_000 + y;
       }
@@ -113,17 +152,5 @@ export const part2 = (s: string): number => {
   return -1;
 };
 
-exports.second = part2;
-
-import * as day from '../examples/day15.input';
-
-console.log(part1(day.input, day.param1));
-console.log(day.answer1);
-console.log(part2(day.input));
-console.log(day.answer2);
-
 // WARNING: takes too much memory
-// console.log(part1(day.puzzleInput, day.puzzleParam1));
-// console.log(day.puzzleAnswer1);
-// console.log(part2(day.puzzleInput));
-// console.log(day.puzzleAnswer2);
+exports.second = part2;
