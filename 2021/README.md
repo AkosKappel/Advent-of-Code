@@ -1,27 +1,27 @@
 # Advent of code 2021
 
-- [x] Day 1: Sonar Sweep
-- [x] Day 2: Dive!
-- [x] Day 3: Binary Diagnostic
-- [x] Day 4: Giant Squid
-- [x] Day 5: Hydrothermal Venture
-- [x] Day 6: Lanternfish
-- [x] Day 7: The Treachery of Whales
-- [x] Day 8: Seven Segment Search
-- [x] Day 9: Smoke Basin
-- [x] Day 10: Syntax Scoring
-- [x] Day 11: Dumbo Octopus
-- [x] Day 12: Passage Pathing
-- [x] Day 13: Transparent Origami
-- [x] Day 14: Extended Polymerization
-- [x] Day 15: Chiton
-- [x] Day 16: Packet Decoder
-- [x] Day 17: Trick Shot
-- [x] Day 18: Snailfish
-- [x] Day 19: Beacon Scanner
-- [x] Day 20: Trench Map
-- [x] Day 21: Dirac Dice
-- [x] Day 22: Reactor Reboot
-- [x] Day 23: Amphipod
-- [x] Day 24: Arithmetic Logic Unit
-- [x] Day 25: Sea Cucumber
+- [x] Day 1: [Sonar Sweep](https://adventofcode.com/2021/day/1)
+- [x] Day 2: [Dive!](https://adventofcode.com/2021/day/2)
+- [x] Day 3: [Binary Diagnostic](https://adventofcode.com/2021/day/3)
+- [x] Day 4: [Giant Squid](https://adventofcode.com/2021/day/4)
+- [x] Day 5: [Hydrothermal Venture](https://adventofcode.com/2021/day/5)
+- [x] Day 6: [Lanternfish](https://adventofcode.com/2021/day/6)
+- [x] Day 7: [The Treachery of Whales](https://adventofcode.com/2021/day/7)
+- [x] Day 8: [Seven Segment Search](https://adventofcode.com/2021/day/8)
+- [x] Day 9: [Smoke Basin](https://adventofcode.com/2021/day/9)
+- [x] Day 10: [Syntax Scoring](https://adventofcode.com/2021/day/10)
+- [x] Day 11: [Dumbo Octopus](https://adventofcode.com/2021/day/11)
+- [x] Day 12: [Passage Pathing](https://adventofcode.com/2021/day/12)
+- [x] Day 13: [Transparent Origami](https://adventofcode.com/2021/day/13)
+- [x] Day 14: [Extended Polymerization](https://adventofcode.com/2021/day/14)
+- [x] Day 15: [Chiton](https://adventofcode.com/2021/day/15)
+- [x] Day 16: [Packet Decoder](https://adventofcode.com/2021/day/16)
+- [x] Day 17: [Trick Shot](https://adventofcode.com/2021/day/17)
+- [x] Day 18: [Snailfish](https://adventofcode.com/2021/day/18)
+- [x] Day 19: [Beacon Scanner](https://adventofcode.com/2021/day/19)
+- [x] Day 20: [Trench Map](https://adventofcode.com/2021/day/20)
+- [x] Day 21: [Dirac Dice](https://adventofcode.com/2021/day/21)
+- [x] Day 22: [Reactor Reboot](https://adventofcode.com/2021/day/22)
+- [x] Day 23: [Amphipod](https://adventofcode.com/2021/day/23)
+- [x] Day 24: [Arithmetic Logic Unit](https://adventofcode.com/2021/day/24)
+- [x] Day 25: [Sea Cucumber](https://adventofcode.com/2021/day/25)
