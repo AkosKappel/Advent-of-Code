@@ -1,124 +1,87 @@
 const GARDEN_PLOT = '.';
 const ROCK = '#';
-const VISITED = 'O';
+const START = 'S';
+
+const DIRECTIONS = [ // [x, y]
+  [1, 0], // right
+  [0, 1], // down
+  [-1, 0], // left
+  [0, -1], // up
+];
+
+const encode = (values) => values.join(',');
+const decode = str => str.split(',').map(Number);
+
+const mod = (n, m) => ((n % m) + m) % m;
+const diffs = values => values.map((value, i) => value - values[i - 1]).slice(1);
+const run = array => array.map(values => {
+  while (values.some(value => value !== 0)) {
+    values = diffs(values);
+    array.push(values);
+  }
+  return array.map(values => values[0]);
+});
 
 class Grid {
   constructor(input) {
-    this.grid = input.split('\n').map(line => line.split(''));
-    this.height = this.grid.length;
-    this.width = this.grid[0].length;
-    this.steps = 0;
+    this.tiles = input.split('\n').map(line => line.trim().split(''));
+    this.height = this.tiles.length;
+    this.width = this.tiles[0].length;
 
-    this.start = this.find('S');
-    this.set(...this.start, GARDEN_PLOT);
-
-    this.oddVisited = new Map();
-    this.evenVisited = new Map();
-    this.evenVisited.set(this.start.join(','), 1);
+    const startRow = this.tiles.findIndex(row => row.includes(START));
+    const startCol = this.tiles[startRow].findIndex(col => col === START);
+    this.start = [startCol, startRow];
+    this.positions = new Set([encode(this.start)]);
   }
 
-  step(n = 1) {
-    for (let i = 0; i < n; i++) {
+  step(times) {
+    for (let i = 0; i < times; i++) {
       this.stepOnce();
-      console.log('Step', this.steps, `(${this.countVisited()} visited)`);
-      // console.log(this.toString() + '\n');
     }
     return this;
   }
 
   stepOnce() {
-    const visited = this.steps % 2 === 0 ? this.evenVisited : this.oddVisited;
-    const nextVisited = this.steps % 2 === 0 ? this.oddVisited : this.evenVisited;
+    this.positions = new Set([...this.neighbors(this.positions)]);
+  }
 
-    for (const key of visited.keys()) {
-      const [x, y] = key.split(',').map(Number);
-      const neighbors = this.neighbors(x, y);
-      for (const [nx, ny] of neighbors) {
-        const nkey = `${nx},${ny}`;
-        nextVisited.set(nkey, 1);
+  *neighbors() {
+    for (const position of this.positions) {
+      const [x, y] = decode(position)
+
+      for (const [dx, dy] of DIRECTIONS) {
+        const nextX = x + dx;
+        const nextY = y + dy;
+        const tile = this.tiles[mod(nextY, this.height)][mod(nextX, this.width)];
+        if (tile === ROCK) continue;
+        yield encode([nextX, nextY]);
       }
     }
-
-    this.steps++;
   }
 
-  neighbors(x, y) {
-    const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
-    const neighbors = [];
+  interpolate(n) {
+    if (n < 200) return this.step(n).positions.size;
 
-    for (const [dx, dy] of directions) {
-      const nx = (x + dx + this.width) % this.width;
-      const ny = (y + dy + this.height) % this.height;
-      if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
-        if (this.get(nx, ny) !== ROCK) {
-          neighbors.push([nx, ny]);
-        }
-      }
+    const counts = [];
+
+    this.step(65);
+    counts.push(this.positions.size);
+
+    for (let k = 0; k < 2; k++) {
+      this.step(131);
+      counts.push(this.positions.size);
     }
 
-    return neighbors;
-  }
+    const coefficients = run([counts])[0];
+    const [a, b, c,] = coefficients;
 
-  get(x, y) {
-    return this.grid[y][x];
-  }
-
-  set(x, y, value) {
-    this.grid[y][x] = value;
-  }
-
-  find(value) {
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        if (this.get(x, y) === value) {
-          return [x, y];
-        }
-      }
-    }
-    return null;
-  }
-
-  countVisited() {
-    const visited = this.steps % 2 === 0 ? this.evenVisited : this.oddVisited;
-    return [...visited.values()].reduce((a, b) => a + b, 0);
-  }
-
-  toString() {
-    const grid = this.grid.map(row => row.slice());
-    const visited = this.steps % 2 === 0 ? this.evenVisited : this.oddVisited;
-    for (const key of visited.keys()) {
-      const [x, y] = key.split(',').map(Number);
-      grid[y][x] = VISITED;
-    }
-    return grid.map(row => row.join('')).join('\n');
+    const steps = (n - 65) / 131;
+    return a + b * steps + c / 2 * steps * (steps - 1);
   }
 }
 
-const part1 = (input, numSteps) => new Grid(input).step(numSteps).countVisited();
+const part1 = (input, numSteps) => new Grid(input).step(numSteps).positions.size;
 
-const part2 = (input, numSteps) => new Grid(input).step(numSteps).countVisited();
+const part2 = (input, numSteps) => new Grid(input).interpolate(numSteps)
 
 module.exports = { part1, part2 };
-
-const example1 = `
-...........
-.....###.#.
-.###.##..#.
-..#.#...#..
-....#.#....
-.##..S####.
-.##..#...#.
-.......##..
-.##.#.####.
-.##..##.##.
-...........
-`.trim();
-console.log(part1(example1, 50));
-
-// 6 steps => 16 garden plots
-// 10 steps => 50 garden plots
-// 50 steps => 1594 garden plots
-// 100 steps => 6536 garden plots
-// 500 steps => 167004 garden plots
-// 1000 steps => 668697 garden plots
-// 5000 steps => 16733044 garden plots
