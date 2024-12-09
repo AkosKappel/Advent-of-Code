@@ -54,15 +54,20 @@ public static class Directions {
 
     public static Vector2 Reverse(this Vector2 direction) => direction * -1;
 
-    public static string ToCode(this Vector2 direction, bool asCompass = false) => direction switch {
-        { X: 0, Y: -1 } => asCompass ? "N" : "U",
-        { X: 1, Y: -1 } => asCompass ? "NE" : "UR",
-        { X: 1, Y: 0 } => asCompass ? "E" : "R",
-        { X: 1, Y: 1 } => asCompass ? "SE" : "DR",
-        { X: 0, Y: 1 } => asCompass ? "S" : "D",
-        { X: -1, Y: 1 } => asCompass ? "SW" : "DL",
-        { X: -1, Y: 0 } => asCompass ? "W" : "L",
-        { X: -1, Y: -1 } => asCompass ? "NW" : "UL",
+    public static bool IsCardinal(this Vector2 direction) => Cardinal.Contains(direction);
+    public static bool IsDiagonal(this Vector2 direction) => Diagonal.Contains(direction);
+    public static bool IsVertical(this Vector2 direction) => Vertical.Contains(direction);
+    public static bool IsHorizontal(this Vector2 direction) => Horizontal.Contains(direction);
+
+    public static string ToCode(this Vector2 direction) => direction switch {
+        { X: 0, Y: -1 } => "U",
+        { X: 1, Y: -1 } => "UR",
+        { X: 1, Y: 0 } => "R",
+        { X: 1, Y: 1 } => "DR",
+        { X: 0, Y: 1 } => "D",
+        { X: -1, Y: 1 } => "DL",
+        { X: -1, Y: 0 } => "L",
+        { X: -1, Y: -1 } => "UL",
         _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
     };
 }
