@@ -1,26 +1,105 @@
-﻿namespace AdventOfCode;
+﻿using System.Numerics;
+
+namespace AdventOfCode;
 
 public class Day10 : BaseDay {
-    private readonly List<int> _firstColumn;
-    public override string InputFilePath { get; } = "Inputs/10-Example.txt";
+    private readonly List<List<int>> _map;
+    private readonly int _width;
+    private readonly int _height;
+
+    private const int LowestPoint = 0;
+    private const int HighestPoint = 9;
+    private const int Unreachable = -1;
 
     public Day10() : this("") { }
 
     public Day10(string filename) {
         var inputFile = string.IsNullOrWhiteSpace(filename) ? InputFilePath : filename;
-        // (_firstColumn, _secondColumn) = ParseInput(inputFile);
+        (_map, _width, _height) = ParseInput(inputFile);
     }
 
-    private static (List<int>, List<int>) ParseInput(string file) {
+    private static (List<List<int>>, int, int) ParseInput(string file) {
         var raw = File.ReadAllText(file).ReplaceLineEndings("\n");
-        return (null, null);
+        var rows = raw.Split("\n");
+        var width = rows.Max(row => row.Length);
+        var height = rows.Length;
+        var grid = rows
+            .Select(row => row.Select(c => int.TryParse(c.ToString(), out var i) ? i : Unreachable).ToList())
+            .ToList();
+        return (grid, width, height);
     }
 
-    public override ValueTask<string> Solve_1() {
-        return new(0.ToString());
+    private List<Vector2> GetTrailheads() => _map
+        .SelectMany((row, y) => row.Select((c, x) => new { c, x, y }))
+        .Where(node => node.c == LowestPoint)
+        .Select(node => new Vector2(node.x, node.y))
+        .ToList();
+
+    private bool IsWithinBounds(Vector2 pos) => 0 <= pos.X && pos.X < _width && 0 <= pos.Y && pos.Y < _height;
+
+    private List<Vector2> GetNeighbors(Vector2 pos) => Directions.Cardinal
+        .Select(dir => pos + dir)
+        .Where(newPos =>
+            IsWithinBounds(newPos) && MapAt(newPos) == MapAt(pos) + 1)
+        .ToList();
+
+
+    private int MapAt(Vector2 pos) => _map[(int)pos.Y][(int)pos.X];
+
+    private int GetScore(Vector2 trailhead) {
+        var visited = new Dictionary<Vector2, int> { { trailhead, 1 } };
+        var queue = new Queue<Vector2>();
+        queue.Enqueue(trailhead);
+
+        var score = 0;
+        while (queue.Count > 0) {
+            var current = queue.Dequeue();
+
+            if (MapAt(current) == HighestPoint) {
+                score++;
+                continue;
+            }
+
+            foreach (var neighbor in GetNeighbors(current)) {
+                if (visited.TryAdd(neighbor, 1)) {
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        return score;
     }
 
-    public override ValueTask<string> Solve_2() {
-        return new(0.ToString());
+    public override ValueTask<string> Solve_1() => new(GetTrailheads().Select(GetScore).Sum().ToString());
+
+    private int GetRating(Vector2 trailhead) {
+        var visited = new Dictionary<Vector2, int> { { trailhead, 1 } };
+        var queue = new Queue<Vector2>();
+        queue.Enqueue(trailhead);
+
+        var rating = 0;
+        while (queue.Count > 0) {
+            var current = queue.Dequeue();
+            var currentWays = visited[current];
+
+            if (MapAt(current) == HighestPoint) {
+                rating += currentWays;
+                continue;
+            }
+
+            foreach (var neighbor in GetNeighbors(current)) {
+                visited.TryAdd(neighbor, currentWays);
+                if (visited.ContainsKey(neighbor)) {
+                    queue.Enqueue(neighbor);
+                }
+                else {
+                    visited[neighbor] += currentWays;
+                }
+            }
+        }
+
+        return rating;
     }
+
+    public override ValueTask<string> Solve_2() => new(GetTrailheads().Select(GetRating).Sum().ToString());
 }
