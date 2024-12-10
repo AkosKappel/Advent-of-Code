@@ -43,53 +43,28 @@ public class Day10 : BaseDay {
             IsWithinBounds(newPos) && MapAt(newPos) == MapAt(pos) + 1)
         .ToList();
 
-
     private int MapAt(Vector2 pos) => _map[(int)pos.Y][(int)pos.X];
 
-    private int GetScore(Vector2 trailhead) {
+    private (int score, int rating) SolveHikeTrail(Vector2 trailhead) {
         var visited = new Dictionary<Vector2, int> { { trailhead, 1 } };
         var queue = new Queue<Vector2>();
         queue.Enqueue(trailhead);
 
         var score = 0;
-        while (queue.Count > 0) {
-            var current = queue.Dequeue();
-
-            if (MapAt(current) == HighestPoint) {
-                score++;
-                continue;
-            }
-
-            foreach (var neighbor in GetNeighbors(current)) {
-                if (visited.TryAdd(neighbor, 1)) {
-                    queue.Enqueue(neighbor);
-                }
-            }
-        }
-
-        return score;
-    }
-
-    public override ValueTask<string> Solve_1() => new(GetTrailheads().Select(GetScore).Sum().ToString());
-
-    private int GetRating(Vector2 trailhead) {
-        var visited = new Dictionary<Vector2, int> { { trailhead, 1 } };
-        var queue = new Queue<Vector2>();
-        queue.Enqueue(trailhead);
-
         var rating = 0;
+
         while (queue.Count > 0) {
             var current = queue.Dequeue();
             var currentWays = visited[current];
 
             if (MapAt(current) == HighestPoint) {
+                score++;
                 rating += currentWays;
                 continue;
             }
 
             foreach (var neighbor in GetNeighbors(current)) {
-                visited.TryAdd(neighbor, currentWays);
-                if (visited.ContainsKey(neighbor)) {
+                if (visited.TryAdd(neighbor, currentWays)) {
                     queue.Enqueue(neighbor);
                 }
                 else {
@@ -98,8 +73,20 @@ public class Day10 : BaseDay {
             }
         }
 
-        return rating;
+        return (score, rating);
     }
 
-    public override ValueTask<string> Solve_2() => new(GetTrailheads().Select(GetRating).Sum().ToString());
+    public override ValueTask<string> Solve_1() => new(
+        GetTrailheads()
+            .Select(start => SolveHikeTrail(start).score)
+            .Sum()
+            .ToString()
+    );
+
+    public override ValueTask<string> Solve_2() => new(
+        GetTrailheads()
+            .Select(start => SolveHikeTrail(start).rating)
+            .Sum()
+            .ToString()
+    );
 }
