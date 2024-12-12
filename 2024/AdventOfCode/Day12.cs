@@ -4,7 +4,6 @@ namespace AdventOfCode;
 
 public class Day12 : BaseDay {
     private readonly Dictionary<int, HashSet<Vector2>> _gardenPlots;
-    public override string InputFilePath { get; } = "Inputs/12-Example.txt";
 
     public Day12() : this("") { }
 
@@ -68,13 +67,38 @@ public class Day12 : BaseDay {
         region.Sum(p => Directions.Cardinal.Count(dir => !region.Contains(p + dir)));
 
     private static int GetNumberOfSides(HashSet<Vector2> region) {
-        return 0;
+        // create four 2x2 squares around each point
+        var squares = new HashSet<(Vector2 topLeft, Vector2 topRight, Vector2 bottomRight, Vector2 bottomLeft)>();
+        foreach (var pos in region) {
+            squares.Add((pos, pos + Directions.Right, pos + Directions.DownRight, pos + Directions.Down));
+            squares.Add((pos + Directions.Left, pos, pos + Directions.Down, pos + Directions.DownLeft));
+            squares.Add((pos + Directions.UpLeft, pos + Directions.Up, pos, pos + Directions.Left));
+            squares.Add((pos + Directions.Up, pos + Directions.UpRight, pos + Directions.Right, pos));
+        }
+
+        var sides = 0;
+
+        foreach (var square in squares) {
+            var common = new HashSet<Vector2>
+                    { square.topLeft, square.topRight, square.bottomRight, square.bottomLeft }
+                .Intersect(region)
+                .ToHashSet();
+
+            // inner or outer corner
+            if (common.Count == 1 || common.Count == 3) sides++;
+            // 2 corners that meet diagonally
+            else if (common.Count == 2 && (common.First() - common.Last()).IsDiagonal()) sides += 2;
+        }
+
+        return sides;
     }
 
     public override ValueTask<string> Solve_1() => new(_gardenPlots
         .Select(entry => {
             var region = entry.Value;
-            return GetArea(region) * GetPerimeter(region);
+            var area = GetArea(region);
+            var perimeter = GetPerimeter(region);
+            return area * perimeter;
         })
         .Sum()
         .ToString()
@@ -83,7 +107,9 @@ public class Day12 : BaseDay {
     public override ValueTask<string> Solve_2() => new(_gardenPlots
         .Select(entry => {
             var region = entry.Value;
-            return GetArea(region) * GetNumberOfSides(region);
+            var area = GetArea(region);
+            var numSides = GetNumberOfSides(region);
+            return area * numSides;
         })
         .Sum()
         .ToString()

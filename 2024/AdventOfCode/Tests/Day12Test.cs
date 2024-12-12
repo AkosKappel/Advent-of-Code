@@ -81,7 +81,7 @@ public class Day12Test {
     [Test]
     public void TestPart2Input() {
         _day = new Day12("Inputs/12.txt");
-        var expected = "0";
+        var expected = "908042";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
