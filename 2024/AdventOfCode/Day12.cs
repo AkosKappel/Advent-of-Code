@@ -67,27 +67,51 @@ public class Day12 : BaseDay {
         region.Sum(p => Directions.Cardinal.Count(dir => !region.Contains(p + dir)));
 
     private static int GetNumberOfSides(HashSet<Vector2> region) {
-        // create four 2x2 squares around each point
         var squares = new HashSet<(Vector2 topLeft, Vector2 topRight, Vector2 bottomRight, Vector2 bottomLeft)>();
         foreach (var pos in region) {
-            squares.Add((pos, pos + Directions.Right, pos + Directions.DownRight, pos + Directions.Down));
-            squares.Add((pos + Directions.Left, pos, pos + Directions.Down, pos + Directions.DownLeft));
-            squares.Add((pos + Directions.UpLeft, pos + Directions.Up, pos, pos + Directions.Left));
-            squares.Add((pos + Directions.Up, pos + Directions.UpRight, pos + Directions.Right, pos));
+            // generate all neighboring points
+            var right = pos + Directions.Right;
+            var downRight = pos + Directions.DownRight;
+            var down = pos + Directions.Down;
+            var downLeft = pos + Directions.DownLeft;
+            var left = pos + Directions.Left;
+            var upLeft = pos + Directions.UpLeft;
+            var up = pos + Directions.Up;
+            var upRight = pos + Directions.UpRight;
+
+            // create all possible 2x2 squares that cover at least one point in the region
+            if (!(region.Contains(pos) && region.Contains(right) &&
+                  region.Contains(downRight) && region.Contains(down))) {
+                squares.Add((pos, right, downRight, down));
+            }
+
+            if (!region.Contains(left) && !(region.Contains(left) && region.Contains(pos) &&
+                                            region.Contains(down) && region.Contains(downLeft))) {
+                squares.Add((left, pos, down, downLeft));
+            }
+
+            if (!region.Contains(upLeft) && !(region.Contains(upLeft) && region.Contains(up) &&
+                                              region.Contains(pos) && region.Contains(left))) {
+                squares.Add((upLeft, up, pos, left));
+            }
+
+            if (!region.Contains(up) && !(region.Contains(up) && region.Contains(upRight) &&
+                                          region.Contains(right) && region.Contains(pos))) {
+                squares.Add((up, upRight, right, pos));
+            }
         }
 
-        var sides = 0;
+        var sides = 0; // number of sides is the same as number of corners
 
         foreach (var square in squares) {
-            var common = new HashSet<Vector2>
-                    { square.topLeft, square.topRight, square.bottomRight, square.bottomLeft }
-                .Intersect(region)
-                .ToHashSet();
+            var points = new[] { square.topLeft, square.topRight, square.bottomRight, square.bottomLeft }
+                .Where(region.Contains)
+                .ToArray();
 
             // inner or outer corner
-            if (common.Count == 1 || common.Count == 3) sides++;
+            if (points.Length == 1 || points.Length == 3) sides++;
             // 2 corners that meet diagonally
-            else if (common.Count == 2 && (common.First() - common.Last()).IsDiagonal()) sides += 2;
+            else if (points.Length == 2 && (points.First() - points.Last()).IsDiagonal()) sides += 2;
         }
 
         return sides;
