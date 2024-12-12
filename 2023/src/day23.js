@@ -93,11 +93,18 @@ const buildGraph = (map) => {
       }),
     );
 
-  return { nodePos, nodes, edges };
+  const adjacencyList = new Map(
+    nodePos.map((pos1, i) => [
+      nodes[i],
+      edges.filter(e => e.from === nodes[i]),
+    ]),
+  );
+
+  return { nodePos, nodes, edges, adjacencyList };
 };
 
 const hike = (map) => {
-  const { nodes, edges } = buildGraph(map);
+  const { nodes, adjacencyList } = buildGraph(map);
 
   const start = nodes[0];
   const end = nodes[nodes.length - 1];
@@ -109,8 +116,7 @@ const hike = (map) => {
 
     const key = `${node},${visited}`;
     if (!cache.has(key)) {
-      const filteredEdges = edges.filter(e => e.from === node);
-      const distances = filteredEdges.map(e => e.distance + longestPath(e.to, visited | node));
+      const distances = adjacencyList.get(node).map(e => e.distance + longestPath(e.to, visited | node));
       cache.set(key, Math.max(...distances));
     }
 
