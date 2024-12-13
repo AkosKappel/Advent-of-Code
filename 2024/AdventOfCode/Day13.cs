@@ -8,7 +8,6 @@ public class Day13 : BaseDay {
     private record Machine(Coord ButtonA, Coord ButtonB, Coord Prize);
 
     private readonly Machine[] _machines;
-    // public override string InputFilePath { get; } = "Inputs/13-Example.txt";
 
     public Day13() : this("") { }
 
@@ -35,29 +34,40 @@ public class Day13 : BaseDay {
 
     private static long CalculatePrize(long k, long q) => 3 * k + q;
 
-    private static (long a, long b) PlayMachine(Machine m, int maxPushes = 100) {
-        for (var k = 0; k <= maxPushes; k++) {
-            for (var q = 0; q <= maxPushes; q++) {
-                if (k * m.ButtonA.X + q * m.ButtonB.X == m.Prize.X &&
-                    k * m.ButtonA.Y + q * m.ButtonB.Y == m.Prize.Y) {
-                    return (k, q);
-                }
-            }
-        }
-
-        return (0, 0);
-    }
-
-    public override ValueTask<string> Solve_1() => new(
-        _machines.Select(m => PlayMachine(m)).Sum(press => CalculatePrize(press.a, press.b)).ToString()
-    );
+    private static bool InRange(long value, long min, long max) => min <= value && value <= max;
 
     private static Machine[] IncreasePrize(Machine[] machines, long amount) => machines
         .Select(m => m with { Prize = new Coord(m.Prize.X + amount, m.Prize.Y + amount) }).ToArray();
 
-    public override ValueTask<string> Solve_2() {
-        // var machines = IncreasePrize(_machines, 10_000_000_000_000L);
+    private static (long a, long b) SolveLinearEquation(long ax, long ay, long bx, long by, long px, long py) {
+        var det = ax * by - ay * bx;
+        var x = px * by - py * bx;
+        var y = ax * py - ay * px;
 
-        return new(0.ToString());
+        if (x % det != 0 || y % det != 0) return (0, 0);
+        return (x / det, y / det);
     }
+
+    public override ValueTask<string> Solve_1() => new(
+        _machines
+            .Select(m => SolveLinearEquation(
+                m.ButtonA.X, m.ButtonA.Y,
+                m.ButtonB.X, m.ButtonB.Y,
+                m.Prize.X, m.Prize.Y
+            ))
+            .Where(press => InRange(press.a, 0, 100) && InRange(press.b, 0, 100))
+            .Sum(press => CalculatePrize(press.a, press.b))
+            .ToString()
+    );
+
+    public override ValueTask<string> Solve_2() => new(
+        IncreasePrize(_machines, 10_000_000_000_000L)
+            .Select(m => SolveLinearEquation(
+                m.ButtonA.X, m.ButtonA.Y,
+                m.ButtonB.X, m.ButtonB.Y,
+                m.Prize.X, m.Prize.Y
+            ))
+            .Sum(press => CalculatePrize(press.a, press.b))
+            .ToString()
+    );
 }

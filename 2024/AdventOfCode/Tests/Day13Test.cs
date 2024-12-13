@@ -29,7 +29,7 @@ public class Day13Test
     public void TestPart2Example()
     {
         _day = new Day13("Inputs/13-Example.txt");
-        var expected = "31";
+        var expected = "875318608908";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -38,7 +38,7 @@ public class Day13Test
     public void TestPart2Input()
     {
         _day = new Day13("Inputs/13.txt");
-        var expected = "21791368";
+        var expected = "87596249540359";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
