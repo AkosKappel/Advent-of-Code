@@ -41,10 +41,12 @@ public class Day13 : BaseDay {
 
     private static (long a, long b) SolveLinearEquation(long ax, long ay, long bx, long by, long px, long py) {
         var det = ax * by - ay * bx;
+        if (det == 0) return (0, 0); // no solution
+
         var x = px * by - py * bx;
         var y = ax * py - ay * px;
 
-        if (x % det != 0 || y % det != 0) return (0, 0);
+        if (x % det != 0 || y % det != 0) return (0, 0); // not integer solution
         return (x / det, y / det);
     }
 
