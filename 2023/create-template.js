@@ -5,7 +5,9 @@ const solutionPath = `src/day${day}.js`;
 const testPath = `tests/day${day}.test.js`;
 const inputPath = `inputs/input${day}.txt`;
 
-const solutionContent = `const part1 = (input) => {
+const solutionContent = `const parse = (input) => input;
+
+const part1 = (input) => {
   return 0;
 };
 
@@ -15,8 +17,10 @@ const part2 = (input) => {
 
 module.exports = { part1, part2 };
 
-// console.log(part1(example1));
-// console.log(part2(example1));
+const example1 = \`\`.trim();
+
+console.log(part1(example1));
+console.log(part2(example1));
 `;
 
 const testContent = `const fs = require('fs');
