@@ -1,3 +1,4 @@
+const fs = require('fs');
 const parse = (input) => input
   .split('\n')
   .map(line => {
@@ -8,7 +9,7 @@ const parse = (input) => input
     };
   });
 
-const project = (objects, dim) => objects.map(({ position, velocity }) => {
+const projection = (objects, dim) => objects.map(({ position, velocity }) => {
   switch (dim) {
     case 'x':
       return {
@@ -43,20 +44,32 @@ const intersection = (a, b) => {
   return { x, y };
 };
 
-const isInRange = (n) => 200_000_000_000_000 <= n && n <= 400_000_000_000_000;
-
-const isInFuture = (stone, position) => Math.sign(position.x - stone.position.x) === Math.sign(stone.velocity.x);
+function* pairs(arr) {
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      yield [arr[i], arr[j]];
+    }
+  }
+}
 
 const part1 = (input) => {
-  const hailstones = project(parse(input), 'z');
+  const particles = projection(parse(input), 'z');
+
+  const MIN = particles.length < 10 ? 7 : 200_000_000_000_000;
+  const MAX = particles.length < 10 ? 27 : 400_000_000_000_000;
+
+  const isInRange = (position) =>
+    MIN <= position.x && position.x <= MAX && MIN <= position.y && position.y <= MAX;
+
+  const isInFuture = (particle, position) =>
+    Math.sign(position.x - particle.position.x) === Math.sign(particle.velocity.x);
+
   let count = 0;
 
-  for (let i = 0; i < hailstones.length; i++) {
-    for (let j = i + 1; j < hailstones.length; j++) {
-      const p = intersection(hailstones[i], hailstones[j]);
-      if (p && isInRange(p.x) && isInRange(p.y) && isInFuture(hailstones[i], p) && isInFuture(hailstones[j], p)) {
-        count++;
-      }
+  for (const [particle1, particle2] of pairs(particles)) {
+    const p = intersection(particle1, particle2);
+    if (p && isInRange(p) && isInFuture(particle1, p) && isInFuture(particle2, p)) {
+      count++;
     }
   }
 
@@ -64,6 +77,7 @@ const part1 = (input) => {
 };
 
 const part2 = (input) => {
+  const particles = parse(input);
   return 0;
 };
 
@@ -76,5 +90,6 @@ const example1 = `
 12, 31, 28 @ -1, -2, -1
 20, 19, 15 @  1, -5, -3
 `.trim();
+// const input = fs.readFileSync('../inputs/input24.txt', 'utf8');
 
 console.log(part2(example1));

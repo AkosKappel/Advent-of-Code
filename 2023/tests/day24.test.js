@@ -13,7 +13,7 @@ const input = fs.readFileSync('inputs/input24.txt', 'utf8');
 
 describe('part 1', () => {
   test('example', () => {
-    expect(part1(example1)).toBe(0);
+    expect(part1(example1)).toBe(2);
   });
 
   test('solution', () => {
@@ -22,11 +22,11 @@ describe('part 1', () => {
 });
 
 describe('part 2', () => {
-  test('example', () => {
-    expect(part2(example1)).toBe(0);
+  test('example', async () => {
+    expect(await part2(example1)).toBe(47);
   });
 
-  test('solution', () => {
-    expect(part2(input)).toBe(0);
+  test('solution', async () => {
+    expect(await part2(input)).toBe(0);
   });
 });
