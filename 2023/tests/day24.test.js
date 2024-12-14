@@ -27,6 +27,6 @@ describe('part 2', () => {
   });
 
   test('solution', async () => {
-    expect(await part2(input)).toBe(0);
+    expect(await part2(input)).toBe(646810057104753);
   });
 });

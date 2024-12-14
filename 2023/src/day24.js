@@ -1,4 +1,3 @@
-const fs = require('fs');
 const parse = (input) => input
   .split('\n')
   .map(line => {
@@ -78,18 +77,46 @@ const part1 = (input) => {
 
 const part2 = (input) => {
   const particles = parse(input);
-  return 0;
+
+  const a = [];
+  const b = [];
+
+  const add = (particles, n) => {
+    const [px0, py0, pz0, vx0, vy0, vz0] = [
+      particles[0].position.x, particles[0].position.y, particles[0].position.z,
+      particles[0].velocity.x, particles[0].velocity.y, particles[0].velocity.z,
+    ].map(BigInt);
+    const [pxN, pyN, pzN, vxN, vyN, vzN] = [
+      particles[n].position.x, particles[n].position.y, particles[n].position.z,
+      particles[n].velocity.x, particles[n].velocity.y, particles[n].velocity.z,
+    ].map(BigInt);
+
+    a.push([vy0 - vyN, vxN - vx0, 0n, pyN - py0, px0 - pxN, 0n]);
+    b.push(px0 * vy0 - py0 * vx0 - pxN * vyN + pyN * vxN);
+    a.push([vz0 - vzN, 0n, vxN - vx0, pzN - pz0, 0n, px0 - pxN]);
+    b.push(px0 * vz0 - pz0 * vx0 - pxN * vzN + pzN * vxN);
+  };
+
+  for (let i = 1; i <= 3; i++) add(particles, i);
+
+  const determinant = (matrix) => {
+    if (matrix.length === 0) return 1n;
+
+    const [firstRow, ...remainingRows] = matrix;
+    const minors = firstRow.map((val, i) =>
+      val * determinant(remainingRows.map(row => row.toSpliced(i, 1))),
+    );
+
+    return minors.reduce((acc, val, i) => (i % 2 ? acc - val : acc + val), 0n);
+  };
+
+  const cramer = (matrix1, matrix2) => {
+    const det1 = determinant(matrix1);
+    return matrix1.map((_, i) => determinant(matrix1.map((r, j) => r.toSpliced(i, 1, matrix2[j]))) / det1);
+  };
+
+  const [rockPosX, rockPosY, rockPosZ] = cramer(a, b);
+  return Number(rockPosX + rockPosY + rockPosZ);
 };
 
 module.exports = { part1, part2 };
-
-const example1 = `
-19, 13, 30 @ -2,  1, -2
-18, 19, 22 @ -1, -1, -2
-20, 25, 34 @ -2, -2, -4
-12, 31, 28 @ -1, -2, -1
-20, 19, 15 @  1, -5, -3
-`.trim();
-// const input = fs.readFileSync('../inputs/input24.txt', 'utf8');
-
-console.log(part2(example1));
