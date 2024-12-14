@@ -13,7 +13,6 @@ public class Day14 : BaseDay {
     private readonly List<Robot> _robots;
     private readonly int _width;
     private readonly int _height;
-    // public override string InputFilePath { get; } = "Inputs/14-Example.txt";
 
     public Day14() : this("") { }
 
@@ -78,16 +77,21 @@ public class Day14 : BaseDay {
     }
 
     public override ValueTask<string> Solve_2() {
-        var target = new string(RobotChar, 31);
+        const int lineLength = 31;
+        var target = new string(RobotChar, lineLength);
 
         for (var time = 0; time < 10_000; time++) {
             var robots = _robots.Select(r => PredictState(r, time)).ToList();
-            var image = DrawImage(robots);
 
-            if (image.Contains(target)) {
-                Console.WriteLine(image);
-                return new(time.ToString());
-            }
+            // check if exists any row and column that contains at least N robots to form a line
+            if (robots.GroupBy(r => r.Position.Y).All(g => g.Count() < lineLength)) continue;
+            if (robots.GroupBy(r => r.Position.X).All(g => g.Count() < lineLength)) continue;
+
+            var image = DrawImage(robots);
+            if (!image.Contains(target)) continue;
+
+            Console.WriteLine(image);
+            return new(time.ToString());
         }
 
         return new((-1).ToString());
