@@ -10,17 +10,14 @@ const parse = (input) => {
     neighbors.split(' ').forEach(neighbor => nodes.add(neighbor));
   });
 
-  // Initialize adjacency map for all nodes
-  nodes.forEach(node => {
-    edges.set(node, new Map());
-  });
+  nodes.forEach(node => edges.set(node, new Map()));
 
   // Add edges with weights
   lines.forEach(line => {
     const [node, neighbors] = line.split(': ');
     neighbors.split(' ').forEach(neighbor => {
-      edges.get(node).set(neighbor, 1);
-      edges.get(neighbor).set(node, 1);
+      edges.get(node).set(neighbor, (edges.get(node).get(neighbor) || 0) + 1);
+      edges.get(neighbor).set(node, (edges.get(neighbor).get(node) || 0) + 1);
     });
   });
 
@@ -40,9 +37,7 @@ const minimumCutPhase = (graph, nodes) => {
 
   // Find s,t-ordering by repeatedly adding the most tightly connected vertex
   while (added.size < nodes.length) {
-    // Find the most tightly connected vertex not yet added
-    let maxWeight = -1;
-    let maxNode = null;
+    let maxWeight = -1, maxNode = null;
 
     nodes.forEach(node => {
       if (!added.has(node) && weights.get(node) > maxWeight) {
@@ -56,9 +51,9 @@ const minimumCutPhase = (graph, nodes) => {
     added.add(maxNode);
 
     // Update weights for remaining vertices
-    nodes.forEach(node => {
-      if (!added.has(node)) {
-        weights.set(node, weights.get(node) + (graph.get(maxNode).get(node) || 0));
+    graph.get(maxNode).forEach((weight, neighbor) => {
+      if (!added.has(neighbor)) {
+        weights.set(neighbor, weights.get(neighbor) + weight);
       }
     });
   }
@@ -76,10 +71,7 @@ const mergeVertices = (graph, nodes, v1, v2) => {
     }
   });
 
-  // Remove v2's edges and vertex
-  graph.get(v2).forEach((_, neighbor) => {
-    graph.get(neighbor).delete(v2);
-  });
+  graph.get(v2).forEach((_, neighbor) => graph.get(neighbor).delete(v2));
   graph.delete(v2);
 
   // Update nodes list
@@ -96,9 +88,7 @@ const findComponents = (graph, startNode, excludedNodes) => {
     component.add(node);
 
     graph.get(node).forEach((_, neighbor) => {
-      if (!visited.has(neighbor)) {
-        dfs(neighbor);
-      }
+      if (!visited.has(neighbor)) dfs(neighbor);
     });
   };
 
@@ -109,7 +99,6 @@ const findComponents = (graph, startNode, excludedNodes) => {
 const part1 = (input) => {
   const { nodes, edges } = parse(input);
   let minCut = Infinity;
-  let bestCutNodes = null;
 
   // Keep track of merged vertices
   const mergeHistory = new Map();
@@ -144,7 +133,6 @@ const part1 = (input) => {
 
     if (cutWeight < minCut) {
       minCut = cutWeight;
-      bestCutNodes = t;
     }
   }
 
