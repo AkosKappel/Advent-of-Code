@@ -19,7 +19,6 @@ public class Day15 : BaseDay {
 
     private readonly char[][] _grid;
     private readonly string _moves;
-    public override string InputFilePath { get; } = "Inputs/15-Example.txt";
 
     public Day15() : this("") { }
 
@@ -45,48 +44,95 @@ public class Day15 : BaseDay {
         (grid ?? _grid).Select(row => (char[])row.Clone()).ToArray();
 
     [Obsolete("For debugging only")]
-    private static void ShowGrid(char[][] grid, Vector2 robot) {
-        Console.WriteLine(string.Join("\n", grid.Select((row, y) => string.Concat(
-            row.Select((c, x) => x == (int)robot.X && y == (int)robot.Y ? Robot : c)
-        ).ToString())) + "\n");
+    private static void ShowGrid(char[][] grid) {
+        Console.WriteLine(string.Join("\n", grid.Select(row => string.Concat(row))) + "\n");
     }
 
-    private Vector2 GetRobotPosition(char[][] grid) {
+    private static Vector2 GetRobotPosition(char[][] grid) {
         var rowIndex = Array.FindIndex(grid, row => row.Contains(Robot));
         var colIndex = Array.IndexOf(grid[rowIndex], Robot);
-        var position = new Vector2(colIndex, rowIndex);
-        SetGridAt(position, Empty, grid);
-        return position;
+        return new Vector2(colIndex, rowIndex);
     }
 
     private static long GpsCoordinate(Vector2 pos) => 100 * (int)pos.Y + (int)pos.X;
 
+    private void Swap(Vector2 pos1, Vector2 pos2, char[][] grid) {
+        var val1 = GridAt(pos1, grid);
+        var val2 = GridAt(pos2, grid);
+        if (val1 == val2) return;
+        SetGridAt(pos1, val2, grid);
+        SetGridAt(pos2, val1, grid);
+    }
+
+    private bool CanMove(Vector2 pos, Vector2 dir, char[][] grid) {
+        var newPos = pos + dir;
+
+        switch (GridAt(newPos, grid)) {
+            case Wall:
+                return false;
+            case Empty:
+                return true;
+            case Box:
+                var nonBoxPos = newPos;
+                while (GridAt(nonBoxPos, grid) == Box) nonBoxPos += dir;
+                return GridAt(nonBoxPos, grid) != Wall;
+            case BixBoxL when dir.IsHorizontal():
+            case BixBoxR when dir.IsHorizontal():
+                return CanMove(newPos, dir, grid);
+            case BixBoxL when dir.IsVertical():
+            case BixBoxR when dir.IsVertical():
+                var leftHalf = GridAt(newPos, grid) == BixBoxL ? newPos : newPos with { X = newPos.X - 1 };
+                var rightHalf = GridAt(newPos, grid) == BixBoxR ? newPos : newPos with { X = newPos.X + 1 };
+                return CanMove(leftHalf, dir, grid) && CanMove(rightHalf, dir, grid);
+        }
+
+        throw new("Unexpected grid value at " + newPos);
+    }
+
+    private void MakeMove(Vector2 pos, Vector2 dir, char[][] grid) {
+        var newPos = pos + dir;
+
+        switch (GridAt(newPos, grid)) {
+            case Wall:
+                return;
+            case Empty:
+                Swap(pos, newPos, grid);
+                return;
+            case Box:
+                var nonBoxPos = newPos;
+                while (GridAt(nonBoxPos, grid) == Box) nonBoxPos += dir;
+                if (GridAt(nonBoxPos, grid) == Wall) return;
+
+                Swap(newPos, nonBoxPos, grid); // move first box to empty space behind last box
+                Swap(pos, newPos, grid); // move robot 1 step ahead to moved box's position
+                return;
+            case BixBoxL when dir.IsHorizontal():
+            case BixBoxR when dir.IsHorizontal():
+                MakeMove(newPos, dir, grid); // move everything that is in the way 1 step ahead
+                Swap(pos, newPos, grid); // move robot to newly created empty space
+                return;
+            case BixBoxL when dir.IsVertical():
+            case BixBoxR when dir.IsVertical():
+                var leftHalf = GridAt(newPos, grid) == BixBoxL ? newPos : newPos with { X = newPos.X - 1 };
+                var rightHalf = GridAt(newPos, grid) == BixBoxR ? newPos : newPos with { X = newPos.X + 1 };
+                MakeMove(leftHalf, dir, grid);
+                MakeMove(rightHalf, dir, grid);
+                Swap(pos, newPos, grid);
+                return;
+        }
+
+        throw new("Unexpected grid value at " + newPos);
+    }
+
     private char[][] MoveBoxes(char[][] grid) {
         var pos = GetRobotPosition(grid);
+        var isPart2 = grid.Any(row => row.Contains(BixBoxL));
 
         foreach (var move in _moves) {
             var dir = _movementDirection[move];
-            var newPos = pos + dir;
-
-            switch (GridAt(newPos, grid)) {
-                case Wall:
-                    continue;
-                case Empty:
-                    pos = newPos;
-                    continue;
-                case Box:
-                    var availablePos = newPos;
-                    while (GridAt(availablePos, grid) == Box) availablePos += dir;
-                    if (GridAt(availablePos, grid) == Wall) continue;
-
-                    SetGridAt(availablePos, Box, grid);
-                    SetGridAt(newPos, Empty, grid);
-                    pos = newPos;
-                    break;
-                case BixBoxL:
-                    break;
-                case BixBoxR:
-                    break;
+            if (CanMove(pos, dir, grid)) {
+                MakeMove(pos, dir, grid);
+                pos += dir;
             }
         }
 
@@ -98,7 +144,7 @@ public class Day15 : BaseDay {
 
         var gpsSum = finalGrid
             .SelectMany((row, y) => row.Select((c, x) => new Vector2(x, y)))
-            .Where(p => GridAt(p, finalGrid) == Box)
+            .Where(pos => GridAt(pos, finalGrid) == Box)
             .Sum(GpsCoordinate);
 
         return new(gpsSum.ToString());

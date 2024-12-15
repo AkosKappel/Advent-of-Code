@@ -53,6 +53,7 @@ public static class Directions {
     ) => RotateRight(direction, -times, mode);
 
     public static Vector2 Reverse(this Vector2 direction) => direction * -1;
+    public static Vector2 Scale(this Vector2 direction, float scale) => direction * scale;
 
     public static bool IsCardinal(this Vector2 direction) => Cardinal.Contains(direction);
     public static bool IsDiagonal(this Vector2 direction) => Diagonal.Contains(direction);
