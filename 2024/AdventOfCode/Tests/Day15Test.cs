@@ -3,15 +3,24 @@
 namespace AdventOfCode.Tests;
 
 [TestFixture]
-public class Day05Test
+public class Day15Test
 {
-    private Day05 _day;
+    private Day15 _day;
 
     [Test]
     public void TestPart1Example()
     {
-        _day = new Day05("Inputs/05-Example.txt");
-        const string expected = "143";
+        _day = new Day15("Inputs/15-Example.txt");
+        const string expected = "2028";
+        var solution = _day.Solve_1();
+        Assert.That(solution.Result, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TestPart1Example2()
+    {
+        _day = new Day15("Inputs/15-Example2.txt");
+        const string expected = "10092";
         var solution = _day.Solve_1();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -19,8 +28,8 @@ public class Day05Test
     [Test]
     public void TestPart1Input()
     {
-        _day = new Day05("Inputs/05.txt");
-        const string expected = "4281";
+        _day = new Day15("Inputs/15.txt");
+        const string expected = "0";
         var solution = _day.Solve_1();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -28,8 +37,8 @@ public class Day05Test
     [Test]
     public void TestPart2Example()
     {
-        _day = new Day05("Inputs/05-Example.txt");
-        const string expected = "123";
+        _day = new Day15("Inputs/15-Example.txt");
+        const string expected = "0";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -37,8 +46,8 @@ public class Day05Test
     [Test]
     public void TestPart2Input()
     {
-        _day = new Day05("Inputs/05.txt");
-        const string expected = "5466";
+        _day = new Day15("Inputs/15.txt");
+        const string expected = "0";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }

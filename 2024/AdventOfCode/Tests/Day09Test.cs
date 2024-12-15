@@ -9,7 +9,7 @@ public class Day09Test {
     [Test]
     public void TestPart1Example() {
         _day = new Day09("Inputs/09-Example.txt");
-        var expected = "1928";
+        const string expected = "1928";
         var solution = _day.Solve_1();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -17,7 +17,7 @@ public class Day09Test {
     [Test]
     public void TestPart1Input() {
         _day = new Day09("Inputs/09.txt");
-        var expected = "6154342787400";
+        const string expected = "6154342787400";
         var solution = _day.Solve_1();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -25,7 +25,7 @@ public class Day09Test {
     [Test]
     public void TestPart2Example() {
         _day = new Day09("Inputs/09-Example.txt");
-        var expected = "2858";
+        const string expected = "2858";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -33,7 +33,7 @@ public class Day09Test {
     [Test]
     public void TestPart2Input() {
         _day = new Day09("Inputs/09.txt");
-        var expected = "6183632723350";
+        const string expected = "6183632723350";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
