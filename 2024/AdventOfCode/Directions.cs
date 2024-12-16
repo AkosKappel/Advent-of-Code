@@ -12,6 +12,16 @@ public static class Directions {
     public static readonly Vector2 DownRight = Down + Right;
     public static readonly Vector2 DownLeft = Down + Left;
 
+    // Aliases
+    public static readonly Vector2 North = Up;
+    public static readonly Vector2 South = Down;
+    public static readonly Vector2 West = Left;
+    public static readonly Vector2 East = Right;
+    public static readonly Vector2 NorthEast = UpRight;
+    public static readonly Vector2 NorthWest = UpLeft;
+    public static readonly Vector2 SouthEast = DownRight;
+    public static readonly Vector2 SouthWest = DownLeft;
+
     public static readonly Vector2[] Vertical = { Up, Down };
     public static readonly Vector2[] Horizontal = { Left, Right };
     public static readonly Vector2[] Cardinal = { Up, Right, Down, Left };
@@ -52,13 +62,19 @@ public static class Directions {
         RotationMode mode = RotationMode.Cardinal
     ) => RotateRight(direction, -times, mode);
 
-    public static Vector2 Reverse(this Vector2 direction) => direction * -1;
+    public static Vector2 Reverse(this Vector2 direction) => -direction;
     public static Vector2 Scale(this Vector2 direction, float scale) => direction * scale;
 
     public static bool IsCardinal(this Vector2 direction) => Cardinal.Contains(direction);
     public static bool IsDiagonal(this Vector2 direction) => Diagonal.Contains(direction);
     public static bool IsVertical(this Vector2 direction) => Vertical.Contains(direction);
     public static bool IsHorizontal(this Vector2 direction) => Horizontal.Contains(direction);
+
+    public static bool IsParallel(this Vector2 direction1, Vector2 direction2, double tolerance = 1e-9) =>
+        Math.Abs(direction1.X * direction2.Y - direction1.Y * direction2.X) < tolerance;
+
+    public static bool IsPerpendicular(this Vector2 direction1, Vector2 direction2) =>
+        Vector2.Dot(direction1, direction2) == 0;
 
     public static string ToCode(this Vector2 direction) => direction switch {
         { X: 0, Y: -1 } => "U",
