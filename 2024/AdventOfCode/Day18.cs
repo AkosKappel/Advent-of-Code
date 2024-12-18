@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections;
+using System.Numerics;
 
 namespace AdventOfCode;
 
@@ -26,7 +27,7 @@ public class Day18 : BaseDay {
         })
         .ToList();
 
-    private static List<Vector2> Dijkstra(bool[,] grid) {
+    private static List<Vector2> BFS(bool[,] grid) {
         var (width, height) = (grid.GetLength(0), grid.GetLength(1));
 
         var start = new Vector2(0, 0);
@@ -85,18 +86,22 @@ public class Day18 : BaseDay {
     }
 
     public override ValueTask<string> Solve_1() => new(
-        Dijkstra(CreateGrid(_bytes.Take(_numBytesToUse), _gridSize)).Count.ToString()
+        BFS(CreateGrid(_bytes.Take(_numBytesToUse), _gridSize)).Count.ToString()
     );
 
     public override ValueTask<string> Solve_2() {
-        var grid = CreateGrid(_bytes.Take(_numBytesToUse), _gridSize);
+        var low = _numBytesToUse;
+        var high = _bytes.Count;
 
-        for (var i = _numBytesToUse; i < _bytes.Count; i++) {
-            var nextByte = _bytes[i];
-            grid[(int)nextByte.Y, (int)nextByte.X] = true;
-            if (Dijkstra(grid) == null) return new($"{nextByte.X},{nextByte.Y}");
+        while (low < high) {
+            var mid = (low + high) / 2;
+            var grid = CreateGrid(_bytes.Take(mid), _gridSize);
+            var path = BFS(grid);
+
+            if (path == null) high = mid;
+            else low = mid + 1;
         }
 
-        return new("-1,-1");
+        return new($"{_bytes[low - 1].X},{_bytes[low - 1].Y}");
     }
 }
