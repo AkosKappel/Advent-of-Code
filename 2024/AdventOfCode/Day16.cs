@@ -49,42 +49,40 @@ public class Day16 : BaseDay {
         Vector2 end
     ) {
         var distances = new Dictionary<(Vector2, Vector2), long>();
-        var queue = new PriorityQueue<(long score, Vector2 pos, Vector2 dir, HashSet<Vector2> path), long>();
-        queue.Enqueue((0, start, Directions.East, new HashSet<Vector2> { start }), 0);
+        var queue = new PriorityQueue<(Vector2 pos, Vector2 dir, HashSet<Vector2> path), long>();
+        queue.Enqueue((start, Directions.East, new() { start }), 0);
 
         var bestScore = long.MaxValue;
         var bestSpots = new HashSet<Vector2>();
 
-        while (queue.Count > 0) {
-            var (score, pos, dir, path) = queue.Dequeue();
-
-            if (pos == end) {
+        while (queue.TryDequeue(out var current, out var score)) {
+            if (current.pos == end) {
                 if (score < bestScore) { // new best path
                     bestScore = score;
-                    bestSpots = path;
+                    bestSpots = current.path;
                 }
                 else if (score == bestScore) { // alternative best path
-                    bestSpots.UnionWith(path);
+                    bestSpots.UnionWith(current.path);
                 }
 
                 continue;
             }
 
-            var key = (pos, dir);
+            var key = (current.pos, current.dir);
             if (distances.TryGetValue(key, out var existingScore) && existingScore < score) {
                 continue;
             }
 
             distances[key] = score;
 
-            foreach (var neighbor in maze[pos]) {
-                if (path.Contains(neighbor)) continue;
+            foreach (var neighbor in maze[current.pos]) {
+                if (current.path.Contains(neighbor)) continue;
 
-                var newDir = neighbor - pos;
-                var newScore = score + 1 + (newDir != dir ? 1000 : 0);
-                var newPath = new HashSet<Vector2>(path) { neighbor };
+                var newDir = neighbor - current.pos;
+                var newScore = score + 1 + (newDir != current.dir ? 1000 : 0);
+                var newPath = new HashSet<Vector2>(current.path) { neighbor };
 
-                queue.Enqueue((newScore, neighbor, newDir, newPath), newScore);
+                queue.Enqueue((neighbor, newDir, newPath), newScore);
             }
         }
 
