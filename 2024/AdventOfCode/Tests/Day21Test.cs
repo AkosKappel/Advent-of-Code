@@ -25,7 +25,7 @@ public class Day21Test {
     [Test]
     public void TestPart2Example() {
         _day = new Day21("Inputs/21-Example.txt");
-        const string expected = "132206819375574";
+        const string expected = "154115708116294";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -33,7 +33,7 @@ public class Day21Test {
     [Test]
     public void TestPart2Input() {
         _day = new Day21("Inputs/21.txt");
-        const string expected = "0";
+        const string expected = "303836969158972";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
