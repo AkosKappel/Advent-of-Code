@@ -42,7 +42,7 @@ public class Day18 : BaseDay {
             var current = queue.Dequeue();
             if (current == end) return ReconstructPath(current);
 
-            var neighbors = Directions.Cardinal
+            var neighbors = Directions.Orthogonal
                 .Select(dir => current + dir)
                 .Where(IsWithinBounds)
                 .Where(IsFree);

@@ -37,7 +37,7 @@ public class Day16 : BaseDay {
         .GroupBy(node => new Vector2(node.x, node.y))
         .ToDictionary(
             group => group.Key,
-            group => Directions.Cardinal
+            group => Directions.Orthogonal
                 .Select(dir => group.Key + dir)
                 .Where(neighbor => maze[(int)neighbor.Y][(int)neighbor.X] != Wall)
                 .ToList()

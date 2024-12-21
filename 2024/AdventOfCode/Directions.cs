@@ -24,27 +24,27 @@ public static class Directions {
 
     public static readonly Vector2[] Vertical = { Up, Down };
     public static readonly Vector2[] Horizontal = { Left, Right };
-    public static readonly Vector2[] Cardinal = { Up, Right, Down, Left };
+    public static readonly Vector2[] Orthogonal = { Up, Right, Down, Left };
     public static readonly Vector2[] Diagonal = { UpRight, DownRight, DownLeft, UpLeft };
     public static readonly Vector2[] All = { Up, UpRight, Right, DownRight, Down, DownLeft, Left, UpLeft };
 
     public enum RotationMode {
         Vertical,
         Horizontal,
-        Cardinal,
+        Orthogonal,
         Diagonal,
-        All
+        All,
     }
 
     public static Vector2 RotateRight(
         this Vector2 direction,
         int times = 1,
-        RotationMode mode = RotationMode.Cardinal
+        RotationMode mode = RotationMode.Orthogonal
     ) {
         var directions = mode switch {
             RotationMode.Vertical => Vertical,
             RotationMode.Horizontal => Horizontal,
-            RotationMode.Cardinal => Cardinal,
+            RotationMode.Orthogonal => Orthogonal,
             RotationMode.Diagonal => Diagonal,
             RotationMode.All => All,
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
@@ -59,13 +59,13 @@ public static class Directions {
     public static Vector2 RotateLeft(
         this Vector2 direction,
         int times = 1,
-        RotationMode mode = RotationMode.Cardinal
+        RotationMode mode = RotationMode.Orthogonal
     ) => RotateRight(direction, -times, mode);
 
     public static Vector2 Reverse(this Vector2 direction) => -direction;
     public static Vector2 Scale(this Vector2 direction, float scale) => direction * scale;
 
-    public static bool IsCardinal(this Vector2 direction) => Cardinal.Contains(direction);
+    public static bool IsOrthogonal(this Vector2 direction) => Orthogonal.Contains(direction);
     public static bool IsDiagonal(this Vector2 direction) => Diagonal.Contains(direction);
     public static bool IsVertical(this Vector2 direction) => Vertical.Contains(direction);
     public static bool IsHorizontal(this Vector2 direction) => Horizontal.Contains(direction);
@@ -76,15 +76,23 @@ public static class Directions {
     public static bool IsPerpendicular(this Vector2 direction1, Vector2 direction2) =>
         Vector2.Dot(direction1, direction2) == 0;
 
-    public static string ToCode(this Vector2 direction) => direction switch {
-        { X: 0, Y: -1 } => "U",
-        { X: 1, Y: -1 } => "UR",
-        { X: 1, Y: 0 } => "R",
-        { X: 1, Y: 1 } => "DR",
-        { X: 0, Y: 1 } => "D",
-        { X: -1, Y: 1 } => "DL",
-        { X: -1, Y: 0 } => "L",
-        { X: -1, Y: -1 } => "UL",
-        _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+    public enum CodeType {
+        Direction,
+        World,
+        Char,
+    }
+
+    private static readonly Dictionary<Vector2, string[]> Codes = new() {
+        { Left, new[] { "L", "W", "<" } },
+        { Up, new[] { "U", "N", "^" } },
+        { Right, new[] { "R", "E", ">" } },
+        { Down, new[] { "D", "S", "v" } },
+        { UpLeft, new[] { "UL", "NW", "\u250c" } },
+        { UpRight, new[] { "UR", "NE", "\u2510" } },
+        { DownRight, new[] { "DR", "SE", "\u2518" } },
+        { DownLeft, new[] { "DL", "SW", "\u2514" } },
     };
+
+    public static string ToCode(this Vector2 direction, CodeType type = CodeType.Direction) =>
+        Codes[direction][(int)type];
 }

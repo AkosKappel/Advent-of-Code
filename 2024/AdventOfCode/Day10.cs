@@ -37,7 +37,7 @@ public class Day10 : BaseDay {
 
     private bool IsWithinBounds(Vector2 pos) => 0 <= pos.X && pos.X < _width && 0 <= pos.Y && pos.Y < _height;
 
-    private List<Vector2> GetNeighbors(Vector2 pos) => Directions.Cardinal
+    private List<Vector2> GetNeighbors(Vector2 pos) => Directions.Orthogonal
         .Select(dir => pos + dir)
         .Where(newPos =>
             IsWithinBounds(newPos) && MapAt(newPos) == MapAt(pos) + 1)

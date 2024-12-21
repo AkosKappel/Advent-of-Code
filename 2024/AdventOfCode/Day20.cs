@@ -32,7 +32,7 @@ public class Day20 : BaseDay {
         var path = new List<Vector2> { current };
 
         while (current != end) {
-            current = Directions.Cardinal
+            current = Directions.Orthogonal
                 .Select(dir => current + dir)
                 .First(neighbor =>
                     track[(int)neighbor.Y][(int)neighbor.X] != Wall &&

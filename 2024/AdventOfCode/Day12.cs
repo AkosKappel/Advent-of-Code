@@ -47,7 +47,7 @@ public class Day12 : BaseDay {
             var current = queue.Dequeue();
             region.Add(current);
 
-            foreach (var dir in Directions.Cardinal) {
+            foreach (var dir in Directions.Orthogonal) {
                 var neighbor = current + dir;
                 if (0 > neighbor.X || neighbor.X >= width || 0 > neighbor.Y || neighbor.Y >= height) continue;
                 if (visited.Contains(neighbor)) continue;
@@ -64,7 +64,7 @@ public class Day12 : BaseDay {
     private static int GetArea(HashSet<Vector2> region) => region.Count;
 
     private static int GetPerimeter(HashSet<Vector2> region) =>
-        region.Sum(p => Directions.Cardinal.Count(dir => !region.Contains(p + dir)));
+        region.Sum(p => Directions.Orthogonal.Count(dir => !region.Contains(p + dir)));
 
     private static int GetNumberOfSides(HashSet<Vector2> region) {
         var squares = new HashSet<(Vector2 topLeft, Vector2 topRight, Vector2 bottomRight, Vector2 bottomLeft)>();
