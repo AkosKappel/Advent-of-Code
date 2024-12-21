@@ -10,7 +10,7 @@ public class Day15 : BaseDay {
     private const char BixBoxL = '[';
     private const char BixBoxR = ']';
 
-    private static readonly Dictionary<char, Vector2> _movementDirection = new() {
+    private static readonly Dictionary<char, Vector2> MovementDirection = new() {
         { '^', Directions.Up },
         { '>', Directions.Right },
         { 'v', Directions.Down },
@@ -129,7 +129,7 @@ public class Day15 : BaseDay {
         var isPart2 = grid.Any(row => row.Contains(BixBoxL));
 
         foreach (var move in _moves) {
-            var dir = _movementDirection[move];
+            var dir = MovementDirection[move];
             if (CanMove(pos, dir, grid)) {
                 MakeMove(pos, dir, grid);
                 pos += dir;

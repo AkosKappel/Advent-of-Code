@@ -5,7 +5,7 @@ namespace AdventOfCode;
 public class Day19 : BaseDay {
     private readonly string[] _availablePatterns;
     private readonly string[] _designPatterns;
-    private static readonly ConcurrentDictionary<string, long> _memo = new();
+    private static readonly ConcurrentDictionary<string, long> Memo = new();
 
     public Day19() : this("") { }
 
@@ -22,13 +22,13 @@ public class Day19 : BaseDay {
     private static long CountPossible(string target, string[] available) {
         if (target.Length == 0) return 1;
 
-        if (_memo.TryGetValue(target, out var result)) return result;
+        if (Memo.TryGetValue(target, out var result)) return result;
 
         var count = available
             .Where(target.StartsWith)
             .Sum(pattern => CountPossible(target[pattern.Length..], available));
 
-        _memo.TryAdd(target, count);
+        Memo.TryAdd(target, count);
         return count;
     }
 
