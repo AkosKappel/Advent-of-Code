@@ -23,9 +23,9 @@ public class Day22Test {
     }
 
     [Test]
-    public void TestPart2Example() {
-        _day = new Day22("Inputs/22-Example.txt");
-        const string expected = "";
+    public void TestPart2Example2() {
+        _day = new Day22("Inputs/22-Example2.txt");
+        const string expected = "23";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
@@ -33,7 +33,7 @@ public class Day22Test {
     [Test]
     public void TestPart2Input() {
         _day = new Day22("Inputs/22.txt");
-        const string expected = "";
+        const string expected = "1455";
         var solution = _day.Solve_2();
         Assert.That(solution.Result, Is.EqualTo(expected));
     }
