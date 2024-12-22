@@ -32,12 +32,12 @@ public class Day22 : BaseDay {
 
     public override ValueTask<string> Solve_2() {
         const int nLastChanges = 4;
-        var dict = new Dictionary<string, Dictionary<int, int>>();
+        var results = new Dictionary<string, int>();
         var recentChanges = new Queue<int>(nLastChanges);
 
-        for (var i = 0; i < _initialSecrets.Length; i++) {
-            var initialSecret = _initialSecrets[i];
+        foreach (var initialSecret in _initialSecrets) {
             var previousPrice = Price(initialSecret);
+            var dict = new Dictionary<string, int>();
             recentChanges.Clear();
 
             foreach (var secret in NextSecret(initialSecret).Skip(1).Take(2000)) {
@@ -49,13 +49,14 @@ public class Day22 : BaseDay {
                 recentChanges.Enqueue(change);
                 if (recentChanges.Count < nLastChanges) continue;
 
-                var key = string.Join(",", recentChanges);
-                if (!dict.ContainsKey(key)) dict[key] = new();
-                dict[key].TryAdd(i, price);
+                dict.TryAdd(string.Join(",", recentChanges), price);
+            }
+
+            foreach (var (id, price) in dict) {
+                results[id] = results.GetValueOrDefault(id, 0) + price;
             }
         }
 
-        var mostBananas = dict.Select(kvp => kvp.Value.Values.Sum()).Max();
-        return new(mostBananas.ToString());
+        return new(results.Values.Max().ToString());
     }
 }
