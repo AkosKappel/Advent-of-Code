@@ -1,11 +1,8 @@
-﻿using System.Collections.Concurrent;
-
-namespace AdventOfCode;
+﻿namespace AdventOfCode;
 
 public class Day19 : BaseDay {
     private readonly string[] _availablePatterns;
     private readonly string[] _designPatterns;
-    private static readonly ConcurrentDictionary<string, long> Memo = new();
 
     public Day19() : this("") { }
 
@@ -19,16 +16,17 @@ public class Day19 : BaseDay {
         return (parts[0].Split(", "), parts[1].Split("\n"));
     }
 
-    private static long CountPossible(string target, string[] available) {
-        if (target.Length == 0) return 1;
+    private static long CountPossible(string target, string[] available, Dictionary<string, long> memo = null) {
+        memo ??= new();
 
-        if (Memo.TryGetValue(target, out var result)) return result;
+        if (memo.TryGetValue(target, out var result)) return result;
+        if (target.Length == 0) return 1;
 
         var count = available
             .Where(target.StartsWith)
-            .Sum(pattern => CountPossible(target[pattern.Length..], available));
+            .Sum(pattern => CountPossible(target[pattern.Length..], available, memo));
 
-        Memo.TryAdd(target, count);
+        memo.TryAdd(target, count);
         return count;
     }
 

@@ -17,7 +17,7 @@ public class Day22 : BaseDay {
     private static long Prune(long a) => a % 16777216;
     private static int Price(long a) => (int)(a % 10);
 
-    private static IEnumerable<long> EvolveSecret(long secret, int iterations = 2024) {
+    private static IEnumerable<long> NextSecret(long secret, int iterations = 2024) {
         for (var i = 0; i < iterations; i++) {
             yield return secret;
             secret = Prune(Mix(secret, secret * 64));
@@ -27,41 +27,35 @@ public class Day22 : BaseDay {
     }
 
     public override ValueTask<string> Solve_1() => new(
-        _initialSecrets.Sum(s => EvolveSecret(s).ElementAt(2000)).ToString()
+        _initialSecrets.Sum(s => NextSecret(s).ElementAt(2000)).ToString()
     );
 
     public override ValueTask<string> Solve_2() {
-        const int capacity = 4;
-        var dict = new Dictionary<string, Dictionary<int, long>>();
+        const int nLastChanges = 4;
+        var dict = new Dictionary<string, Dictionary<int, int>>();
+        var recentChanges = new Queue<int>(nLastChanges);
 
         for (var i = 0; i < _initialSecrets.Length; i++) {
             var initialSecret = _initialSecrets[i];
             var previousPrice = Price(initialSecret);
+            recentChanges.Clear();
 
-            var recentChanges = new Queue<int>(capacity);
-            var sequence = EvolveSecret(initialSecret).Skip(1).Take(2000);
-
-            foreach (var secret in sequence) {
+            foreach (var secret in NextSecret(initialSecret).Skip(1).Take(2000)) {
                 var price = Price(secret);
                 var change = price - previousPrice;
                 previousPrice = price;
 
-                if (recentChanges.Count >= capacity) recentChanges.Dequeue();
+                if (recentChanges.Count >= nLastChanges) recentChanges.Dequeue();
                 recentChanges.Enqueue(change);
+                if (recentChanges.Count < nLastChanges) continue;
 
-                if (recentChanges.Count >= capacity) {
-                    var key = string.Join(",", recentChanges);
-                    if (!dict.ContainsKey(key)) dict[key] = new();
-                    dict[key].TryAdd(i, price);
-                }
+                var key = string.Join(",", recentChanges);
+                if (!dict.ContainsKey(key)) dict[key] = new();
+                dict[key].TryAdd(i, price);
             }
         }
 
-        var (changes, maxBananas) = dict.Keys
-            .Select(key => (key, dict[key].Values.Sum()))
-            .OrderByDescending(x => x.Item2)
-            .First();
-
-        return new(maxBananas.ToString());
+        var mostBananas = dict.Select(kvp => kvp.Value.Values.Sum()).Max();
+        return new(mostBananas.ToString());
     }
 }

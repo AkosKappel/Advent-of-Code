@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-namespace AdventOfCode;
+﻿namespace AdventOfCode;
 
 using Keypad = (int width, int height, Dictionary<char, (int x, int y)> keys);
 
@@ -22,8 +20,8 @@ public class Day21 : BaseDay {
         "<v>",
     });
 
-    private static readonly ConcurrentDictionary<(char, char, KeypadType), IEnumerable<string>> PathMemo = new();
-    private static readonly ConcurrentDictionary<(string, int), long> LengthMemo = new();
+    private static readonly Dictionary<(char, char, KeypadType), IEnumerable<string>> PathMemo = new();
+    private static readonly Dictionary<(string, int), long> LengthMemo = new();
 
     private readonly string[] _codes;
 
