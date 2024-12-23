@@ -35,11 +35,13 @@ public class Day22 : BaseDay {
         const int nLastChanges = 4;
         var results = new Dictionary<int, int>();
         var recentChanges = new Queue<int>(nLastChanges);
+        var seen = new HashSet<int>();
 
         foreach (var initialSecret in _initialSecrets) {
             var previousPrice = Price(initialSecret);
-            var buyer = new Dictionary<int, int>();
+
             recentChanges.Clear();
+            seen.Clear();
 
             foreach (var secret in NextSecret(initialSecret).Skip(1).Take(2000)) {
                 var price = Price(secret);
@@ -50,10 +52,9 @@ public class Day22 : BaseDay {
                 recentChanges.Enqueue(change);
                 if (recentChanges.Count < nLastChanges) continue;
 
-                buyer.TryAdd(Hash(recentChanges), price);
-            }
+                var key = Hash(recentChanges);
+                if (!seen.Add(key)) continue;
 
-            foreach (var (key, price) in buyer) {
                 results[key] = results.GetValueOrDefault(key, 0) + price;
             }
         }
@@ -61,6 +62,6 @@ public class Day22 : BaseDay {
         return new(results.Values.Max().ToString());
 
         int Price(long a) => (int)(a % 10);
-        int Hash(IEnumerable<int> numbers) => numbers.Aggregate(0, (a, b) => (a << 8) + b);
+        int Hash(IEnumerable<int> numbers) => numbers.Aggregate(0, (a, b) => (a << 6) + b);
     }
 }
