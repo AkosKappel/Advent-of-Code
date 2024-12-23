@@ -2,7 +2,6 @@
 
 public class Day23 : BaseDay {
     private readonly Dictionary<string, HashSet<string>> _adjacencyList;
-    // public override string InputFilePath { get; } = "Inputs/23-Example.txt";
 
     public Day23() : this("") { }
 
@@ -29,11 +28,37 @@ public class Day23 : BaseDay {
         return adjacencyList;
     }
 
+    private static void BronKerbosch(
+        HashSet<string> R,
+        HashSet<string> P,
+        HashSet<string> X,
+        Dictionary<string, HashSet<string>> graph,
+        List<HashSet<string>> cliques
+    ) {
+        if (P.Count == 0 && X.Count == 0) {
+            cliques.Add(new HashSet<string>(R));
+            return;
+        }
+
+        var pivot = P.Concat(X).First();
+
+        foreach (var v in P.Except(graph[pivot])) {
+            var newR = new HashSet<string>(R) { v };
+            var newP = new HashSet<string>(P.Intersect(graph[v]));
+            var newX = new HashSet<string>(X.Intersect(graph[v]));
+
+            BronKerbosch(newR, newP, newX, graph, cliques);
+            P.Remove(v);
+            X.Add(v);
+        }
+    }
+
     public override ValueTask<string> Solve_1() {
+        const char firstLetter = 't';
         var triangles = new HashSet<string>();
 
-        foreach (var u in _adjacencyList.Keys) {
-            foreach (var v in _adjacencyList[u]) {
+        foreach (var (u, neighbors) in _adjacencyList) {
+            foreach (var v in neighbors) {
                 if (string.Compare(u, v, StringComparison.Ordinal) > 0) continue;
                 var common = _adjacencyList[u].Intersect(_adjacencyList[v]);
 
@@ -41,17 +66,32 @@ public class Day23 : BaseDay {
                     if (string.Compare(u, w, StringComparison.Ordinal) > 0 ||
                         string.Compare(v, w, StringComparison.Ordinal) > 0) continue;
 
+                    if (!u.StartsWith(firstLetter) && !v.StartsWith(firstLetter) && !w.StartsWith(firstLetter))
+                        continue;
+
                     var key = string.Join(",", new[] { u, v, w }.OrderBy(x => x));
                     triangles.Add(key);
                 }
             }
         }
 
-        var targets = triangles.Where(x => x.Split(",").Any(x => x.StartsWith("t")));
-        return new(targets.Count().ToString());
+        return new(triangles.Count.ToString());
     }
 
     public override ValueTask<string> Solve_2() {
-        return new(0.ToString());
+        var cliques = new List<HashSet<string>>();
+
+        BronKerbosch(
+            R: new HashSet<string>(),
+            P: new HashSet<string>(_adjacencyList.Keys),
+            X: new HashSet<string>(),
+            graph: _adjacencyList,
+            cliques
+        );
+
+        var maximumClique = cliques.MaxBy(c => c.Count);
+        var password = string.Join(",", maximumClique.OrderBy(x => x));
+
+        return new(password);
     }
 }
