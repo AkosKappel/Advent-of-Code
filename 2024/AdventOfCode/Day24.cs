@@ -5,7 +5,6 @@ public class Day24 : BaseDay {
 
     private readonly Dictionary<string, bool> _wires;
     private readonly Dictionary<string, Gate> _gates;
-    public override string InputFilePath { get; } = "Inputs/24-Example2.txt";
 
     public Day24() : this("") { }
 
@@ -46,6 +45,44 @@ public class Day24 : BaseDay {
         };
     }
 
+    private static List<Gate> GetFaultyGates(List<Gate> gates) {
+        var faultyGates = new List<Gate>();
+
+        foreach (var gate in gates) {
+            if (gate.Output.StartsWith('z') && gate.Output != "z45" && gate.Type != "XOR") {
+                faultyGates.Add(gate);
+            }
+            else if (!gate.Output.StartsWith('z')
+                     && !(gate.Input1.StartsWith('x') || gate.Input1.StartsWith('y'))
+                     && !(gate.Input2.StartsWith('x') || gate.Input2.StartsWith('y'))
+                     && gate.Type == "XOR") {
+                faultyGates.Add(gate);
+            }
+            else if (gate.Type == "XOR"
+                     && (gate.Input1.StartsWith('x') || gate.Input1.StartsWith('y'))
+                     && (gate.Input2.StartsWith('x') || gate.Input2.StartsWith('y'))
+                     && !(gate.Input1.EndsWith("00") && gate.Input2.EndsWith("00"))) {
+                var foundAnother = gates.Any(otherGate =>
+                    !otherGate.Equals(gate) &&
+                    (otherGate.Input1 == gate.Output || otherGate.Input2 == gate.Output) &&
+                    otherGate.Type == "XOR");
+                if (!foundAnother) faultyGates.Add(gate);
+            }
+            else if (gate.Type == "AND"
+                     && (gate.Input1.StartsWith('x') || gate.Input1.StartsWith('y'))
+                     && (gate.Input2.StartsWith('x') || gate.Input2.StartsWith('y'))
+                     && !gate.Input1.EndsWith("00") && !gate.Input2.EndsWith("00")) {
+                var foundAnother = gates.Any(otherGate =>
+                    !otherGate.Equals(gate) &&
+                    (otherGate.Input1 == gate.Output || otherGate.Input2 == gate.Output) &&
+                    otherGate.Type == "OR");
+                if (!foundAnother) faultyGates.Add(gate);
+            }
+        }
+
+        return faultyGates;
+    }
+
     public override ValueTask<string> Solve_1() => new(
         _gates.Keys
             .Where(key => key.StartsWith('z'))
@@ -54,7 +91,7 @@ public class Day24 : BaseDay {
             .ToString()
     );
 
-    public override ValueTask<string> Solve_2() {
-        return new(0.ToString());
-    }
+    public override ValueTask<string> Solve_2() => new(
+        string.Join(',', GetFaultyGates(_gates.Values.ToList()).Select(gate => gate.Output).Order())
+    );
 }
