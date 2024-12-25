@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Day01 {
-    private long[] parse(String input) {
+    private static long[] parse(String input) {
         String[] lines = input.replaceAll("\r\n", "\n").split("\n");
         long[] result = new long[lines.length];
 
