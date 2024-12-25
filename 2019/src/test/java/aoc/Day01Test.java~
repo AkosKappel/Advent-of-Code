@@ -30,14 +30,14 @@ class Day01Test {
     class Part1Tests {
         @Test
         void testExample() {
-            int result = day.part1(example);
-            assertEquals(0, result);
+            long result = day.part1(example);
+            assertEquals(34241L, result);
         }
 
         @Test
         void testSolution() {
-            int result = day.part1(input);
-            assertEquals(0, result);
+            long result = day.part1(input);
+            assertEquals(3297909L, result);
         }
     }
 
@@ -46,14 +46,14 @@ class Day01Test {
     class Part2Tests {
         @Test
         void testExample() {
-            int result = day.part2(example);
-            assertEquals(0, result);
+            long result = day.part2(example);
+            assertEquals(0L, result);
         }
 
         @Test
         void testSolution() {
-            int result = day.part2(input);
-            assertEquals(0, result);
+            long result = day.part2(input);
+            assertEquals(4943994L, result);
         }
     }
 }

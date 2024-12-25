@@ -31,13 +31,13 @@ class Day01Test {
         @Test
         void testExample() {
             long result = day.part1(example);
-            assertEquals(0L, result);
+            assertEquals(34241L, result);
         }
 
         @Test
         void testSolution() {
             long result = day.part1(input);
-            assertEquals(0L, result);
+            assertEquals(3297909L, result);
         }
     }
 
@@ -47,13 +47,13 @@ class Day01Test {
         @Test
         void testExample() {
             long result = day.part2(example);
-            assertEquals(0L, result);
+            assertEquals(51316L, result);
         }
 
         @Test
         void testSolution() {
             long result = day.part2(input);
-            assertEquals(0L, result);
+            assertEquals(4943994L, result);
         }
     }
 }

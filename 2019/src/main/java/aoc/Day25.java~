@@ -1,9 +1,5 @@
 package aoc;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public class Day25 {
     public long part1(String input) {
         return 0L;
@@ -13,10 +9,9 @@ public class Day25 {
         return 0L;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Day25 day = new Day25();
-        String filepath = "src/main/resources/day25.txt";
-        String input = Files.readString(Paths.get(filepath), StandardCharsets.UTF_8);
+        String input = "src/main/resources/day25.txt";
 
         long startPart1 = System.currentTimeMillis();
         long resultPart1 = day.part1(input);
