@@ -9,6 +9,7 @@ public class Day25 {
         String[] lines = input.replaceAll("\r\n", "\n").split("\n");
         return new long[lines.length];
     }
+
     public long part1(String input) {
         return 0L;
     }
