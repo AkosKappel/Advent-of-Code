@@ -9,10 +9,10 @@ import java.util.Queue;
 import java.util.*;
 
 public class Day15 {
-    private enum Direction {
+    private enum CompassDirection {
         NONE, NORTH, SOUTH, WEST, EAST;
 
-        public Direction turnLeft() {
+        public CompassDirection turnLeft() {
             return switch (this) {
                 case NORTH -> WEST;
                 case WEST -> SOUTH;
@@ -22,7 +22,7 @@ public class Day15 {
             };
         }
 
-        public Direction turnRight() {
+        public CompassDirection turnRight() {
             return switch (this) {
                 case NORTH -> EAST;
                 case EAST -> SOUTH;
@@ -50,14 +50,14 @@ public class Day15 {
     private static class RepairAndroid {
         private final IntcodeComputer computer;
         private final Point startPosition = new Point(0, 0);
-        private final Direction startDirection = Direction.NORTH;
+        private final CompassDirection startDirection = CompassDirection.NORTH;
 
         public RepairAndroid(String code) {
             computer = IntcodeComputer.fromString(code);
             computer.setOutputSize(1);
         }
 
-        public AndroidResponse checkMove(Direction direction) {
+        public AndroidResponse checkMove(CompassDirection direction) {
             computer.addInput(direction.ordinal());
             computer.run();
             long response = computer.readOutput();
@@ -75,10 +75,10 @@ public class Day15 {
             Set<Point> maze = new HashSet<>();
 
             Point currentPosition = startPosition;
-            Direction currentDirection = startDirection;
+            CompassDirection currentDirection = startDirection;
 
             do {
-                Direction newDirection = currentDirection.turnRight();
+                CompassDirection newDirection = currentDirection.turnRight();
                 Point newPosition = newDirection.move(currentPosition);
                 AndroidResponse response = checkMove(newDirection);
 
@@ -114,8 +114,8 @@ public class Day15 {
     private static List<Point> getNeighbors(Point position, Set<Point> maze) {
         List<Point> neighbors = new LinkedList<>();
 
-        for (Direction direction : Direction.values()) {
-            if (direction == Direction.NONE) continue;
+        for (CompassDirection direction : CompassDirection.values()) {
+            if (direction == CompassDirection.NONE) continue;
             Point neighbor = direction.move(position);
             if (maze.contains(neighbor)) neighbors.add(neighbor);
         }
