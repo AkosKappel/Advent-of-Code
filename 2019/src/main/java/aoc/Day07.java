@@ -12,37 +12,6 @@ public class Day07 {
                 .toArray();
     }
 
-    private static class Permutations {
-        private int[] arr;
-        public List<int[]> result;
-
-        public List<int[]> generate(int[] arr) {
-            this.arr = arr;
-            this.result = new ArrayList<>();
-            permute(0);
-            return result;
-        }
-
-        private void permute(int start) {
-            if (start == arr.length - 1) {
-                result.add(arr.clone());
-                return;
-            }
-
-            for (int i = start; i < arr.length; i++) {
-                swap(start, i);
-                permute(start + 1);
-                swap(start, i);
-            }
-        }
-
-        private void swap(int i, int j) {
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
-        }
-    }
-
     private static class IntcodeComputer {
         private final int[] program;
         private int ip = 0;
@@ -126,11 +95,10 @@ public class Day07 {
     }
 
     public long part1(String input) {
-        int[] phaseSettings = {0, 1, 2, 3, 4};
         int highestSignal = Integer.MIN_VALUE;
-        Permutations permutations = new Permutations();
+        Permutations<Integer> permutations = new Permutations<>(new Integer[]{0, 1, 2, 3, 4});
 
-        for (int[] sequence : permutations.generate(phaseSettings)) {
+        for (List<Integer> sequence : permutations) {
             List<IntcodeComputer> computers = new ArrayList<>();
             for (int phase : sequence) {
                 int[] program = parse(input);
@@ -139,7 +107,7 @@ public class Day07 {
             }
 
             Integer outputSignal = 0;
-            for (int i = 0; i < sequence.length; i++) {
+            for (int i = 0; i < sequence.size(); i++) {
                 computers.get(i).run(new int[]{outputSignal});
                 outputSignal = computers.get(i).getOutput();
             }
@@ -151,11 +119,10 @@ public class Day07 {
     }
 
     public long part2(String input) {
-        int[] phaseSettings = {5, 6, 7, 8, 9};
         int highestSignal = Integer.MIN_VALUE;
-        Permutations permutations = new Permutations();
+        Permutations<Integer> permutations = new Permutations<>(new Integer[]{5, 6, 7, 8, 9});
 
-        for (int[] sequence : permutations.generate(phaseSettings)) {
+        for (List<Integer> sequence : permutations) {
             List<IntcodeComputer> computers = new ArrayList<>();
             for (int phase : sequence) {
                 int[] program = parse(input);
