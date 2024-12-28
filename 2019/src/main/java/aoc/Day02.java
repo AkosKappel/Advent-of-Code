@@ -3,42 +3,14 @@ package aoc;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class Day02 {
-
-    private static int[] parse(String input) {
-        return Arrays.stream(input.trim().split(","))
-                .mapToInt(Integer::parseInt)
-                .toArray();
-    }
-
-    private static void run(int[] program) {
-        for (int i = 0; i < program.length; i += 4) {
-            int opcode = program[i];
-            if (opcode == 99) break;
-
-            int in1 = program[i + 1];
-            int in2 = program[i + 2];
-            int out = program[i + 3];
-
-            switch (opcode) {
-                case 1:
-                    program[out] = program[in1] + program[in2];
-                    break;
-                case 2:
-                    program[out] = program[in1] * program[in2];
-                    break;
-            }
-        }
-    }
-
     public long part1(String input) {
-        int[] program = parse(input);
-        program[1] = 12;
-        program[2] = 2;
-        run(program);
-        return program[0];
+        IntcodeComputer program = IntcodeComputer.fromString(input);
+        program.setMemoryAt(1, 12);
+        program.setMemoryAt(2, 2);
+        program.run();
+        return program.getMemoryAt(0);
     }
 
     public long part2(String input) {
@@ -46,11 +18,11 @@ public class Day02 {
 
         for (int noun = 0; noun < 100; noun++) {
             for (int verb = 0; verb < 100; verb++) {
-                int[] program = parse(input);
-                program[1] = noun;
-                program[2] = verb;
-                run(program);
-                if (program[0] == target) {
+                IntcodeComputer program = IntcodeComputer.fromString(input);
+                program.setMemoryAt(1, noun);
+                program.setMemoryAt(2, verb);
+                program.run();
+                if (program.getMemoryAt(0) == target) {
                     return 100 * noun + verb;
                 }
             }
