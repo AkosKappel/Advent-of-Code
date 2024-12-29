@@ -19,7 +19,7 @@ public class Day18 {
     private record Triple<A, B, C>(A a, B b, C c) {
     }
 
-    private static final Map<Triple<Character, Integer, Set<Character>>, Long> memo = new HashMap<>();
+    private static final Map<Triple<Collection<Character>, Integer, Set<Character>>, Long> memo = new HashMap<>();
 
     private static boolean isKey(char c) {
         return 'a' <= c && c <= 'z';
@@ -29,16 +29,19 @@ public class Day18 {
         return 'A' <= c && c <= 'Z';
     }
 
-    private static Map<Character, List<Edge>> buildGraph(String input) {
-        Map<Character, List<Edge>> graph = new HashMap<>();
-
-        String[] lines = input.replaceAll("\r\n", "\n").split("\n");
-        int height = lines.length, width = lines[0].length();
-        char[][] grid = new char[height][width];
-        for (int y = 0; y < height; y++) {
-            char[] row = lines[y].toCharArray();
-            System.arraycopy(row, 0, grid[y], 0, width);
+    private static Point findEntrance(char[][] grid) {
+        for (int y = 0; y < grid.length; y++) {
+            for (int x = 0; x < grid[y].length; x++) {
+                if (grid[y][x] == ENTRANCE) return new Point(x, y);
+            }
         }
+
+        throw new IllegalStateException("Entrance not found");
+    }
+
+    private static Map<Character, List<Edge>> buildGraph(char[][] grid) {
+        Map<Character, List<Edge>> graph = new HashMap<>();
+        int height = grid.length, width = grid[0].length;
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -96,22 +99,37 @@ public class Day18 {
         return edges;
     }
 
-    private static long collectKeys(Map<Character, List<Edge>> graph, char current, int numRemainingKeys, Set<Character> collectedKeys) {
+    private static long collectKeys(
+            Map<Character, List<Edge>> graph,
+            Collection<Character> starts,
+            int numRemainingKeys,
+            Set<Character> collectedKeys
+    ) {
         if (numRemainingKeys == 0) return 0; // all keys have been collected
 
-        Triple<Character, Integer, Set<Character>> key = new Triple<>(current, numRemainingKeys, new HashSet<>(collectedKeys));
+        Triple<Collection<Character>, Integer, Set<Character>> key = new Triple<>(
+                new HashSet<>(starts),
+                numRemainingKeys,
+                new HashSet<>(collectedKeys)
+        );
         if (memo.containsKey(key)) return memo.get(key); // already calculated
 
         long shortestDistance = Long.MAX_VALUE;
 
-        for (Edge edge : getReachableKeys(graph, current, collectedKeys)) {
-            Set<Character> newCollectedKeys = new HashSet<>(collectedKeys);
-            newCollectedKeys.add(edge.to);
+        for (Character current : starts) {
+            for (Edge edge : getReachableKeys(graph, current, collectedKeys)) {
+                Set<Character> newCollectedKeys = new HashSet<>(collectedKeys);
+                newCollectedKeys.add(edge.to);
 
-            long distance = edge.weight;
-            distance += collectKeys(graph, edge.to, numRemainingKeys - 1, newCollectedKeys);
+                Collection<Character> newStarts = new HashSet<>(starts);
+                newStarts.remove(current);
+                newStarts.add(edge.to);
 
-            shortestDistance = Math.min(shortestDistance, distance);
+                long distance = edge.weight;
+                distance += collectKeys(graph, newStarts, numRemainingKeys - 1, newCollectedKeys);
+
+                shortestDistance = Math.min(shortestDistance, distance);
+            }
         }
 
         memo.put(key, shortestDistance); // memoize result
@@ -151,14 +169,52 @@ public class Day18 {
         return reachableKeys;
     }
 
+    private static char[][] updateGrid(char[][] grid) {
+        Point entrance = findEntrance(grid);
+        grid[entrance.y][entrance.x] = WALL;
+
+        for (Direction dir : Direction.values()) {
+            Point neighbor = dir.move(entrance);
+            grid[neighbor.y][neighbor.x] = WALL;
+        }
+
+        grid[entrance.y - 1][entrance.x + 1] = '1';
+        grid[entrance.y + 1][entrance.x + 1] = '2';
+        grid[entrance.y - 1][entrance.x - 1] = '3';
+        grid[entrance.y + 1][entrance.x - 1] = '4';
+
+        return grid;
+    }
+
+    private static char[][] parse(String input) {
+        String[] lines = input.replaceAll("\r\n", "\n").split("\n");
+
+        int height = lines.length, width = lines[0].length();
+        char[][] grid = new char[height][width];
+
+        for (int y = 0; y < height; y++) {
+            char[] row = lines[y].toCharArray();
+            System.arraycopy(row, 0, grid[y], 0, width);
+        }
+
+        return grid;
+    }
+
     public long part1(String input) {
-        Map<Character, List<Edge>> graph = buildGraph(input);
+        char[][] grid = parse(input);
+        Map<Character, List<Edge>> graph = buildGraph(grid);
         long numKeys = graph.keySet().stream().filter(Day18::isKey).count();
-        return collectKeys(graph, ENTRANCE, (int) numKeys, new HashSet<>());
+        memo.clear();
+        return collectKeys(graph, Collections.singleton(ENTRANCE), (int) numKeys, new HashSet<>());
     }
 
     public long part2(String input) {
-        return 0L;
+        char[][] grid = updateGrid(parse(input));
+        Map<Character, List<Edge>> graph = buildGraph(grid);
+        Collection<Character> starts = Arrays.asList('1', '2', '3', '4');
+        long numKeys = graph.keySet().stream().filter(Day18::isKey).count();
+        memo.clear();
+        return collectKeys(graph, starts, (int) numKeys, new HashSet<>());
     }
 
     public static void main(String[] args) throws Exception {

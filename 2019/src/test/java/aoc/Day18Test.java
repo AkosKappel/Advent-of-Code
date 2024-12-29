@@ -15,6 +15,10 @@ class Day18Test {
     private static String example3;
     private static String example4;
     private static String example5;
+    private static String example6;
+    private static String example7;
+    private static String example8;
+    private static String example9;
     private static String input;
     private Day18 day;
 
@@ -25,6 +29,10 @@ class Day18Test {
         example3 = Files.readString(Paths.get("src/main/resources/day18_example3.txt"), StandardCharsets.UTF_8);
         example4 = Files.readString(Paths.get("src/main/resources/day18_example4.txt"), StandardCharsets.UTF_8);
         example5 = Files.readString(Paths.get("src/main/resources/day18_example5.txt"), StandardCharsets.UTF_8);
+        example6 = Files.readString(Paths.get("src/main/resources/day18_example6.txt"), StandardCharsets.UTF_8);
+        example7 = Files.readString(Paths.get("src/main/resources/day18_example7.txt"), StandardCharsets.UTF_8);
+        example8 = Files.readString(Paths.get("src/main/resources/day18_example8.txt"), StandardCharsets.UTF_8);
+        example9 = Files.readString(Paths.get("src/main/resources/day18_example9.txt"), StandardCharsets.UTF_8);
         input = Files.readString(Paths.get("src/main/resources/day18.txt"), StandardCharsets.UTF_8);
     }
 
@@ -77,15 +85,33 @@ class Day18Test {
     @DisplayName("Part 2")
     class Part2Tests {
         @Test
-        void testExample() {
-            long result = day.part2(example);
-            assertEquals(0L, result);
+        void testExample6() {
+            long result = day.part2(example6);
+            assertEquals(8L, result);
+        }
+
+        @Test
+        void testExample7() {
+            long result = day.part2(example7);
+            assertEquals(24L, result);
+        }
+
+        @Test
+        void testExample8() {
+            long result = day.part2(example8);
+            assertEquals(32L, result);
+        }
+
+        @Test
+        void testExample9() {
+            long result = day.part2(example9);
+            assertEquals(72L, result);
         }
 
         @Test
         void testSolution() {
             long result = day.part2(input);
-            assertEquals(0L, result);
+            assertEquals(1864L, result);
         }
     }
 }
