@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.Queue;
 
 public class IntcodeComputer {
-    private long[] program;
+    private final long[] initialMemory;
+    private long[] memory;
     private long ip = 0;
     private long relativeBase = 0;
     private final Queue<Long> input;
@@ -24,10 +25,11 @@ public class IntcodeComputer {
     private final static int EQUALS = 8;
     private final static int RELATIVE_BASE_OFFSET = 9;
 
-    public IntcodeComputer(long[] program) {
-        this.program = program;
-        this.input = new ArrayDeque<>();
-        this.output = new ArrayDeque<>();
+    public IntcodeComputer(long[] code) {
+        initialMemory = Arrays.copyOf(code, code.length);
+        memory = code;
+        input = new ArrayDeque<>();
+        output = new ArrayDeque<>();
     }
 
     public static IntcodeComputer fromString(String input) {
@@ -143,30 +145,43 @@ public class IntcodeComputer {
         output.clear();
     }
 
-    public void reset() {
+    public void start() {
+        running = true;
+    }
+
+    public void stop() {
+        running = false;
+    }
+
+    public void restart() {
         ip = 0;
         relativeBase = 0;
         running = true;
         input.clear();
         output.clear();
+        memory = Arrays.copyOf(initialMemory, initialMemory.length);
+    }
+
+    public long[] getMemory() {
+        return memory;
     }
 
     public long getMemoryAt(long address) {
         if (address < 0) return 0;
-        if (address >= program.length) increaseMemory(Math.max(program.length * 2, (int) address + 1));
-        return program[(int) address];
+        if (address >= memory.length) increaseMemory(Math.max(memory.length * 2, (int) address + 1));
+        return memory[(int) address];
     }
 
     public void setMemoryAt(long address, long value) {
         if (address < 0) return; // ignore negative indices
-        if (address >= program.length) increaseMemory(Math.max(program.length * 2, (int) address + 1));
-        program[(int) address] = value;
+        if (address >= memory.length) increaseMemory(Math.max(memory.length * 2, (int) address + 1));
+        memory[(int) address] = value;
     }
 
     public void increaseMemory(int newSize) {
         long[] newMemory = new long[newSize];
-        System.arraycopy(program, 0, newMemory, 0, program.length);
-        program = newMemory;
+        System.arraycopy(memory, 0, newMemory, 0, memory.length);
+        memory = newMemory;
     }
 
     private long read(long param, int mode) {
