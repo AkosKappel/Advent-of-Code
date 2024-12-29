@@ -1,5 +1,6 @@
 package aoc;
 
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Day03 {
-    private record Point(int x, int y) {
-    }
 
     private static List<List<Point>> parse(String input) {
         String[] lines = input.replaceAll("\r\n", "\n").split("\n");
