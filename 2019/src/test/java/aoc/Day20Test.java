@@ -63,7 +63,7 @@ class Day20Test {
         @Test
         void testSolution() {
             long result = day.part2(input);
-            assertEquals(0L, result);
+            assertEquals(6214L, result);
         }
     }
 }
