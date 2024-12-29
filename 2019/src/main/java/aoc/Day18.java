@@ -1,5 +1,9 @@
 package aoc;
 
+import aoc.utils.Direction;
+import aoc.utils.Edge;
+import aoc.utils.Triple;
+
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,12 +16,6 @@ public class Day18 {
     private static final char WALL = '#';
     private static final char OPEN = '.';
     private static final char ENTRANCE = '@';
-
-    private record Edge(Character to, int weight) {
-    }
-
-    private record Triple<A, B, C>(A a, B b, C c) {
-    }
 
     private static final Map<Triple<Collection<Character>, Integer, Set<Character>>, Long> memo = new HashMap<>();
 
@@ -39,8 +37,8 @@ public class Day18 {
         throw new IllegalStateException("Entrance not found");
     }
 
-    private static Map<Character, List<Edge>> buildGraph(char[][] grid) {
-        Map<Character, List<Edge>> graph = new HashMap<>();
+    private static Map<Character, List<Edge<Character>>> buildGraph(char[][] grid) {
+        Map<Character, List<Edge<Character>>> graph = new HashMap<>();
         int height = grid.length, width = grid[0].length;
 
         for (int y = 0; y < height; y++) {
@@ -49,7 +47,7 @@ public class Day18 {
                 if (cell == WALL || cell == OPEN) continue;
 
                 Point p = new Point(x, y);
-                List<Edge> edges = getEdges(p, grid);
+                List<Edge<Character>> edges = getEdges(p, grid);
                 graph.put(cell, edges);
             }
         }
@@ -57,8 +55,8 @@ public class Day18 {
         return graph;
     }
 
-    private static List<Edge> getEdges(Point from, char[][] grid) {
-        List<Edge> edges = new LinkedList<>();
+    private static List<Edge<Character>> getEdges(Point from, char[][] grid) {
+        List<Edge<Character>> edges = new LinkedList<>();
         Set<Point> visited = new HashSet<>();
         Queue<Map.Entry<Point, Integer>> queue = new ArrayDeque<>();
         queue.add(Map.entry(from, 0));
@@ -73,7 +71,7 @@ public class Day18 {
 
             char cell = grid[position.y][position.x];
             if ((isKey(cell) || isDoor(cell)) && distance > 0) {
-                edges.add(new Edge(cell, distance));
+                edges.add(new Edge<>(cell, distance));
                 continue;
             }
 
@@ -100,7 +98,7 @@ public class Day18 {
     }
 
     private static long collectKeys(
-            Map<Character, List<Edge>> graph,
+            Map<Character, List<Edge<Character>>> graph,
             Collection<Character> starts,
             int numRemainingKeys,
             Set<Character> collectedKeys
@@ -117,15 +115,15 @@ public class Day18 {
         long shortestDistance = Long.MAX_VALUE;
 
         for (Character current : starts) {
-            for (Edge edge : getReachableKeys(graph, current, collectedKeys)) {
+            for (Edge<Character> edge : getReachableKeys(graph, current, collectedKeys)) {
                 Set<Character> newCollectedKeys = new HashSet<>(collectedKeys);
-                newCollectedKeys.add(edge.to);
+                newCollectedKeys.add(edge.destination());
 
                 Collection<Character> newStarts = new HashSet<>(starts);
                 newStarts.remove(current);
-                newStarts.add(edge.to);
+                newStarts.add(edge.destination());
 
-                long distance = edge.weight;
+                long distance = edge.weight();
                 distance += collectKeys(graph, newStarts, numRemainingKeys - 1, newCollectedKeys);
 
                 shortestDistance = Math.min(shortestDistance, distance);
@@ -136,8 +134,12 @@ public class Day18 {
         return shortestDistance;
     }
 
-    private static Set<Edge> getReachableKeys(Map<Character, List<Edge>> graph, char current, Set<Character> collectedKeys) {
-        Set<Edge> reachableKeys = new HashSet<>();
+    private static Set<Edge<Character>> getReachableKeys(
+            Map<Character, List<Edge<Character>>> graph,
+            char current,
+            Set<Character> collectedKeys
+    ) {
+        Set<Edge<Character>> reachableKeys = new HashSet<>();
         Map<Character, Integer> distances = new HashMap<>();
         Queue<Map.Entry<Character, Integer>> pq = new PriorityQueue<>(Map.Entry.comparingByValue());
         pq.add(Map.entry(current, 0));
@@ -148,7 +150,7 @@ public class Day18 {
             int currentDistance = entry.getValue();
 
             if (isKey(currentNode) && !collectedKeys.contains(currentNode)) {
-                reachableKeys.add(new Edge(currentNode, currentDistance));
+                reachableKeys.add(new Edge<>(currentNode, currentDistance));
                 continue;
             }
 
@@ -156,9 +158,9 @@ public class Day18 {
                 continue; // we don't have key for this door
             }
 
-            for (Edge edge : graph.get(currentNode)) {
-                char neighbor = edge.to;
-                int newDistance = currentDistance + edge.weight;
+            for (Edge<Character> edge : graph.get(currentNode)) {
+                char neighbor = edge.destination();
+                int newDistance = currentDistance + edge.weight();
                 if (newDistance >= distances.getOrDefault(neighbor, Integer.MAX_VALUE)) continue;
 
                 distances.put(neighbor, newDistance);
@@ -202,7 +204,7 @@ public class Day18 {
 
     public long part1(String input) {
         char[][] grid = parse(input);
-        Map<Character, List<Edge>> graph = buildGraph(grid);
+        Map<Character, List<Edge<Character>>> graph = buildGraph(grid);
         long numKeys = graph.keySet().stream().filter(Day18::isKey).count();
         memo.clear();
         return collectKeys(graph, Collections.singleton(ENTRANCE), (int) numKeys, new HashSet<>());
@@ -210,7 +212,7 @@ public class Day18 {
 
     public long part2(String input) {
         char[][] grid = updateGrid(parse(input));
-        Map<Character, List<Edge>> graph = buildGraph(grid);
+        Map<Character, List<Edge<Character>>> graph = buildGraph(grid);
         Collection<Character> starts = Arrays.asList('1', '2', '3', '4');
         long numKeys = graph.keySet().stream().filter(Day18::isKey).count();
         memo.clear();

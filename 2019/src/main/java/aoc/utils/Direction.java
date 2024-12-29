@@ -1,4 +1,4 @@
-package aoc;
+package aoc.utils;
 
 import java.awt.*;
 
@@ -23,6 +23,15 @@ public enum Direction {
             case LEFT -> new Point(p.x - 1, p.y);
             case DOWN -> new Point(p.x, p.y + 1);
             case RIGHT -> new Point(p.x + 1, p.y);
+        };
+    }
+
+    public Point3D move(Point3D p) {
+        return switch (this) {
+            case UP -> new Point3D(p.x(), p.y() - 1, p.z());
+            case LEFT -> new Point3D(p.x() - 1, p.y(), p.z());
+            case DOWN -> new Point3D(p.x(), p.y() + 1, p.z());
+            case RIGHT -> new Point3D(p.x() + 1, p.y(), p.z());
         };
     }
 }

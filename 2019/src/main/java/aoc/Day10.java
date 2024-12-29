@@ -51,7 +51,7 @@ public class Day10 {
         return angles;
     }
 
-    private static Map.Entry<Point, Map<Double, List<Point>>> findBestLocation(Set<Point> asteroids) {
+    private static Map<Double, List<Point>> findBestLocation(Set<Point> asteroids) {
         Point bestLocation = null;
         Map<Double, List<Point>> bestAngles = null;
         int maxVisible = 0;
@@ -73,22 +73,18 @@ public class Day10 {
             points.sort(Comparator.comparingInt(p -> manhattanDistance(imsLocation, p)));
         }
 
-        return new AbstractMap.SimpleEntry<>(bestLocation, bestAngles);
+        return bestAngles;
     }
 
     public long part1(String input) {
         Set<Point> asteroids = parse(input);
-        Map.Entry<Point, Map<Double, List<Point>>> bestLocation = findBestLocation(asteroids);
-        Map<Double, List<Point>> angles = bestLocation.getValue();
+        Map<Double, List<Point>> angles = findBestLocation(asteroids);
         return angles.size();
     }
 
     public long part2(String input) {
         Set<Point> asteroids = parse(input);
-        Map.Entry<Point, Map<Double, List<Point>>> bestLocation = findBestLocation(asteroids);
-
-        List<Map.Entry<Double, List<Point>>> sortedAngles = bestLocation
-                .getValue()
+        List<Map.Entry<Double, List<Point>>> sortedAngles = findBestLocation(asteroids)
                 .entrySet()
                 .stream()
                 .sorted(Comparator.comparingDouble(Map.Entry::getKey))

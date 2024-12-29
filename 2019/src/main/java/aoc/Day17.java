@@ -1,5 +1,8 @@
 package aoc;
 
+import aoc.utils.Direction;
+import aoc.utils.Pair;
+
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Day17 {
@@ -44,7 +46,7 @@ public class Day17 {
         return intersections;
     }
 
-    private static Map.Entry<Point, Direction> findVacuumRobot(String[] grid) {
+    private static Pair<Point, Direction> findVacuumRobot(String[] grid) {
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length(); x++) {
                 char tile = grid[y].charAt(x);
@@ -60,7 +62,7 @@ public class Day17 {
                     default -> throw new IllegalStateException("Unexpected value: " + tile);
                 };
 
-                return Map.entry(position, direction);
+                return new Pair<>(position, direction);
             }
         }
 
@@ -75,9 +77,9 @@ public class Day17 {
     }
 
     private static String[] walk(String[] grid) {
-        Map.Entry<Point, Direction> vacuumRobot = findVacuumRobot(grid);
-        Point position = vacuumRobot.getKey();
-        Direction direction = vacuumRobot.getValue();
+        Pair<Point, Direction> vacuumRobot = findVacuumRobot(grid);
+        Point position = vacuumRobot.first();
+        Direction direction = vacuumRobot.second();
 
         List<String> moves = new LinkedList<>();
         int steps = 0;

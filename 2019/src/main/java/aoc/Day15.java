@@ -1,5 +1,7 @@
 package aoc;
 
+import aoc.utils.Pair;
+
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -70,7 +72,7 @@ public class Day15 {
             };
         }
 
-        public Map.Entry<Point, Set<Point>> followWall() {
+        public Pair<Point, Set<Point>> followWall() {
             Point oxygenPosition = null;
             Set<Point> maze = new HashSet<>();
 
@@ -107,7 +109,7 @@ public class Day15 {
             } while (!currentPosition.equals(startPosition) || !currentDirection.equals(startDirection));
 
             assert oxygenPosition != null : "Oxygen position not found";
-            return new AbstractMap.SimpleEntry<>(oxygenPosition, maze);
+            return new Pair<>(oxygenPosition, maze);
         }
     }
 
@@ -154,9 +156,9 @@ public class Day15 {
     public long part1(String input) {
         RepairAndroid android = new RepairAndroid(input);
 
-        Map.Entry<Point, Set<Point>> crawledSpace = android.followWall();
-        Point oxygen = crawledSpace.getKey();
-        Set<Point> maze = crawledSpace.getValue();
+        Pair<Point, Set<Point>> crawledSpace = android.followWall();
+        Point oxygen = crawledSpace.first();
+        Set<Point> maze = crawledSpace.second();
 
         Point start = new Point(0, 0);
         return BFS(maze, start, oxygen);
@@ -165,9 +167,9 @@ public class Day15 {
     public long part2(String input) {
         RepairAndroid android = new RepairAndroid(input);
 
-        Map.Entry<Point, Set<Point>> crawledSpace = android.followWall();
-        Point oxygen = crawledSpace.getKey();
-        Set<Point> maze = crawledSpace.getValue();
+        Pair<Point, Set<Point>> crawledSpace = android.followWall();
+        Point oxygen = crawledSpace.first();
+        Set<Point> maze = crawledSpace.second();
 
         Point unreachable = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
         return BFS(maze, oxygen, unreachable); // explore the whole space

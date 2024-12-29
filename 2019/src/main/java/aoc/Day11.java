@@ -1,5 +1,7 @@
 package aoc;
 
+import aoc.utils.Direction;
+
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
