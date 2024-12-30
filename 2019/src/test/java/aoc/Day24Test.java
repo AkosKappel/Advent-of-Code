@@ -46,14 +46,14 @@ class Day24Test {
     class Part2Tests {
         @Test
         void testExample() {
-            long result = day.part2(example);
-            assertEquals(0L, result);
+            long result = day.part2(example, 10);
+            assertEquals(99L, result);
         }
 
         @Test
         void testSolution() {
-            long result = day.part2(input);
-            assertEquals(0L, result);
+            long result = day.part2(input, 200);
+            assertEquals(2097L, result);
         }
     }
 }
