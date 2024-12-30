@@ -10,11 +10,7 @@ public class Day06 {
     private final String ME = "YOU";
     private final String SANTA = "SAN";
 
-    private Map<String, Set<String>> orbits;
-
-    public Day06() {
-        this.orbits = null;
-    }
+    private Map<String, Set<String>> orbits = null;
 
     private static Map<String, Set<String>> parse(String input) {
         String[] lines = input.replaceAll("\r\n", "\n").split("\n");

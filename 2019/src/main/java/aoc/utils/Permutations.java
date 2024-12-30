@@ -9,9 +9,9 @@ public class Permutations<T> implements Iterable<List<T>> {
     private final T[] array;
     private final List<List<T>> permutations;
 
-    public Permutations(T[] array) {
-        this.array = array;
-        this.permutations = new ArrayList<>();
+    public Permutations(T[] arr) {
+        array = arr;
+        permutations = new ArrayList<>();
         generate(0);
     }
 

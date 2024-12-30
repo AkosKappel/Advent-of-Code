@@ -200,9 +200,7 @@ public class Day17 {
         program.setMemoryAt(0, 2);
 
         String instructions = String.format("%s\n%s\n%s\n%s\nn\n", mainFunction, functions[0], functions[1], functions[2]);
-        for (char c : instructions.toCharArray()) {
-            program.addInput((int) c);
-        }
+        program.addInput(instructions);
 
         program.run();
         return program.readLastOutput();
