@@ -8,13 +8,7 @@ import java.util.Queue;
 public class Day21 {
     private static long executeScript(String code, String springScript) {
         IntcodeComputer program = IntcodeComputer.fromString(code);
-        program.addInput(
-                springScript
-                        .chars()
-                        .mapToLong(c -> c)
-                        .toArray()
-        );
-
+        program.addInput(springScript);
         program.run();
 
         Queue<Long> output = program.getOutput();

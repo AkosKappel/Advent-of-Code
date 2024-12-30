@@ -13,6 +13,7 @@ public class IntcodeComputer {
     private final Queue<Long> output;
     private boolean running = true;
     private int outputSize = -1; // let it run until it halts by itself
+    private boolean waitForInput = false;
 
     // Opcodes
     private final static int ADD = 1;
@@ -27,7 +28,7 @@ public class IntcodeComputer {
 
     public IntcodeComputer(long[] code) {
         initialMemory = Arrays.copyOf(code, code.length);
-        memory = code;
+        memory = Arrays.copyOf(code, code.length);
         input = new ArrayDeque<>();
         output = new ArrayDeque<>();
     }
@@ -72,7 +73,10 @@ public class IntcodeComputer {
                     ip += 4;
                     break;
                 case INPUT:
-                    if (input.isEmpty()) throw new IllegalArgumentException("Missing input");
+                    if (input.isEmpty()) {
+                        if (waitForInput) return false;
+                        throw new IllegalArgumentException("Missing input");
+                    }
                     write(param1, mode1, input.poll());
                     ip += 2;
                     break;
@@ -111,6 +115,11 @@ public class IntcodeComputer {
         for (long number : numbers) input.add(number);
     }
 
+    public void addInput(String x) {
+        x.chars().mapToLong(c -> c).forEach(input::add);
+    }
+
+
     public Long readOutput() {
         if (output.isEmpty()) throw new IllegalStateException("No output");
         return output.poll();
@@ -125,8 +134,20 @@ public class IntcodeComputer {
         outputSize = size;
     }
 
+    public void setWaitForInput(boolean wait) {
+        waitForInput = wait;
+    }
+
     public boolean isRunning() {
         return running;
+    }
+
+    public boolean hasInput() {
+        return !input.isEmpty();
+    }
+
+    public boolean hasOutput() {
+        return !output.isEmpty();
     }
 
     public Queue<Long> getInput() {
