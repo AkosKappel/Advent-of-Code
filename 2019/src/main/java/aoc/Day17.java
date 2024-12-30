@@ -18,7 +18,6 @@ public class Day17 {
 
     private static String[] scanGrid(String input) {
         IntcodeComputer program = IntcodeComputer.fromString(input);
-        program.setOutputSize(-1);
         program.run();
         String grid = program
                 .getOutput()
@@ -199,7 +198,6 @@ public class Day17 {
 
         IntcodeComputer program = IntcodeComputer.fromString(input);
         program.setMemoryAt(0, 2);
-        program.setOutputSize(-1);
 
         String instructions = String.format("%s\n%s\n%s\n%s\nn\n", mainFunction, functions[0], functions[1], functions[2]);
         for (char c : instructions.toCharArray()) {

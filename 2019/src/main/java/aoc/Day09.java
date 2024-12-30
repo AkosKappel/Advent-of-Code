@@ -9,7 +9,6 @@ public class Day09 {
     public String part1(String input) {
         IntcodeComputer computer = IntcodeComputer.fromString(input);
         computer.addInput(1);
-        computer.setOutputSize(-1);
         computer.run();
         return computer.getOutput().stream().map(String::valueOf).collect(Collectors.joining(","));
     }
@@ -18,7 +17,7 @@ public class Day09 {
         IntcodeComputer computer = IntcodeComputer.fromString(input);
         computer.addInput(2);
         computer.run();
-        return computer.getOutput().stream().findFirst().orElseThrow();
+        return computer.readOutput();
     }
 
     public static void main(String[] args) throws Exception {

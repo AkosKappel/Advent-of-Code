@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 public class Day05 {
     public long part1(String input) {
         IntcodeComputer program = IntcodeComputer.fromString(input);
-        program.setOutputSize(-1); // let it run until it halts
         program.addInput(1);
         program.run();
         return program.readLastOutput();

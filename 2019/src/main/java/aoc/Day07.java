@@ -18,6 +18,7 @@ public class Day07 {
             for (int phase : sequence) {
                 IntcodeComputer computer = IntcodeComputer.fromString(input);
                 computer.addInput(phase);
+                computer.setOutputSize(1);
                 computers.add(computer);
             }
 
@@ -42,6 +43,7 @@ public class Day07 {
             for (int phase : sequence) {
                 IntcodeComputer computer = IntcodeComputer.fromString(input);
                 computer.addInput(phase);
+                computer.setOutputSize(1);
                 computers.add(computer);
             }
 

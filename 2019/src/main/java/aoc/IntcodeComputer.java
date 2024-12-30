@@ -12,7 +12,7 @@ public class IntcodeComputer {
     private final Queue<Long> input;
     private final Queue<Long> output;
     private boolean running = true;
-    private int outputSize = 1;
+    private int outputSize = -1; // let it run until it halts by itself
 
     // Opcodes
     private final static int ADD = 1;
