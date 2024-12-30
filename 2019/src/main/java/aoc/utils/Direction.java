@@ -26,6 +26,15 @@ public enum Direction {
         };
     }
 
+    public Point move(int x, int y) {
+        return switch (this) {
+            case UP -> new Point(x, y - 1);
+            case LEFT -> new Point(x - 1, y);
+            case DOWN -> new Point(x, y + 1);
+            case RIGHT -> new Point(x + 1, y);
+        };
+    }
+
     public Point3D move(Point3D p) {
         return switch (this) {
             case UP -> new Point3D(p.x(), p.y() - 1, p.z());
