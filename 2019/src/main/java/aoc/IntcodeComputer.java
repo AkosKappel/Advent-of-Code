@@ -3,6 +3,7 @@ package aoc;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Queue;
+import java.util.Scanner;
 
 public class IntcodeComputer {
     private final long[] initialMemory;
@@ -111,6 +112,29 @@ public class IntcodeComputer {
         return true; // finished
     }
 
+
+    public void runInteractive() {
+        waitForInput = true;
+        Scanner scanner = new Scanner(System.in);
+
+        while (running) {
+            boolean finished = run();
+            String out = readAsciiOutput().trim();
+            if (!out.isEmpty()) System.out.println(out);
+
+            if (finished) break;
+
+            System.out.print("> ");
+            String input = scanner.nextLine();
+            if (input.equals("exit")) break;
+            if (!input.isEmpty() && !input.endsWith("\n")) input += "\n";
+
+            addInput(input);
+        }
+
+        scanner.close();
+    }
+
     public void addInput(long... numbers) {
         for (long number : numbers) input.add(number);
     }
@@ -128,6 +152,12 @@ public class IntcodeComputer {
     public Long readLastOutput() {
         while (output.size() > 1) output.poll();
         return readOutput();
+    }
+
+    public String readAsciiOutput() {
+        StringBuilder sb = new StringBuilder();
+        while (!output.isEmpty()) sb.append((char) output.poll().longValue());
+        return sb.toString();
     }
 
     public void setOutputSize(int size) {
