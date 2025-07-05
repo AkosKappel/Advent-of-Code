@@ -25,13 +25,13 @@ func TestDay05(t *testing.T) {
 		cases := []TestCase{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: "dabAcCaCBAcCcaDA",
+				want:  10,
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  11894,
 			},
 		}
 

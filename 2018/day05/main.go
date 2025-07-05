@@ -3,37 +3,29 @@ package day05
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
-
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
-
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
-		}
-
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
-		}
-
-		result = append(result, n)
-	}
-
-	return result, nil
+func doesReact(a, b rune) bool {
+	return a-'A' == b-'a' || a-'a' == b-'A'
 }
 
 func Part1(input string) int {
-	return 0
+	split := []rune(input)
+
+	reacted := true
+	for reacted {
+		reacted = false
+		for i := 0; i < len(split)-1; i++ {
+			if doesReact(split[i], split[i+1]) {
+				split = append(split[:i], split[i+2:]...)
+				reacted = true
+				break
+			}
+		}
+	}
+
+	return len(split)
 }
 
 func Part2(input string) int {
