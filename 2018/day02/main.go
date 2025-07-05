@@ -48,8 +48,33 @@ func Part1(input string) int {
 	return twoSameLetters * threeSameLetters
 }
 
-func Part2(input string) int {
-	return 0
+func Part2(input string) string {
+	lines := parse(input)
+
+	for i := 0; i < len(lines); i++ {
+		for j := i + 1; j < len(lines); j++ {
+			line1, line2 := lines[i], lines[j]
+
+			diffCound, diffIndex := 0, -1
+			for k := 0; k < len(line1); k++ {
+				if line1[k] != line2[k] {
+					if diffIndex == -1 {
+						diffIndex = k
+					}
+					diffCound++
+				}
+				if diffCound > 1 {
+					break
+				}
+			}
+
+			if diffCound == 1 {
+				return line1[:diffIndex] + line1[diffIndex+1:]
+			}
+		}
+	}
+
+	return ""
 }
 
 func Run() {
