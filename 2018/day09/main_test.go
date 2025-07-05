@@ -25,13 +25,38 @@ func TestDay09(t *testing.T) {
 		cases := []TestCase{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: "9 players; last marble is worth 25 points",
+				want:  32,
+			},
+			{
+				name:  "Example Input 2",
+				input: "10 players; last marble is worth 1618 points",
+				want:  8317,
+			},
+			{
+				name:  "Example Input 3",
+				input: "13 players; last marble is worth 7999 points",
+				want:  146373,
+			},
+			{
+				name:  "Example Input 4",
+				input: "17 players; last marble is worth 1104 points",
+				want:  2764,
+			},
+			{
+				name:  "Example Input 5",
+				input: "21 players; last marble is worth 6111 points",
+				want:  54718,
+			},
+			{
+				name:  "Example Input 6",
+				input: "30 players; last marble is worth 5807 points",
+				want:  37305,
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  384892,
 			},
 		}
 
