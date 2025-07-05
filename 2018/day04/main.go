@@ -23,7 +23,7 @@ type Guard struct {
 
 var logPattern = regexp.MustCompile(`\[(\d+)-(\d+)-(\d+) (\d+):(\d+)] (.+)`)
 
-func parse(s string) ([]Record, error) {
+func parse(s string) map[int]*Guard {
 	lines := strings.Split(s, "\n")
 	sort.Strings(lines) // sort chronologically
 
@@ -36,7 +36,7 @@ func parse(s string) ([]Record, error) {
 
 		matches := logPattern.FindStringSubmatch(line)
 		if matches == nil {
-			return nil, fmt.Errorf("invalid log line: %s", line)
+			panic(fmt.Sprintf("failed to parse line: %s", line))
 		}
 
 		year, _ := strconv.Atoi(matches[1])
@@ -52,7 +52,7 @@ func parse(s string) ([]Record, error) {
 		})
 	}
 
-	return records, nil
+	return analyze(records)
 }
 
 func analyze(records []Record) map[int]*Guard {
@@ -86,12 +86,7 @@ func analyze(records []Record) map[int]*Guard {
 }
 
 func Part1(input string) int {
-	records, err := parse(input)
-	if err != nil {
-		panic(err)
-	}
-
-	guards := analyze(records)
+	guards := parse(input)
 
 	// Find the guard with the most total asleep
 	var sleepiest *Guard
@@ -106,8 +101,7 @@ func Part1(input string) int {
 	}
 
 	// Find the minute this guard was most frequently asleep
-	maxMinute := 0
-	maxTimesAsleep := 0
+	var maxMinute, maxTimesAsleep int
 	for minute, timesAsleep := range sleepiest.MinutesAsleep {
 		if timesAsleep > maxTimesAsleep {
 			maxMinute = minute
@@ -119,7 +113,21 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return 0
+	guards := parse(input)
+
+	// Find the guard with the most sleep on a single minute
+	var maxTimesAsleep, sleepiestMinute, guardId int
+	for id, g := range guards {
+		for minute, timesAsleep := range g.MinutesAsleep {
+			if timesAsleep > maxTimesAsleep {
+				maxTimesAsleep = timesAsleep
+				sleepiestMinute = minute
+				guardId = id
+			}
+		}
+	}
+
+	return guardId * sleepiestMinute
 }
 
 func Run() {
