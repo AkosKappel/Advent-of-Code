@@ -11,7 +11,10 @@ import (
 func parse(s string) ([]int, error) {
 	var result []int
 
-	lines := strings.Split(s, "\n")
+	lines := strings.FieldsFunc(s, func(r rune) bool {
+		return r == ',' || r == '\n'
+	})
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
@@ -44,7 +47,26 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return 0
+	values, err := parse(input)
+	if err != nil {
+		panic(err)
+	}
+
+	total := 0
+	seen := make(map[int]bool)
+	seen[total] = true
+
+	for {
+		for _, value := range values {
+			total += value
+			if seen[total] {
+				return total
+			}
+			seen[total] = true
+		}
+	}
+
+	return total
 }
 
 func Run() {
