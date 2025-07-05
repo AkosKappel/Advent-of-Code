@@ -3,37 +3,119 @@ package day04
 import (
 	"fmt"
 	"os"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+type Record struct {
+	Time    time.Time
+	Message string
+}
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+type Guard struct {
+	Id            int
+	MinutesAsleep [60]int // how many times this guard was asleep on each minute [0..59]
+	TotalAsleep   int     // total minutes asleep
+}
+
+var logPattern = regexp.MustCompile(`\[(\d+)-(\d+)-(\d+) (\d+):(\d+)] (.+)`)
+
+func parse(s string) ([]Record, error) {
+	lines := strings.Split(s, "\n")
+	sort.Strings(lines) // sort chronologically
+
+	records := make([]Record, 0, len(lines))
 
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
+		if strings.TrimSpace(line) == "" {
+			continue
 		}
 
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
+		matches := logPattern.FindStringSubmatch(line)
+		if matches == nil {
+			return nil, fmt.Errorf("invalid log line: %s", line)
 		}
 
-		result = append(result, n)
+		year, _ := strconv.Atoi(matches[1])
+		month, _ := strconv.Atoi(matches[2])
+		day, _ := strconv.Atoi(matches[3])
+		hour, _ := strconv.Atoi(matches[4])
+		minute, _ := strconv.Atoi(matches[5])
+		message := matches[6]
+
+		records = append(records, Record{
+			Time:    time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.UTC),
+			Message: message,
+		})
 	}
 
-	return result, nil
+	return records, nil
+}
+
+func analyze(records []Record) map[int]*Guard {
+	guards := make(map[int]*Guard)
+
+	var currentGuardId, fellAsleepAt int
+
+	for _, rec := range records {
+		switch {
+		case strings.Contains(rec.Message, "begins shift"):
+			fields := strings.Fields(rec.Message)
+			id, _ := strconv.Atoi(fields[1][1:]) // strip leading #
+			currentGuardId = id
+			if _, ok := guards[id]; !ok {
+				guards[id] = &Guard{Id: id}
+			}
+
+		case strings.Contains(rec.Message, "falls asleep"):
+			fellAsleepAt = rec.Time.Minute()
+
+		case strings.Contains(rec.Message, "wakes up"):
+			wakeAt := rec.Time.Minute()
+			guards[currentGuardId].TotalAsleep += wakeAt - fellAsleepAt
+			for m := fellAsleepAt; m < wakeAt; m++ {
+				guards[currentGuardId].MinutesAsleep[m]++
+			}
+		}
+	}
+
+	return guards
 }
 
 func Part1(input string) int {
-	return 0
+	records, err := parse(input)
+	if err != nil {
+		panic(err)
+	}
+
+	guards := analyze(records)
+
+	// Find the guard with the most total asleep
+	var sleepiest *Guard
+	for _, g := range guards {
+		if sleepiest == nil || g.TotalAsleep > sleepiest.TotalAsleep {
+			sleepiest = g
+		}
+	}
+
+	if sleepiest == nil {
+		panic("no sleepiest guard")
+	}
+
+	// Find the minute this guard was most frequently asleep
+	maxMinute := 0
+	maxTimesAsleep := 0
+	for minute, timesAsleep := range sleepiest.MinutesAsleep {
+		if timesAsleep > maxTimesAsleep {
+			maxMinute = minute
+			maxTimesAsleep = timesAsleep
+		}
+	}
+
+	return sleepiest.Id * maxMinute
 }
 
 func Part2(input string) int {
