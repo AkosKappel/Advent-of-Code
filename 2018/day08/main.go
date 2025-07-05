@@ -53,6 +53,25 @@ func sumMetadata(node Node) int {
 	return sum
 }
 
+func getValue(node Node) int {
+	sum := 0
+
+	if len(node.Children) == 0 {
+		for _, metadata := range node.Metadata {
+			sum += metadata
+		}
+	} else {
+		for _, metadata := range node.Metadata {
+			childIndex := metadata - 1
+			if 0 <= childIndex && childIndex < len(node.Children) {
+				sum += getValue(node.Children[metadata-1])
+			}
+		}
+	}
+
+	return sum
+}
+
 func Part1(input string) int {
 	numbers := parse(input)
 	tree, _ := buildTree(numbers, 0)
@@ -60,7 +79,9 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return 0
+	numbers := parse(input)
+	tree, _ := buildTree(numbers, 0)
+	return getValue(tree)
 }
 
 func Run() {
@@ -70,7 +91,6 @@ func Run() {
 	}
 
 	input := string(data)
-	//input := "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2"
 
 	startPart1 := time.Now()
 	answerPart1 := Part1(input)
