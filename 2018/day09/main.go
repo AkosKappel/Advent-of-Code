@@ -2,6 +2,7 @@ package day09
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -20,34 +21,15 @@ type Node struct {
 	next  *Node
 }
 
-type CircularLinkedList struct {
-	head *Node
-	tail *Node
-}
-
-func NewCircularLinkedList(value int) *CircularLinkedList {
-	node := &Node{value: value, prev: nil, next: nil}
-
-	list := &CircularLinkedList{}
-	list.head = node
-	list.tail = node
-
-	node.next = node
-	node.prev = node
-
-	return list
-}
-
-func (list *CircularLinkedList) Display() {
-	if list.head == nil {
+func (node *Node) Display() {
+	if node.next == nil || node.prev == nil {
 		fmt.Println("No Data Present in Linked List.")
 	} else {
-		start := list.head
-		current := start
+		current := node
 		for {
 			fmt.Printf("%v", current.value)
 			current = current.next
-			if current == start {
+			if current == node {
 				break
 			}
 			fmt.Printf(" -> ")
@@ -91,13 +73,15 @@ func (node *Node) Remove() *Node {
 	return temp
 }
 
-func Part1(input string) int {
-	numPlayers, lastMarble := parse(input)
-
+func playMarble(numPlayers int, lastMarble int) int {
 	score := make([]int, numPlayers)
-	list := NewCircularLinkedList(0)
 
-	current := list.head
+	start := &Node{value: 0, prev: nil, next: nil}
+	start.next = start
+	start.prev = start
+
+	current := start
+
 	for marble := 1; marble <= lastMarble; marble++ {
 		player := marble % numPlayers
 		if marble%23 == 0 {
@@ -117,22 +101,27 @@ func Part1(input string) int {
 		}
 	}
 
-	//list.Display()
+	//start.Display()
 	return highScore
 }
 
+func Part1(input string) int {
+	numPlayers, lastMarble := parse(input)
+	return playMarble(numPlayers, lastMarble)
+}
+
 func Part2(input string) int {
-	return 0
+	numPlayers, lastMarble := parse(input)
+	return playMarble(numPlayers, lastMarble*100)
 }
 
 func Run() {
-	//data, err := os.ReadFile("day09/input.txt")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//input := string(data)
-	input := "9 players; last marble is worth 25 points"
+	data, err := os.ReadFile("day09/input.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	input := string(data)
 
 	startPart1 := time.Now()
 	answerPart1 := Part1(input)
