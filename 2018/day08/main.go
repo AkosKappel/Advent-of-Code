@@ -8,32 +8,55 @@ import (
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+func parse(s string) []int {
+	chunks := strings.Split(s, " ")
+	result := make([]int, 0, len(chunks))
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
-
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
-		}
-
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
-		}
-
+	for _, chunk := range chunks {
+		n, _ := strconv.Atoi(chunk)
 		result = append(result, n)
 	}
 
-	return result, nil
+	return result
+}
+
+type Node struct {
+	Children []Node
+	Metadata []int
+}
+
+func buildTree(numbers []int, index int) (Node, int) {
+	headers := numbers[index : index+2]
+	numChildren := headers[0]
+	numMetadata := headers[1]
+	index += 2
+
+	children := make([]Node, numChildren)
+	for i := 0; i < numChildren; i++ {
+		children[i], index = buildTree(numbers, index)
+	}
+
+	metadata := numbers[index : index+numMetadata]
+	index += numMetadata
+
+	return Node{children, metadata}, index
+}
+
+func sumMetadata(node Node) int {
+	sum := 0
+	for _, metadata := range node.Metadata {
+		sum += metadata
+	}
+	for _, child := range node.Children {
+		sum += sumMetadata(child)
+	}
+	return sum
 }
 
 func Part1(input string) int {
-	return 0
+	numbers := parse(input)
+	tree, _ := buildTree(numbers, 0)
+	return sumMetadata(tree)
 }
 
 func Part2(input string) int {
@@ -47,6 +70,7 @@ func Run() {
 	}
 
 	input := string(data)
+	//input := "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2"
 
 	startPart1 := time.Now()
 	answerPart1 := Part1(input)
