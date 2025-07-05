@@ -6,12 +6,6 @@ import (
 	"testing"
 )
 
-type TestCase struct {
-	name  string
-	input string
-	want  int
-}
-
 func getInput(t *testing.T, filename string) string {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -22,16 +16,20 @@ func getInput(t *testing.T, filename string) string {
 
 func TestDay07(t *testing.T) {
 	t.Run("Part1", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input string
+			want  string
+		}{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: getInput(t, "example.txt"),
+				want:  "CABDFE",
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  "FHMEQGIRSXNWZBCLOTUADJPKVY",
 			},
 		}
 
@@ -46,7 +44,11 @@ func TestDay07(t *testing.T) {
 	})
 
 	t.Run("Part2", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input string
+			want  int
+		}{
 			{
 				name:  "Example Input 1",
 				input: "",
