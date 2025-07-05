@@ -34,7 +34,7 @@ func parse(s string) ([]Point, error) {
 	return result, nil
 }
 
-func getBoundingBox(points []Point) (minX, maxX, minY, maxY int) {
+func getBoundingBox(points []Point) (minX, maxX, minY, maxY, width, height int) {
 	minX, maxX, minY, maxY = points[0].X, points[0].X, points[0].Y, points[0].Y
 	for _, p := range points {
 		if p.X < minX {
@@ -50,7 +50,18 @@ func getBoundingBox(points []Point) (minX, maxX, minY, maxY int) {
 		}
 	}
 
-	return minX, maxX, minY, maxY
+	width = maxX - minX + 1
+	height = maxY - minY + 1
+
+	return minX, maxX, minY, maxY, width, height
+}
+
+func createGrid(width, height int) [][]int {
+	grid := make([][]int, height)
+	for i := range grid {
+		grid[i] = make([]int, width)
+	}
+	return grid
 }
 
 func abs(x int) int {
@@ -70,16 +81,8 @@ func Part1(input string) int {
 		panic(err)
 	}
 
-	// calculate bounding box
-	minX, maxX, minY, maxY := getBoundingBox(points)
-	width := maxX - minX + 1
-	height := maxY - minY + 1
-
-	// create grid
-	grid := make([][]int, height)
-	for i := range grid {
-		grid[i] = make([]int, width)
-	}
+	minX, maxX, minY, maxY, width, height := getBoundingBox(points)
+	grid := createGrid(width, height)
 
 	sameDistance := -1 // special value for points with the same distance
 
@@ -134,8 +137,35 @@ func Part1(input string) int {
 	return maxFiniteArea
 }
 
-func Part2(input string) int {
-	return 0
+func Part2(input string, threshold int) int {
+	points, err := parse(input)
+	if err != nil {
+		panic(err)
+	}
+
+	minX, maxX, minY, maxY, width, height := getBoundingBox(points)
+	grid := createGrid(width, height)
+
+	// sum the distances for each grid cell to each point
+	for y := minY; y <= maxY; y++ {
+		for x := minX; x <= maxX; x++ {
+			for _, p := range points {
+				grid[y-minY][x-minX] += manhattanDistance(Point{x, y}, p)
+			}
+		}
+	}
+
+	// cound cells with total distance below threshold
+	numBelowThreshold := 0
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if grid[y][x] < threshold {
+				numBelowThreshold++
+			}
+		}
+	}
+
+	return numBelowThreshold
 }
 
 func Run() {
@@ -152,7 +182,7 @@ func Run() {
 	fmt.Printf("Part 1: %v (%d ms)\n", answerPart1, endPart1.Sub(startPart1).Milliseconds())
 
 	startPart2 := time.Now()
-	answerPart2 := Part2(input)
+	answerPart2 := Part2(input, 10000)
 	endPart2 := time.Now()
 	fmt.Printf("Part 2: %v (%d ms)\n", answerPart2, endPart2.Sub(startPart2).Milliseconds())
 }
