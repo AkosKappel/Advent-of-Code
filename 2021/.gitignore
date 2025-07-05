@@ -1,4 +1,4 @@
-.idea/
-venv/
-template_dir/
-__pycache__/
+/.idea/
+/venv/
+/template_dir/
+/__pycache__/
