@@ -9,11 +9,10 @@ import (
 )
 
 func parse(s string) ([]int, error) {
-	var result []int
-
 	lines := strings.FieldsFunc(s, func(r rune) bool {
 		return r == ',' || r == '\n'
 	})
+	result := make([]int, 0, len(lines))
 
 	for _, line := range lines {
 		line = strings.TrimSpace(line)

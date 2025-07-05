@@ -10,12 +10,14 @@ import (
 func parse(s string) []string {
 	lines := strings.Split(s, "\n")
 	result := make([]string, 0, len(lines))
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line != "" {
 			result = append(result, line)
 		}
 	}
+
 	return result
 }
 
