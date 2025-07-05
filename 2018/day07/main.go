@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func parse(s string) (map[rune][]rune, []rune) {
+func parse(s string) map[rune][]rune {
 	lines := strings.Split(s, "\n")
 	nodes := make(map[rune][]rune)
 
@@ -31,58 +31,121 @@ func parse(s string) (map[rune][]rune, []rune) {
 		nodes[node] = append(nodes[node], dependency)
 	}
 
-	// collect and sort the keys in alphabetical order
-	keys := make([]rune, 0, len(nodes))
-	for k := range nodes {
-		keys = append(keys, k)
-	}
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+	return nodes
+}
 
-	return nodes, keys
+func findNoDependencyNodes(graph map[rune][]rune, exclude ...rune) []rune {
+	var result []rune
+
+	for node, deps := range graph {
+		if len(deps) == 0 {
+			skip := false
+			for _, excludedNode := range exclude {
+				if excludedNode == node {
+					skip = true
+					break
+				}
+			}
+			if skip {
+				continue
+			}
+
+			result = append(result, node)
+		}
+	}
+
+	sort.Slice(result, func(i, j int) bool { return result[i] < result[j] })
+
+	return result
+}
+
+func removeNode(graph map[rune][]rune, node rune) {
+	// remove from map
+	delete(graph, node)
+
+	// remove from dependencies
+	for k, deps := range graph {
+		newDeps := make([]rune, 0, len(deps))
+		for _, dep := range deps {
+			if dep != node {
+				newDeps = append(newDeps, dep)
+			}
+		}
+		graph[k] = newDeps
+	}
 }
 
 func Part1(input string) string {
-	nodes, keys := parse(input)
-	solution := make([]rune, 0, len(keys))
+	nodes := parse(input)
+	solution := make([]rune, 0, len(nodes))
 
 	for len(nodes) > 0 {
-		// find next node with no dependencies (in sorted order)
-		var current rune
-		found := false
-		for _, k := range keys {
-			deps, ok := nodes[k]
-			if ok && len(deps) == 0 {
-				current = k
-				found = true
-				break
-			}
+		// find next node with no dependencies
+		resolvedNodes := findNoDependencyNodes(nodes)
+		if len(resolvedNodes) == 0 {
+			panic("no node without dependencies found")
 		}
-		if !found {
-			panic("could not find node without dependencies")
-		}
+
+		// find alphabetically lowest node
+		current := resolvedNodes[0]
 
 		// add next step and remove it from the map
 		solution = append(solution, current)
-		delete(nodes, current)
-
-		// remove current node from dependency lists of remaining nodes
-		for k, deps := range nodes {
-			newDeps := make([]rune, 0, len(deps))
-			for _, dep := range deps {
-				if dep != current {
-					newDeps = append(newDeps, dep)
-				}
-			}
-			nodes[k] = newDeps
-		}
+		removeNode(nodes, current)
 	}
 
 	return string(solution)
-
 }
 
-func Part2(input string) int {
-	return 0
+type Worker struct {
+	node rune
+	time int
+}
+
+func Part2(input string, numWorkers int, baseTime int) (int, string) {
+	nodes := parse(input)
+	workers := make([]Worker, numWorkers)
+	solution := make([]rune, 0, len(nodes))
+	clock := 0
+
+	for len(nodes) > 0 {
+		// update workers
+		for i := range workers {
+			if workers[i].node == 0 {
+				continue // skip free workers
+			}
+			if workers[i].time == 0 {
+				solution = append(solution, workers[i].node)
+				removeNode(nodes, workers[i].node)
+				workers[i].node = 0 // release worker
+			} else {
+				workers[i].time-- // decrease time left
+			}
+		}
+
+		currentlyProcessedNodes := make([]rune, 0, len(workers))
+		for i := range workers {
+			if workers[i].node != 0 {
+				currentlyProcessedNodes = append(currentlyProcessedNodes, workers[i].node)
+			}
+		}
+
+		// find next node with no dependencies
+		resolvableNodes := findNoDependencyNodes(nodes, currentlyProcessedNodes...)
+
+		// assign to all free workers
+		for i := range workers {
+			if workers[i].node == 0 && len(resolvableNodes) > 0 {
+				workers[i].node = resolvableNodes[0]
+				workers[i].time = baseTime + int(workers[i].node) - int('A')
+				resolvableNodes = resolvableNodes[1:]
+			}
+		}
+
+		clock++
+	}
+
+	return clock - 1, string(solution)
 }
 
 func Run() {
@@ -99,7 +162,7 @@ func Run() {
 	fmt.Printf("Part 1: %v (%d ms)\n", answerPart1, endPart1.Sub(startPart1).Milliseconds())
 
 	startPart2 := time.Now()
-	answerPart2 := Part2(input)
+	answerPart2, solution := Part2(input, 5, 60)
 	endPart2 := time.Now()
-	fmt.Printf("Part 2: %v (%d ms)\n", answerPart2, endPart2.Sub(startPart2).Milliseconds())
+	fmt.Printf("Part 2: %v %s (%d ms)\n", answerPart2, solution, endPart2.Sub(startPart2).Milliseconds())
 }
