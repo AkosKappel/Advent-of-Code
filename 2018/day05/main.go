@@ -10,26 +10,52 @@ func doesReact(a, b rune) bool {
 	return a-'A' == b-'a' || a-'a' == b-'A'
 }
 
-func Part1(input string) int {
-	split := []rune(input)
-
-	reacted := true
-	for reacted {
-		reacted = false
-		for i := 0; i < len(split)-1; i++ {
-			if doesReact(split[i], split[i+1]) {
-				split = append(split[:i], split[i+2:]...)
-				reacted = true
-				break
-			}
+func react(polymer []rune) []rune {
+	stack := make([]rune, 0, len(polymer))
+	for _, c := range polymer {
+		if len(stack) > 0 && doesReact(stack[len(stack)-1], c) {
+			stack = stack[:len(stack)-1] // remove last
+		} else {
+			stack = append(stack, c)
 		}
 	}
+	return stack
+}
 
-	return len(split)
+func Part1(input string) int {
+	return len(react([]rune(input)))
 }
 
 func Part2(input string) int {
-	return 0
+	// collect unique types (always lowercase letters)
+	types := make(map[rune]struct{})
+	for _, c := range input {
+		if 'A' <= c && c <= 'Z' {
+			types[c+'a'-'A'] = struct{}{}
+		} else if 'a' <= c && c <= 'z' {
+			types[c] = struct{}{}
+		}
+	}
+
+	shortest := len(input)
+	for t := range types {
+		// remove both upper and lower case of t
+		modified := make([]rune, 0, len(input))
+		for _, c := range input {
+			if c == t || c == t+'A'-'a' {
+				continue
+			}
+			modified = append(modified, c)
+		}
+
+		// use the fast react function (single-pass stack)
+		reacted := react(modified)
+		if len(reacted) < shortest {
+			shortest = len(reacted)
+		}
+	}
+
+	return shortest
 }
 
 func Run() {
