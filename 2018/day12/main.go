@@ -3,40 +3,65 @@ package day12
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+const EMPTY = "."
+const PLANT = '#'
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+func parse(s string) (initialState string, rules map[string]string) {
+	sections := strings.SplitAfterN(s, "\n", 2)
+	_, _ = fmt.Sscanf(strings.TrimSpace(sections[0]), "initial state: %s", &initialState)
 
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
-		}
+	rules = make(map[string]string)
 
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
-		}
-
-		result = append(result, n)
+	for _, rule := range strings.Split(strings.TrimSpace(sections[1]), "\n") {
+		parts := strings.Split(rule, " => ")
+		lhs := strings.TrimSpace(parts[0])
+		rhs := strings.TrimSpace(parts[1])
+		rules[lhs] = rhs
 	}
 
-	return result, nil
+	return
 }
 
 func Part1(input string) int {
-	return 0
+	const generations = 20
+	padding := strings.Repeat(EMPTY, 3)
+	startIndex := 0
+
+	pots, rules := parse(input)
+	pots = padding + pots + padding
+	startIndex -= 3
+
+	for i := 0; i < generations; i++ {
+		nextState := strings.Builder{}
+		for j := 2; j < len(pots)-2; j++ {
+			pot := pots[j-2 : j+3]
+			if rule, ok := rules[pot]; ok {
+				nextState.WriteString(rule)
+			} else {
+				nextState.WriteString(EMPTY)
+			}
+		}
+
+		pots = padding + nextState.String() + padding
+		startIndex -= 1
+	}
+
+	sum := 0
+	for i, pot := range pots {
+		if pot == PLANT {
+			sum += i + startIndex
+		}
+	}
+
+	return sum
 }
 
 func Part2(input string) int {
+	const generations = 50_000_000_000
 	return 0
 }
 
