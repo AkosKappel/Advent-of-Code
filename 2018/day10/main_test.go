@@ -3,14 +3,9 @@ package day10_test
 import (
 	"aoc2018/day10"
 	"os"
+	"strings"
 	"testing"
 )
-
-type TestCase struct {
-	name  string
-	input string
-	want  int
-}
 
 func getInput(t *testing.T, filename string) string {
 	data, err := os.ReadFile(filename)
@@ -22,40 +17,68 @@ func getInput(t *testing.T, filename string) string {
 
 func TestDay10(t *testing.T) {
 	t.Run("Part1", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input string
+			want  string
+		}{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: getInput(t, "example.txt"),
+				want: strings.TrimSpace(`
+#...#..###
+#...#...#.
+#...#...#.
+#####...#.
+#...#...#.
+#...#...#.
+#...#...#.
+#...#..###
+`),
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want: strings.TrimSpace(`
+.####....####...#.......######..#.......#....#...####...######
+#....#..#....#..#............#..#.......#....#..#....#..#.....
+#.......#.......#............#..#.......#....#..#.......#.....
+#.......#.......#...........#...#.......#....#..#.......#.....
+#.......#.......#..........#....#.......######..#.......#####.
+#..###..#..###..#.........#.....#.......#....#..#.......#.....
+#....#..#....#..#........#......#.......#....#..#.......#.....
+#....#..#....#..#.......#.......#.......#....#..#.......#.....
+#...##..#...##..#.......#.......#.......#....#..#....#..#.....
+.###.#...###.#..######..######..######..#....#...####...######
+`),
 			},
 		}
 
 		for _, tc := range cases {
 			t.Run(tc.name, func(t *testing.T) {
-				got := day10.Part1(tc.input)
+				got, _ := day10.Part1(tc.input)
 				if got != tc.want {
-					t.Errorf("Part1() = %d; want %d", got, tc.want)
+					t.Errorf("Part1() = %s; want %s", got, tc.want)
 				}
 			})
 		}
 	})
 
 	t.Run("Part2", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input string
+			want  int
+		}{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: getInput(t, "example.txt"),
+				want:  3,
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  10144,
 			},
 		}
 
