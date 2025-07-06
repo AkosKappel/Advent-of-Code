@@ -50,7 +50,7 @@ func TestDay12(t *testing.T) {
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  3600000002022,
 			},
 		}
 

@@ -7,62 +7,140 @@ import (
 	"time"
 )
 
-const EMPTY = "."
-const PLANT = '#'
+const EMPTY rune = '.'
+const PLANT rune = '#'
 
-func parse(s string) (initialState string, rules map[string]string) {
-	sections := strings.SplitAfterN(s, "\n", 2)
-	_, _ = fmt.Sscanf(strings.TrimSpace(sections[0]), "initial state: %s", &initialState)
+func parse(s string) (pots map[int]rune, rules map[string]rune) {
+	lines := strings.Split(s, "\n")
+	initialState := strings.TrimSpace(strings.TrimPrefix(lines[0], "initial state: "))
 
-	rules = make(map[string]string)
-
-	for _, rule := range strings.Split(strings.TrimSpace(sections[1]), "\n") {
-		parts := strings.Split(rule, " => ")
-		lhs := strings.TrimSpace(parts[0])
-		rhs := strings.TrimSpace(parts[1])
-		rules[lhs] = rhs
+	pots = make(map[int]rune)
+	for i, c := range initialState {
+		pots[i] = c
 	}
 
+	rules = make(map[string]rune)
+	for _, line := range lines[1:] {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		parts := strings.Split(line, " => ")
+		lhs := strings.TrimSpace(parts[0])
+		rhs := strings.TrimSpace(parts[1])
+
+		if len(lhs) != 5 || len(rhs) != 1 {
+			panic(fmt.Sprintf("invalid rule: %s => %s", lhs, rhs))
+		}
+
+		rules[lhs] = rune(rhs[0])
+	}
+
+	return pots, rules
+}
+
+func minMax(pots map[int]rune) (min, max int) {
+	first := true
+	for k := range pots {
+		if first {
+			min, max = k, k
+			first = false
+		} else {
+			if k < min {
+				min = k
+			}
+			if k > max {
+				max = k
+			}
+		}
+	}
 	return
+}
+
+func evolve(pots map[int]rune, rules map[string]rune) map[int]rune {
+	newPots := make(map[int]rune)
+	minPot, maxPot := minMax(pots)
+
+	for i := minPot - 2; i <= maxPot+2; i++ {
+		var sb strings.Builder
+		for j := i - 2; j <= i+2; j++ {
+			if c, ok := pots[j]; ok {
+				sb.WriteRune(c)
+			} else {
+				sb.WriteRune(EMPTY)
+			}
+		}
+		pattern := sb.String()
+
+		if v, ok := rules[pattern]; ok {
+			newPots[i] = v
+		} else {
+			newPots[i] = EMPTY
+		}
+	}
+
+	// Remove empty pots
+	pots = make(map[int]rune)
+	for k, v := range newPots {
+		if v == PLANT {
+			pots[k] = PLANT
+		}
+	}
+
+	return pots
+}
+
+func sumPots(pots map[int]rune) int {
+	sum := 0
+	for k := range pots {
+		sum += k
+	}
+	return sum
 }
 
 func Part1(input string) int {
 	const generations = 20
-	padding := strings.Repeat(EMPTY, 3)
-	startIndex := 0
-
 	pots, rules := parse(input)
-	pots = padding + pots + padding
-	startIndex -= 3
 
-	for i := 0; i < generations; i++ {
-		nextState := strings.Builder{}
-		for j := 2; j < len(pots)-2; j++ {
-			pot := pots[j-2 : j+3]
-			if rule, ok := rules[pot]; ok {
-				nextState.WriteString(rule)
-			} else {
-				nextState.WriteString(EMPTY)
-			}
-		}
-
-		pots = padding + nextState.String() + padding
-		startIndex -= 1
+	for g := 0; g < generations; g++ {
+		pots = evolve(pots, rules)
 	}
 
-	sum := 0
-	for i, pot := range pots {
-		if pot == PLANT {
-			sum += i + startIndex
-		}
-	}
-
-	return sum
+	return sumPots(pots)
 }
 
 func Part2(input string) int {
 	const generations = 50_000_000_000
-	return 0
+	const minStableCount = 100
+	pots, rules := parse(input)
+
+	var lastSum int
+	var lastDiff int
+	stableCount := 0
+
+	for g := 1; g <= generations; g++ {
+		pots = evolve(pots, rules)
+		sum := sumPots(pots)
+		diff := sum - lastSum
+
+		if diff == lastDiff {
+			stableCount++
+		} else {
+			stableCount = 0
+		}
+
+		// Assume the pattern is stable, if it hasn't changed for X generations
+		if stableCount > minStableCount {
+			remaining := generations - g
+			return sum + remaining*diff
+		}
+
+		lastSum = sum
+		lastDiff = diff
+	}
+
+	return sumPots(pots)
 }
 
 func Run() {
