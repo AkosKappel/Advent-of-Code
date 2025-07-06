@@ -2,22 +2,15 @@ package day11_test
 
 import (
 	"aoc2018/day11"
-	"os"
 	"testing"
 )
 
 type TestCase struct {
 	name  string
-	input string
+	input int
+	wantX int
+	wantY int
 	want  int
-}
-
-func getInput(t *testing.T, filename string) string {
-	data, err := os.ReadFile(filename)
-	if err != nil {
-		t.Fatalf("Failed to read file %s: %v", filename, err)
-	}
-	return string(data)
 }
 
 func TestDay11(t *testing.T) {
@@ -25,21 +18,32 @@ func TestDay11(t *testing.T) {
 		cases := []TestCase{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: 18,
+				wantX: 33,
+				wantY: 45,
+				want:  29,
+			},
+			{
+				name:  "Example Input 2",
+				input: 42,
+				wantX: 21,
+				wantY: 61,
+				want:  30,
 			},
 			{
 				name:  "Real Input",
-				input: getInput(t, "input.txt"),
-				want:  0,
+				input: 7165,
+				wantX: 235,
+				wantY: 20,
+				want:  31,
 			},
 		}
 
 		for _, tc := range cases {
 			t.Run(tc.name, func(t *testing.T) {
-				got := day11.Part1(tc.input)
-				if got != tc.want {
-					t.Errorf("Part1() = %d; want %d", got, tc.want)
+				gotX, gotY, gotPower := day11.Part1(tc.input)
+				if gotX != tc.wantX || gotY != tc.wantY || gotPower != tc.want {
+					t.Errorf("Part1() = (%d, %d, %d); want (%d, %d, %d)", gotX, gotY, gotPower, tc.wantX, tc.wantY, tc.want)
 				}
 			})
 		}
@@ -49,21 +53,32 @@ func TestDay11(t *testing.T) {
 		cases := []TestCase{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: 18,
+				wantX: 90,
+				wantY: 269,
+				want:  16,
+			},
+			{
+				name:  "Example Input 2",
+				input: 42,
+				wantX: 232,
+				wantY: 251,
+				want:  12,
 			},
 			{
 				name:  "Real Input",
-				input: getInput(t, "input.txt"),
-				want:  0,
+				input: 7165,
+				wantX: 237,
+				wantY: 223,
+				want:  14,
 			},
 		}
 
 		for _, tc := range cases {
 			t.Run(tc.name, func(t *testing.T) {
-				got := day11.Part2(tc.input)
-				if got != tc.want {
-					t.Errorf("Part2() = %d; want %d", got, tc.want)
+				gotX, gotY, gotSize := day11.Part2(tc.input)
+				if gotX != tc.wantX || gotY != tc.wantY || gotSize != tc.want {
+					t.Errorf("Part2() = (%d, %d, %d); want (%d, %d, %d)", gotX, gotY, gotSize, tc.wantX, tc.wantY, tc.want)
 				}
 			})
 		}
