@@ -31,7 +31,6 @@ const (
 	Empty      = ' '
 	Slash      = '/'
 	Backslash  = '\\'
-	Collision  = 'X'
 )
 
 type Cart struct {
@@ -217,13 +216,70 @@ func Part1(input string) string {
 		tick++
 	}
 }
+func Part2(input string) string {
+	grid, carts := parse(input)
 
-func Part2(input string) int {
-	return 0
+	for len(carts) > 1 {
+		// sort carts in reading order
+		sort.Slice(carts, func(i, j int) bool {
+			if carts[i].y == carts[j].y {
+				return carts[i].x < carts[j].x
+			}
+			return carts[i].y < carts[j].y
+		})
+
+		// map to track where carts are
+		pos := make(map[[2]int]int) // [x,y] -> cart index
+
+		// fill map initially
+		for idx, c := range carts {
+			pos[[2]int{c.x, c.y}] = idx
+		}
+
+		removed := make(map[int]bool)
+
+		for i := 0; i < len(carts); i++ {
+			// skip carts already removed
+			if removed[i] {
+				continue
+			}
+
+			cart := &carts[i]
+
+			// remove old position
+			delete(pos, [2]int{cart.x, cart.y})
+
+			move(cart, &grid)
+
+			newPos := [2]int{cart.x, cart.y}
+
+			if otherIdx, exists := pos[newPos]; exists && !removed[otherIdx] {
+				// collision
+				removed[i] = true
+				removed[otherIdx] = true
+				delete(pos, newPos)
+			} else {
+				// no collision, occupy the new position
+				pos[newPos] = i
+			}
+		}
+
+		// remove carts in reverse order to keep indices correct
+		var newCarts []Cart
+		for idx, c := range carts {
+			if !removed[idx] {
+				newCarts = append(newCarts, c)
+			}
+		}
+		carts = newCarts
+	}
+
+	// last remaining cart
+	lastCart := carts[0]
+	return fmt.Sprintf("%d,%d", lastCart.x, lastCart.y)
 }
 
 func Run() {
-	//data, err := os.ReadFile("day13/example.txt")
 	data, err := os.ReadFile("day13/input.txt")
 	if err != nil {
 		panic(err)

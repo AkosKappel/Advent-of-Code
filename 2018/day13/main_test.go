@@ -9,7 +9,7 @@ import (
 type TestCase struct {
 	name  string
 	input string
-	want  int
+	want  string
 }
 
 func getInput(t *testing.T, filename string) string {
@@ -22,11 +22,7 @@ func getInput(t *testing.T, filename string) string {
 
 func TestDay13(t *testing.T) {
 	t.Run("Part1", func(t *testing.T) {
-		cases := []struct {
-			name  string
-			input string
-			want  string
-		}{
+		cases := []TestCase{
 			{
 				name:  "Example Input 1",
 				input: "",
@@ -52,14 +48,14 @@ func TestDay13(t *testing.T) {
 	t.Run("Part2", func(t *testing.T) {
 		cases := []TestCase{
 			{
-				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				name:  "Example Input 2",
+				input: getInput(t, "example2.txt"),
+				want:  "6,4",
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  "137,101",
 			},
 		}
 
