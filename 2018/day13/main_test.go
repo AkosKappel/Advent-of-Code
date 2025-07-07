@@ -22,16 +22,20 @@ func getInput(t *testing.T, filename string) string {
 
 func TestDay13(t *testing.T) {
 	t.Run("Part1", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input string
+			want  string
+		}{
 			{
 				name:  "Example Input 1",
 				input: "",
-				want:  0,
+				want:  "7,3",
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  "109,23",
 			},
 		}
 
