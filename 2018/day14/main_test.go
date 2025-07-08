@@ -2,36 +2,40 @@ package day14_test
 
 import (
 	"aoc2018/day14"
-	"os"
 	"testing"
 )
 
-type TestCase struct {
-	name  string
-	input string
-	want  int
-}
-
-func getInput(t *testing.T, filename string) string {
-	data, err := os.ReadFile(filename)
-	if err != nil {
-		t.Fatalf("Failed to read file %s: %v", filename, err)
-	}
-	return string(data)
-}
-
 func TestDay14(t *testing.T) {
 	t.Run("Part1", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input int
+			want  string
+		}{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: 9,
+				want:  "5158916779",
+			},
+			{
+				name:  "Example Input 2",
+				input: 5,
+				want:  "0124515891",
+			},
+			{
+				name:  "Example Input 3",
+				input: 18,
+				want:  "9251071085",
+			},
+			{
+				name:  "Example Input 4",
+				input: 2018,
+				want:  "5941429882",
 			},
 			{
 				name:  "Real Input",
-				input: getInput(t, "input.txt"),
-				want:  0,
+				input: 704321,
+				want:  "1741551073",
 			},
 		}
 
@@ -46,16 +50,35 @@ func TestDay14(t *testing.T) {
 	})
 
 	t.Run("Part2", func(t *testing.T) {
-		cases := []TestCase{
+		cases := []struct {
+			name  string
+			input string
+			want  int
+		}{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: "51589",
+				want:  9,
+			},
+			{
+				name:  "Example Input 2",
+				input: "01245",
+				want:  5,
+			},
+			{
+				name:  "Example Input 3",
+				input: "92510",
+				want:  18,
+			},
+			{
+				name:  "Example Input 4",
+				input: "59414",
+				want:  2018,
 			},
 			{
 				name:  "Real Input",
-				input: getInput(t, "input.txt"),
-				want:  0,
+				input: "704321",
+				want:  20322683,
 			},
 		}
 

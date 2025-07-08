@@ -2,51 +2,60 @@ package day14
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+const initialRecipes = "37"
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
-
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
-		}
-
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
-		}
-
-		result = append(result, n)
+func generateNewRecipes(recipes *[]rune, elves *[]int) (newRecipes []rune) {
+	combined := 0
+	for _, elf := range *elves {
+		combined += int((*recipes)[elf] - '0')
 	}
 
-	return result, nil
+	newRecipes = []rune(strconv.Itoa(combined))
+	return
 }
 
-func Part1(input string) int {
-	return 0
+func Part1(input int) string {
+	recipes := []rune(initialRecipes)
+	elves := []int{0, 1}
+
+	numToGenerate := input + 10
+
+	for len(recipes) < numToGenerate {
+		recipes = append(recipes, generateNewRecipes(&recipes, &elves)...)
+
+		for j, elf := range elves {
+			elves[j] = (elf + int(recipes[elf]-'0') + 1) % len(recipes)
+		}
+	}
+
+	return string(recipes[input:numToGenerate])
 }
 
 func Part2(input string) int {
-	return 0
+	recipes := []rune(initialRecipes)
+	elves := []int{0, 1}
+
+	for {
+		recipes = append(recipes, generateNewRecipes(&recipes, &elves)...)
+
+		for j, elf := range elves {
+			elves[j] = (elf + int(recipes[elf]-'0') + 1) % len(recipes)
+		}
+
+		lastFewRecipes := recipes[max(0, len(recipes)-len(input)-10):]
+		if strings.Contains(string(lastFewRecipes), input) {
+			return strings.Index(string(recipes), input)
+		}
+	}
 }
 
 func Run() {
-	data, err := os.ReadFile("day14/input.txt")
-	if err != nil {
-		panic(err)
-	}
-
-	input := string(data)
+	input := 704321
 
 	startPart1 := time.Now()
 	answerPart1 := Part1(input)
@@ -54,7 +63,7 @@ func Run() {
 	fmt.Printf("Part 1: %v (%d ms)\n", answerPart1, endPart1.Sub(startPart1).Milliseconds())
 
 	startPart2 := time.Now()
-	answerPart2 := Part2(input)
+	answerPart2 := Part2(strconv.Itoa(input))
 	endPart2 := time.Now()
 	fmt.Printf("Part 2: %v (%d ms)\n", answerPart2, endPart2.Sub(startPart2).Milliseconds())
 }
