@@ -3,20 +3,26 @@ package day14
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 )
 
 const initialRecipes = "37"
 
-func generateNewRecipes(recipes *[]rune, elves *[]int) (newRecipes []rune) {
-	combined := 0
-	for _, elf := range *elves {
-		combined += int((*recipes)[elf] - '0')
+func hasPatternAtEnd(recipes []rune, pattern []rune) bool {
+	patternLength := len(pattern)
+	recipesLength := len(recipes)
+
+	if recipesLength < patternLength {
+		return false
 	}
 
-	newRecipes = []rune(strconv.Itoa(combined))
-	return
+	for i := 0; i < patternLength; i++ {
+		if recipes[recipesLength-patternLength+i] != pattern[i] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func Part1(input int) string {
@@ -26,7 +32,13 @@ func Part1(input int) string {
 	numToGenerate := input + 10
 
 	for len(recipes) < numToGenerate {
-		recipes = append(recipes, generateNewRecipes(&recipes, &elves)...)
+		combined := 0
+		for _, elf := range elves {
+			combined += int(recipes[elf] - '0')
+		}
+
+		newRecipes := []rune(strconv.Itoa(combined))
+		recipes = append(recipes, newRecipes...)
 
 		for j, elf := range elves {
 			elves[j] = (elf + int(recipes[elf]-'0') + 1) % len(recipes)
@@ -40,16 +52,37 @@ func Part2(input string) int {
 	recipes := []rune(initialRecipes)
 	elves := []int{0, 1}
 
-	for {
-		recipes = append(recipes, generateNewRecipes(&recipes, &elves)...)
+	pattern := []rune(input)
+	patternLength := len(pattern)
 
-		for j, elf := range elves {
-			elves[j] = (elf + int(recipes[elf]-'0') + 1) % len(recipes)
+	for {
+		// compute combined and new recipes
+		combined := 0
+		for _, elf := range elves {
+			combined += int(recipes[elf] - '0')
 		}
 
-		lastFewRecipes := recipes[max(0, len(recipes)-len(input)-10):]
-		if strings.Contains(string(lastFewRecipes), input) {
-			return strings.Index(string(recipes), input)
+		if combined >= 10 {
+			// add first recipe
+			recipes = append(recipes, rune('0'+combined/10))
+
+			// check after adding one recipe
+			if hasPatternAtEnd(recipes, pattern) {
+				return len(recipes) - patternLength
+			}
+		}
+
+		// add second recipe
+		recipes = append(recipes, rune('0'+combined%10))
+
+		// check after adding second recipe
+		if hasPatternAtEnd(recipes, pattern) {
+			return len(recipes) - patternLength
+		}
+
+		// move elves
+		for j, elf := range elves {
+			elves[j] = (elf + int(recipes[elf]-'0') + 1) % len(recipes)
 		}
 	}
 }
