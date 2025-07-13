@@ -3,33 +3,11 @@ package day16
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
-
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
-
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
-		}
-
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
-		}
-
-		result = append(result, n)
-	}
-
-	return result, nil
+func parse(s string) {
+	return
 }
 
 func Part1(input string) int {
