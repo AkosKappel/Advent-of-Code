@@ -87,11 +87,13 @@ func parseInstruction(line string) [4]int {
 	return instruction
 }
 
-func parse(s string) []Sample {
+func parse(s string) ([]Sample, [][4]int) {
 	lines := strings.Split(strings.TrimSpace(s), "\n")
 	var samples []Sample
+	var testProgram [][4]int
 
 	i := 0
+	// Parse samples first
 	for i < len(lines) {
 		line := strings.TrimSpace(lines[i])
 		if line == "" {
@@ -119,7 +121,21 @@ func parse(s string) []Sample {
 		}
 	}
 
-	return samples
+	// Skip empty lines between samples and test program
+	for i < len(lines) && strings.TrimSpace(lines[i]) == "" {
+		i++
+	}
+
+	// Parse test program
+	for i < len(lines) {
+		line := strings.TrimSpace(lines[i])
+		if line != "" {
+			testProgram = append(testProgram, parseInstruction(line))
+		}
+		i++
+	}
+
+	return samples, testProgram
 }
 
 func testOpcode(sample Sample, opFunc OpFunc) bool {
@@ -135,6 +151,89 @@ func testOpcode(sample Sample, opFunc OpFunc) bool {
 	return expected == sample.after
 }
 
+func getPossibleOpcodes(sample Sample) []string {
+	var possible []string
+	for opName, opFunc := range opcodes {
+		if testOpcode(sample, opFunc) {
+			possible = append(possible, opName)
+		}
+	}
+	return possible
+}
+
+func deduceOpcodeMapping(samples []Sample) map[int]string {
+	// For each opcode number, track which operations are possible
+	possible := make(map[int]map[string]bool)
+	for i := 0; i < 16; i++ {
+		possible[i] = make(map[string]bool)
+		for opName := range opcodes {
+			possible[i][opName] = true
+		}
+	}
+
+	// For each sample, eliminate impossible opcodes
+	for _, sample := range samples {
+		opcodeNum := sample.instruction[0]
+		possibleOps := getPossibleOpcodes(sample)
+		possibleSet := make(map[string]bool)
+		for _, op := range possibleOps {
+			possibleSet[op] = true
+		}
+
+		// Remove operations that don't work for this opcode number
+		for opName := range possible[opcodeNum] {
+			if !possibleSet[opName] {
+				delete(possible[opcodeNum], opName)
+			}
+		}
+	}
+
+	// Deduce the mapping using constraint propagation
+	mapping := make(map[int]string)
+	used := make(map[string]bool)
+
+	for len(mapping) < 16 {
+		// Find opcode numbers with only one possible operation
+		for opcodeNum := 0; opcodeNum < 16; opcodeNum++ {
+			if _, mapped := mapping[opcodeNum]; mapped {
+				continue
+			}
+
+			available := make([]string, 0)
+			for opName := range possible[opcodeNum] {
+				if !used[opName] {
+					available = append(available, opName)
+				}
+			}
+
+			if len(available) == 1 {
+				mapping[opcodeNum] = available[0]
+				used[available[0]] = true
+			}
+		}
+	}
+
+	return mapping
+}
+
+func executeProgram(program [][4]int, opcodeMapping map[int]string) [4]int {
+	registers := [4]int{0, 0, 0, 0}
+
+	for _, instruction := range program {
+		opcodeNum := instruction[0]
+		a := instruction[1]
+		b := instruction[2]
+		c := instruction[3]
+
+		opName := opcodeMapping[opcodeNum]
+		opFunc := opcodes[opName]
+
+		registers[c] = opFunc(a, b, registers)
+	}
+
+	return registers
+}
+
 func countMatchingOpcodes(sample Sample) int {
 	count := 0
 	for _, opFunc := range opcodes {
@@ -146,7 +245,7 @@ func countMatchingOpcodes(sample Sample) int {
 }
 
 func Part1(input string) int {
-	samples := parse(input)
+	samples, _ := parse(input)
 	count := 0
 
 	for _, sample := range samples {
@@ -159,7 +258,16 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return 0
+	samples, testProgram := parse(input)
+
+	// Deduce which opcode number corresponds to which operation
+	opcodeMapping := deduceOpcodeMapping(samples)
+
+	// Execute the test program
+	finalRegisters := executeProgram(testProgram, opcodeMapping)
+
+	// Return the value in register 0
+	return finalRegisters[0]
 }
 
 func Run() {
