@@ -3,41 +3,165 @@ package day17
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+const (
+	Clay         rune = '#'
+	Sand         rune = '.'
+	SettledWater rune = '~'
+	FlowingWater rune = '|'
+	Spring       rune = '+'
+)
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+type Point struct{ x, y int }
 
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
+var grid map[Point]rune
+var minY, maxY int
+
+func parse(input string) {
+	grid = make(map[Point]rune)
+	minY = 1 << 30
+	maxY = 0
+
+	re := regexp.MustCompile(`([xy])=(\d+), ([xy])=(\d+)\.\.(\d+)`)
+	for _, line := range strings.Split(strings.TrimSpace(input), "\n") {
+		matches := re.FindStringSubmatch(line)
+		a1, _ := strconv.Atoi(matches[2])
+		a2, _ := strconv.Atoi(matches[4])
+		a3, _ := strconv.Atoi(matches[5])
+
+		for i := a2; i <= a3; i++ {
+			var p Point
+			if matches[1] == "x" {
+				p = Point{a1, i}
+			} else {
+				p = Point{i, a1}
+			}
+			grid[p] = Clay
+			if p.y < minY {
+				minY = p.y
+			}
+			if p.y > maxY {
+				maxY = p.y
+			}
 		}
+	}
+}
 
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
-		}
+func set(p Point, r rune) {
+	if _, ok := grid[p]; !ok {
+		grid[p] = r
+	}
+}
 
-		result = append(result, n)
+func get(p Point) rune {
+	if r, ok := grid[p]; ok {
+		return r
+	}
+	return Sand
+}
+
+func fill(p Point) {
+	if p.y > maxY {
+		return
 	}
 
-	return result, nil
+	below := Point{p.x, p.y + 1}
+	if get(below) == Sand {
+		set(below, FlowingWater)
+		fill(below)
+	}
+
+	if get(below) != Clay && get(below) != SettledWater {
+		return
+	}
+
+	leftBound, rightBound := p.x, p.x
+	blockedLeft, blockedRight := false, false
+
+	// go left
+	for {
+		left := Point{leftBound - 1, p.y}
+		belowLeft := Point{left.x, left.y + 1}
+		if get(left) == Clay {
+			blockedLeft = true
+			break
+		}
+		if get(left) != FlowingWater {
+			set(left, FlowingWater)
+		}
+		if get(belowLeft) == Sand {
+			set(belowLeft, FlowingWater)
+			fill(belowLeft)
+		}
+		if get(belowLeft) != Clay && get(belowLeft) != SettledWater {
+			break
+		}
+		leftBound--
+	}
+
+	// go right
+	for {
+		right := Point{rightBound + 1, p.y}
+		belowRight := Point{right.x, right.y + 1}
+		if get(right) == Clay {
+			blockedRight = true
+			break
+		}
+		if get(right) != FlowingWater {
+			set(right, FlowingWater)
+		}
+		if get(belowRight) == Sand {
+			set(belowRight, FlowingWater)
+			fill(belowRight)
+		}
+		if get(belowRight) != Clay && get(belowRight) != SettledWater {
+			break
+		}
+		rightBound++
+	}
+
+	// Fill with settled water if bounded both sides
+	if blockedLeft && blockedRight {
+		for x := leftBound; x <= rightBound; x++ {
+			grid[Point{x, p.y}] = SettledWater
+		}
+		fill(Point{p.x, p.y - 1}) // go up to settle above
+	}
 }
 
 func Part1(input string) int {
-	return 0
+	parse(input)
+	source := Point{500, 0}
+	set(source, Spring)
+	fill(source)
+
+	count := 0
+	for p, r := range grid {
+		if p.y >= minY && p.y <= maxY && (r == FlowingWater || r == SettledWater) {
+			count++
+		}
+	}
+	return count
 }
 
 func Part2(input string) int {
-	return 0
+	parse(input)
+	source := Point{500, 0}
+	set(source, Spring)
+	fill(source)
+
+	count := 0
+	for p, r := range grid {
+		if p.y >= minY && p.y <= maxY && r == SettledWater {
+			count++
+		}
+	}
+	return count
 }
 
 func Run() {
