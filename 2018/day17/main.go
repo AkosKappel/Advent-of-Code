@@ -3,36 +3,101 @@ package day17
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+const (
+	Clay  rune = '#'
+	Sand  rune = '.'
+	Water rune = '~'
+)
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+type Point struct {
+	x, y int
+}
+
+func parse(s string) (map[Point]rune, Point) {
+	lines := strings.Split(strings.TrimSpace(s), "\n")
+	groud := make(map[Point]rune)
 
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
+		var x1, x2, y1, y2 int
+
+		_, err := fmt.Sscanf(line, "x=%d, y=%d..%d", &x1, &y1, &y2)
+		if err == nil {
+			for y := y1; y <= y2; y++ {
+				groud[Point{x1, y}] = Clay
+			}
+			continue
 		}
 
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
+		_, err = fmt.Sscanf(line, "y=%d, x=%d..%d", &y1, &x1, &x2)
+		if err == nil {
+			for x := x1; x <= x2; x++ {
+				groud[Point{x, y1}] = Clay
+			}
+			continue
 		}
-
-		result = append(result, n)
 	}
 
-	return result, nil
+	waterSource := Point{500, 0}
+	groud[waterSource] = Water
+
+	return groud, waterSource
+}
+
+// DFS from the water source
+func flow(groud map[Point]rune, waterSource Point) int {
+	toVisit := []Point{waterSource}
+
+	for len(toVisit) > 0 {
+		point := toVisit[0]
+		toVisit = toVisit[1:]
+
+		if groud[point] != Water {
+			groud[point] = Water
+		}
+
+		// Flow down
+		down := Point{point.x, point.y + 1}
+		if _, exists := groud[down]; !exists {
+			toVisit = append(toVisit, down)
+			continue
+		}
+
+		// Flow left
+		left := Point{point.x - 1, point.y}
+		if groud[left] == Sand {
+			toVisit = append(toVisit, left)
+			continue
+		}
+
+		// Flow right
+		right := Point{point.x + 1, point.y}
+		if groud[right] == Sand {
+			toVisit = append(toVisit, right)
+			continue
+		}
+
+		// Backpropagate
+		toVisit = append(toVisit, Point{point.x, point.y - 1})
+	}
+
+	// count water particles
+	numWaterParts := 0
+	for _, v := range groud {
+		if v == Water {
+			numWaterParts++
+		}
+	}
+
+	return numWaterParts
 }
 
 func Part1(input string) int {
+	groud, source := parse(input)
+
 	return 0
 }
 
