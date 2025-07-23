@@ -128,9 +128,10 @@ func evolve(g *Grid) *Grid {
 }
 
 func Part1(input string) int {
+	const minutes = 10
 	grid := parse(input)
 
-	for i := 0; i < 10; i++ {
+	for minute := 0; minute < minutes; minute++ {
 		grid = evolve(grid)
 	}
 
@@ -138,7 +139,26 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return 0
+	const minutes = 1_000_000_000
+	grid := parse(input)
+	seen := map[string]int{}
+	minute := 0
+
+	for minute < minutes {
+		state := grid.String()
+		if prev, ok := seen[state]; ok {
+			period := minute - prev
+			remaining := minutes - minute
+			repeat := remaining / period
+			minute += repeat * period
+			remaining %= period
+		}
+		seen[state] = minute
+		minute++
+		grid = evolve(grid)
+	}
+
+	return grid.Count(Lumberyard) * grid.Count(Tree)
 }
 
 func Run() {
