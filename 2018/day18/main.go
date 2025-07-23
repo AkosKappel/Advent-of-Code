@@ -3,37 +3,138 @@ package day18
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+const (
+	Ground     rune = '.'
+	Tree       rune = '|'
+	Lumberyard rune = '#'
+)
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+type Grid struct {
+	Area          [][]rune
+	Height, Width int
+}
 
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
+func (g *Grid) Get(x, y int) rune {
+	if 0 <= x && x < g.Width && 0 <= y && y < g.Height {
+		return g.Area[y][x]
+	}
+	return Ground
+}
+
+func (g *Grid) Set(x, y int, r rune) {
+	if 0 <= x && x < g.Width && 0 <= y && y < g.Height {
+		g.Area[y][x] = r
+	}
+}
+
+func (g *Grid) Count(r rune) int {
+	count := 0
+	for _, row := range g.Area {
+		for _, cell := range row {
+			if cell == r {
+				count++
+			}
 		}
+	}
+	return count
+}
 
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
+func (g *Grid) Neighbors(x, y int) []rune {
+	var neighbors []rune
+	for i := -1; i <= 1; i++ {
+		for j := -1; j <= 1; j++ {
+			if i == 0 && j == 0 {
+				continue
+			}
+			neighbors = append(neighbors, g.Get(x+i, y+j))
 		}
+	}
+	return neighbors
+}
 
-		result = append(result, n)
+func (g *Grid) String() string {
+	s := strings.Builder{}
+	for _, row := range g.Area {
+		for _, cell := range row {
+			s.WriteRune(cell)
+		}
+		s.WriteRune('\n')
+	}
+	return s.String()
+}
+
+func parse(s string) *Grid {
+	lines := strings.Split(strings.TrimSpace(s), "\n")
+
+	height := len(lines)
+	width := len(strings.TrimSpace(lines[0]))
+	area := make([][]rune, height)
+
+	for i, line := range lines {
+		area[i] = []rune(strings.TrimSpace(line))
 	}
 
-	return result, nil
+	return &Grid{Area: area, Height: height, Width: width}
+}
+
+func evolve(g *Grid) *Grid {
+	newArea := make([][]rune, g.Height)
+	for i := range newArea {
+		newArea[i] = make([]rune, g.Width)
+	}
+
+	for i := 0; i < g.Height; i++ {
+		for j := 0; j < g.Width; j++ {
+			lumberyards, trees, ground := 0, 0, 0
+			for _, neighbor := range g.Neighbors(j, i) {
+				switch neighbor {
+				case Lumberyard:
+					lumberyards++
+				case Tree:
+					trees++
+				case Ground:
+					ground++
+				}
+			}
+
+			switch g.Get(j, i) {
+			case Ground:
+				if trees >= 3 {
+					newArea[i][j] = Tree
+				} else {
+					newArea[i][j] = Ground
+				}
+			case Tree:
+				if lumberyards >= 3 {
+					newArea[i][j] = Lumberyard
+				} else {
+					newArea[i][j] = Tree
+				}
+			case Lumberyard:
+				if trees >= 1 && lumberyards >= 1 {
+					newArea[i][j] = Lumberyard
+				} else {
+					newArea[i][j] = Ground
+				}
+			}
+		}
+	}
+
+	return &Grid{Area: newArea, Height: g.Height, Width: g.Width}
 }
 
 func Part1(input string) int {
-	return 0
+	grid := parse(input)
+
+	for i := 0; i < 10; i++ {
+		grid = evolve(grid)
+	}
+
+	return grid.Count(Lumberyard) * grid.Count(Tree)
 }
 
 func Part2(input string) int {
