@@ -25,13 +25,33 @@ func TestDay20(t *testing.T) {
 		cases := []TestCase{
 			{
 				name:  "Example Input 1",
-				input: "",
-				want:  0,
+				input: "^WNE$",
+				want:  3,
+			},
+			{
+				name:  "Example Input 2",
+				input: "^ENWWW(NEEE|SSE(EE|N))$",
+				want:  10,
+			},
+			{
+				name:  "Example Input 3",
+				input: "^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$",
+				want:  18,
+			},
+			{
+				name:  "Example Input 3",
+				input: "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$",
+				want:  23,
+			},
+			{
+				name:  "Example Input 3",
+				input: "^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$",
+				want:  31,
 			},
 			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  3725,
 			},
 		}
 
