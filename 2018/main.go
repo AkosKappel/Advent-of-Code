@@ -29,7 +29,7 @@ import (
 )
 
 func main() {
-	daysToRun := []int{21}
+	daysToRun := []int{22}
 
 	for _, day := range daysToRun {
 		switch day {

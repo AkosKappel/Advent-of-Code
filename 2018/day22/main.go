@@ -3,37 +3,80 @@ package day22
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+var depth int
+var targetX, targetY int
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+var erosionLevel map[[2]int]int
+
+func parse(input string) {
+	lines := strings.Split(strings.TrimSpace(input), "\n")
 
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
+		if strings.HasPrefix(line, "depth:") {
+			_, err := fmt.Sscanf(line, "depth: %d", &depth)
+			if err != nil {
+				panic(err)
+			}
+			continue
 		}
 
-		n, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
+		if strings.HasPrefix(line, "target:") {
+			_, err := fmt.Sscanf(line, "target: %d,%d", &targetX, &targetY)
+			if err != nil {
+				panic(err)
+			}
+			continue
 		}
-
-		result = append(result, n)
 	}
 
-	return result, nil
+	erosionLevel = make(map[[2]int]int)
+}
+
+func geoIndex(x, y int) int {
+	if x == 0 && y == 0 {
+		return 0
+	}
+	if x == targetX && y == targetY {
+		return 0
+	}
+	if y == 0 {
+		return x * 16807
+	}
+	if x == 0 {
+		return y * 48271
+	}
+	return getErosion(x-1, y) * getErosion(x, y-1)
+}
+
+func getErosion(x, y int) int {
+	key := [2]int{x, y}
+	if val, exists := erosionLevel[key]; exists {
+		return val
+	}
+	e := (geoIndex(x, y) + depth) % 20183
+	erosionLevel[key] = e
+	return e
+}
+
+func getType(x, y int) int {
+	return getErosion(x, y) % 3
 }
 
 func Part1(input string) int {
-	return 0
+	parse(input)
+
+	sum := 0
+	for y := 0; y <= targetY; y++ {
+		for x := 0; x <= targetX; x++ {
+			sum += getType(x, y)
+		}
+	}
+
+	return sum
 }
 
 func Part2(input string) int {
