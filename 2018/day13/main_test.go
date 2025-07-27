@@ -25,7 +25,7 @@ func TestDay13(t *testing.T) {
 		cases := []TestCase{
 			{
 				name:  "Example Input 1",
-				input: "",
+				input: getInput(t, "example.txt"),
 				want:  "7,3",
 			},
 			{
@@ -39,7 +39,7 @@ func TestDay13(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				got := day13.Part1(tc.input)
 				if got != tc.want {
-					t.Errorf("Part1() = %d; want %d", got, tc.want)
+					t.Errorf("Part1() = %s; want %s", got, tc.want)
 				}
 			})
 		}
@@ -63,7 +63,7 @@ func TestDay13(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				got := day13.Part2(tc.input)
 				if got != tc.want {
-					t.Errorf("Part2() = %d; want %d", got, tc.want)
+					t.Errorf("Part2() = %s; want %s", got, tc.want)
 				}
 			})
 		}

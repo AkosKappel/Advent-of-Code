@@ -43,7 +43,7 @@ func TestDay14(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				got := day14.Part1(tc.input)
 				if got != tc.want {
-					t.Errorf("Part1() = %d; want %d", got, tc.want)
+					t.Errorf("Part1() = %s; want %s", got, tc.want)
 				}
 			})
 		}
