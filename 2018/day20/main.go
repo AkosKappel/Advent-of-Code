@@ -34,7 +34,7 @@ func parse(s string) map[point][]point {
 			curr = stack[len(stack)-1]
 		case ')':
 			stack = stack[:len(stack)-1]
-		case '^', '$': // skip ^ and $
+		case '^', '$':
 			continue
 		default:
 			panic("unexpected character: " + string(c))
@@ -66,7 +66,8 @@ func bfs(graph map[point][]point, start point) map[point]int {
 
 func Part1(input string) int {
 	graph := parse(input)
-	dist := bfs(graph, point{0, 0})
+	start := point{0, 0}
+	dist := bfs(graph, start)
 
 	maxDist := 0
 	for _, d := range dist {
@@ -79,7 +80,18 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
+	graph := parse(input)
+	start := point{0, 0}
+	dist := bfs(graph, start)
 
+	count := 0
+	for _, d := range dist {
+		if d >= 1000 {
+			count++
+		}
+	}
+
+	return count
 }
 
 func Run() {
