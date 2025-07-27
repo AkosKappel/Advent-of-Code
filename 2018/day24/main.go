@@ -119,12 +119,34 @@ func parse(input string) []*Group {
 	return groups
 }
 
-func Part1(input string) int {
-	groups := parse(input)
+func cloneGroups(groups []*Group) []*Group {
+	cloned := make([]*Group, len(groups))
+	for i, g := range groups {
+		weakToCopy := make(map[string]bool)
+		for k, v := range g.weakTo {
+			weakToCopy[k] = v
+		}
+		immuneToCopy := make(map[string]bool)
+		for k, v := range g.immuneTo {
+			immuneToCopy[k] = v
+		}
+		cloned[i] = &Group{
+			id:         g.id,
+			army:       g.army,
+			units:      g.units,
+			hp:         g.hp,
+			weakTo:     weakToCopy,
+			immuneTo:   immuneToCopy,
+			attackType: g.attackType,
+			attackDmg:  g.attackDmg,
+			initiative: g.initiative,
+		}
+	}
+	return cloned
+}
 
+func fight(groups []*Group) (immuneUnits, infectionUnits int, immuneWon bool, stalemate bool) {
 	for {
-		// Target selection phase
-
 		// Reset targets
 		for _, g := range groups {
 			g.target = nil
@@ -208,38 +230,80 @@ func Part1(input string) int {
 		}
 		groups = aliveGroups
 
-		// Check if only one army is left
-		immuneLeft := false
-		infectionLeft := false
+		// Count remaining units by army
+		immuneUnits = 0
+		infectionUnits = 0
 		for _, g := range groups {
-			if g.army == "Immune System" {
-				immuneLeft = true
-			} else if g.army == "Infection" {
-				infectionLeft = true
+			switch g.army {
+			case "Immune System":
+				immuneUnits += g.units
+			case "Infection":
+				infectionUnits += g.units
 			}
 		}
-		if !(immuneLeft && infectionLeft) {
+
+		if immuneUnits == 0 || infectionUnits == 0 {
+			immuneWon = infectionUnits == 0
+			stalemate = false
 			break
 		}
 
 		// If no units killed this round, break to avoid infinite loop
 		if totalUnitsKilled == 0 {
+			// Stalemate, no units killed this round
+			stalemate = true
+			immuneWon = false
 			break
 		}
 	}
 
-	// Sum units in the winning army
-	sum := 0
-	for _, g := range groups {
-		sum += g.units
-	}
+	return
+}
 
-	return sum
+func Part1(input string) int {
+	groups := parse(input)
+	immuneUnits, infectionUnits, immuneWon, _ := fight(groups)
+	if immuneWon {
+		return immuneUnits
+	}
+	return infectionUnits
 }
 
 func Part2(input string) int {
-	// Not implemented in this snippet
-	return 0
+	// We'll use binary search over boost amount to find minimal boost for immune system victory
+
+	low := 0
+	high := 20000 // arbitrary large upper bound for boost
+	var result int
+
+	// Pre-parse without boost to speed cloning later
+	originalGroups := parse(input)
+
+	for low <= high {
+		mid := (low + high) / 2
+
+		// Clone groups and apply boost
+		groups := cloneGroups(originalGroups)
+		// Apply boost to immune system attack damage
+		for _, g := range groups {
+			if g.army == "Immune System" {
+				g.attackDmg += mid
+			}
+		}
+
+		immuneUnits, _, immuneWon, stalemate := fight(groups)
+
+		if immuneWon && !stalemate {
+			// immune system wins - try smaller boost
+			high = mid - 1
+			result = immuneUnits
+		} else {
+			// infection wins or stalemate - try larger boost
+			low = mid + 1
+		}
+	}
+
+	return result
 }
 
 func Run() {
