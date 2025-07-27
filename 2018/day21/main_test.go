@@ -24,14 +24,9 @@ func TestDay21(t *testing.T) {
 	t.Run("Part1", func(t *testing.T) {
 		cases := []TestCase{
 			{
-				name:  "Example Input 1",
-				input: "",
-				want:  0,
-			},
-			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  3173684,
 			},
 		}
 
@@ -48,14 +43,9 @@ func TestDay21(t *testing.T) {
 	t.Run("Part2", func(t *testing.T) {
 		cases := []TestCase{
 			{
-				name:  "Example Input 1",
-				input: "",
-				want:  0,
-			},
-			{
 				name:  "Real Input",
 				input: getInput(t, "input.txt"),
-				want:  0,
+				want:  12464363,
 			},
 		}
 
