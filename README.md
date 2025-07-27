@@ -4,6 +4,148 @@ Stars collected by *Ákos Kappel*
 
 <hr>
 
+## 2018 - Go <img src='./misc/go.svg' alt="Go" width="32" height="32" />
+
+<table style="text-align: center;">
+  <tr>
+    <td>
+      <b>Day 1</b><br>
+      <a href="https://adventofcode.com/2023/day/1">Chronal Calibration</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 2</b><br>
+      <a href="https://adventofcode.com/2023/day/2">Inventory Management System</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 3</b><br>
+      <a href="https://adventofcode.com/2023/day/3">No Matter How You Slice It</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 4</b><br>
+      <a href="https://adventofcode.com/2023/day/4">Repose Record</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 5</b><br>
+      <a href="https://adventofcode.com/2023/day/5">Alchemical Reduction</a><br>
+      <span>⭐⭐</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>Day 6</b><br>
+      <a href="https://adventofcode.com/2023/day/6">Chronal Coordinates</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 7</b><br>
+      <a href="https://adventofcode.com/2023/day/7">The Sum of Its Parts</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 8</b><br>
+      <a href="https://adventofcode.com/2023/day/8">Memory Maneuver</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 9</b><br>
+      <a href="https://adventofcode.com/2023/day/9">Marble Mania</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 10</b><br>
+      <a href="https://adventofcode.com/2023/day/10">The Stars Align</a><br>
+      <span>⭐⭐</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>Day 11</b><br>
+      <a href="https://adventofcode.com/2023/day/11">Chronal Charge</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 12</b><br>
+      <a href="https://adventofcode.com/2023/day/12">Subterranean Sustainability</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 13</b><br>
+      <a href="https://adventofcode.com/2023/day/13">Mine Cart Madness</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 14</b><br>
+      <a href="https://adventofcode.com/2023/day/14">Chocolate Charts</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 15</b><br>
+      <a href="https://adventofcode.com/2023/day/15">Beverage Bandits</a><br>
+      <span>⭐⭐</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>Day 16</b><br>
+      <a href="https://adventofcode.com/2023/day/16">Chronal Classification</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 17</b><br>
+      <a href="https://adventofcode.com/2023/day/17">Reservoir Research</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 18</b><br>
+      <a href="https://adventofcode.com/2023/day/18">Settlers of The North Pole</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 19</b><br>
+      <a href="https://adventofcode.com/2023/day/19">Go With The Flow</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 20</b><br>
+      <a href="https://adventofcode.com/2023/day/20">A Regular Map</a><br>
+      <span>⭐⭐</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>Day 21</b><br>
+      <a href="https://adventofcode.com/2023/day/21">Chronal Conversion</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 22</b><br>
+      <a href="https://adventofcode.com/2023/day/22">Mode Maze</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 23</b><br>
+      <a href="https://adventofcode.com/2023/day/23">Experimental Emergency Teleportation</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 24</b><br>
+      <a href="https://adventofcode.com/2023/day/24">Immune System Simulator 20XX</a><br>
+      <span>⭐⭐</span>
+    </td>
+    <td>
+      <b>Day 25</b><br>
+      <a href="https://adventofcode.com/2023/day/25">FourDimensional Adventure</a><br>
+      <span>⭐⭐</span>
+    </td>
+  </tr>
+</table>
+
+<hr>
+
 ## 2019 - Java <img src='./misc/java.svg' alt="Java" width="32" height="32" />
 
 <table style="text-align: center; width: 1200px;">
