@@ -3,37 +3,62 @@ package day23
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
 
-func parse(s string) ([]int, error) {
-	var result []int
+type NanoBot struct {
+	pos [3]int
+	r   int
+}
 
-	lines := strings.FieldsFunc(s, func(r rune) bool {
-		return r == ',' || r == '\n'
-	})
+func parse(s string) []NanoBot {
+	var nanoBots []NanoBot
 
+	lines := strings.Split(strings.TrimSpace(s), "\n")
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue // skip empty lines
-		}
-
-		n, err := strconv.Atoi(line)
+		var x, y, z, r int
+		_, err := fmt.Sscanf(line, "pos=<%d,%d,%d>, r=%d", &x, &y, &z, &r)
 		if err != nil {
-			return nil, err // fail if the line isn't a valid signed int
+			panic(err)
 		}
-
-		result = append(result, n)
+		nanoBots = append(nanoBots, NanoBot{[3]int{x, y, z}, r})
 	}
 
-	return result, nil
+	return nanoBots
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func manhattanDistance(a, b [3]int) int {
+	return abs(a[0]-b[0]) + abs(a[1]-b[1]) + abs(a[2]-b[2])
 }
 
 func Part1(input string) int {
-	return 0
+	nanoBots := parse(input)
+
+	// find the bot with the largest radius
+	var largest = &nanoBots[0]
+	for _, bot := range nanoBots {
+		if bot.r > largest.r {
+			largest = &bot
+		}
+	}
+
+	// count the number of bots within the radius of the largest bot
+	count := 0
+	for _, bot := range nanoBots {
+		if manhattanDistance(largest.pos, bot.pos) <= largest.r {
+			count++
+		}
+	}
+
+	return count
 }
 
 func Part2(input string) int {
