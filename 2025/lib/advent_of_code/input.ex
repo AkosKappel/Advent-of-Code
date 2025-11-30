@@ -38,7 +38,7 @@ defmodule AdventOfCode.Input do
   def delete!(day, nil), do: delete!(day, default_year())
   def delete!(day, year), do: File.rm!(cache_path(day, year))
 
-  defp cache_path(day, year), do: Path.join(cache_dir(), "/#{year}/#{day}.aocinput")
+  defp cache_path(day, year), do: Path.join(cache_dir(), "/#{year}-#{day}.txt")
   defp in_cache?(day, year), do: File.exists?(cache_path(day, year))
 
   defp store_in_cache!(day, year, input) do
@@ -65,10 +65,7 @@ defmodule AdventOfCode.Input do
 
   defp cache_dir do
     config()
-    |> Keyword.get(
-      :cache_dir,
-      Path.join([System.get_env("XDG_CACHE_HOME", "~/.cache"), "/advent_of_code_inputs"])
-    )
+    |> Keyword.get(:cache_dir, System.get_env("XDG_CACHE_HOME", "./inputs"))
     |> Path.expand()
   end
 
