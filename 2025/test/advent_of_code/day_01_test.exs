@@ -3,19 +3,49 @@ defmodule AdventOfCode.Day01Test do
 
   import AdventOfCode.Day01
 
+  @day 1
+  @year 2025
+
+  @example1 String.trim("""
+L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82
+""")
+
+  @tag :skip
+  test "part1 example1" do
+    result = part1(@example1)
+
+    assert result == 3
+  end
+
   @tag :skip
   test "part1" do
-    input = nil
+    input = AdventOfCode.Input.get!(@day, @year)
     result = part1(input)
 
-    assert result
+    assert result == 1120
+  end
+
+  @tag :skip
+  test "part2 example1" do
+    result = part2(@example1)
+
+    assert result == 6
   end
 
   @tag :skip
   test "part2" do
-    input = nil
+    input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result
+    assert result == 6554
   end
 end
