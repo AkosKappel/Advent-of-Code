@@ -19,14 +19,12 @@ R14
 L82
 """)
 
-  @tag :skip
   test "part1 example1" do
     result = part1(@example1)
 
     assert result == 3
   end
 
-  @tag :skip
   test "part1" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part1(input)
@@ -34,14 +32,12 @@ L82
     assert result == 1120
   end
 
-  @tag :skip
   test "part2 example1" do
     result = part2(@example1)
 
     assert result == 6
   end
 
-  @tag :skip
   test "part2" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
