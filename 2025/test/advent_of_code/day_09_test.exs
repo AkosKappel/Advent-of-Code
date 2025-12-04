@@ -3,19 +3,34 @@ defmodule AdventOfCode.Day09Test do
 
   import AdventOfCode.Day09
 
-  @tag :skip
-  test "part1" do
-    input = nil
-    result = part1(input)
+  @day 9
+  @year 2025
 
-    assert result
+  @example1 ""
+
+  test "part1 example1" do
+    result = part1(@example1)
+
+    assert result == nil
   end
 
-  @tag :skip
+  test "part1" do
+    input = AdventOfCode.Input.get!(@day, @year)
+    result = part1(input)
+
+    assert result == nil
+  end
+
+  test "part2 example1" do
+    result = part2(@example1)
+
+    assert result == nil
+  end
+
   test "part2" do
-    input = nil
+    input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result
+    assert result == nil
   end
 end

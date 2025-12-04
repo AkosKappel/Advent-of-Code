@@ -26,21 +26,19 @@ defmodule AdventOfCode.Day01Test do
   use ExUnit.Case
 
   import AdventOfCode.Day01
-
-  @tag :skip # Make sure to remove to run your test.
+ # Make sure to remove to run your test.
   test "part1" do
-    input = nil
+    input = AdventOfCode.Input.get!(1, 2025)
     result = part1(input)
 
-    assert result
+    assert result == nil
   end
-
-  @tag :skip # Make sure to remove to run your test.
+ # Make sure to remove to run your test.
   test "part2" do
-    input = nil
+    input = AdventOfCode.Input.get!(1, 2025)
     result = part2(input)
 
-    assert result
+    assert result == nil
   end
 end
 ```

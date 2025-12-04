@@ -7,17 +7,17 @@ defmodule AdventOfCode.Day01Test do
   @year 2025
 
   @example1 String.trim("""
-L68
-L30
-R48
-L5
-R60
-L55
-L1
-L99
-R14
-L82
-""")
+            L68
+            L30
+            R48
+            L5
+            R60
+            L55
+            L1
+            L99
+            R14
+            L82
+            """)
 
   test "part1 example1" do
     result = part1(@example1)
