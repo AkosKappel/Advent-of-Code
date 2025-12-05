@@ -17,16 +17,26 @@ defmodule AdventOfCode.Input do
   def get!(day, nil), do: get!(day, default_year())
 
   def get!(day, year) do
-    cond do
-      in_cache?(day, year) ->
-        from_cache!(day, year)
+    if future?(day, year) do
+      "Advent of Code input for day #{day} of year #{year} has not been released yet"
+    else
+      cond do
+        in_cache?(day, year) ->
+          from_cache!(day, year)
 
-      allow_network?() ->
-        download!(day, year)
+        allow_network?() ->
+          download!(day, year)
 
-      true ->
-        raise "Cache miss for day #{day} of year #{year} and `:allow_network?` is not `true`"
+        true ->
+          raise "Cache miss for day #{day} of year #{year} and `:allow_network?` is not `true`"
+      end
     end
+  end
+
+  defp future?(day, year) do
+    today = Date.utc_today()
+    date = Date.new!(year, 12, day)
+    Date.compare(date, today) == :gt
   end
 
   @doc """

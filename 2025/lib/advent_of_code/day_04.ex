@@ -5,8 +5,8 @@ defmodule AdventOfCode.Day04 do
     |> Enum.map(&String.graphemes/1)
   end
 
-  def part1(args) do
-    grid = parse(args)
+  def part1(input) do
+    grid = parse(input)
     h = length(grid)
     w = grid |> hd() |> length()
 
@@ -18,8 +18,8 @@ defmodule AdventOfCode.Day04 do
     end
   end
 
-  def part2(args) do
-    grid = parse(args)
+  def part2(input) do
+    grid = parse(input)
     {count, _final_grid} = peel(grid, 0)
     count
   end

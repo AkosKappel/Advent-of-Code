@@ -23,8 +23,8 @@ defmodule AdventOfCode.Day02 do
     end
   end
 
-  def part1(args) do
-    args
+  def part1(input) do
+    input
     |> parse()
     |> Enum.reduce(0, fn {from, to}, count ->
       from..to
@@ -55,8 +55,8 @@ defmodule AdventOfCode.Day02 do
     end
   end
 
-  def part2(args) do
-    args
+  def part2(input) do
+    input
     |> parse()
     |> Enum.reduce(0, fn {from, to}, count ->
       from..to

@@ -36,6 +36,6 @@ defmodule AdventOfCode.Day03Test do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result == nil
+    assert result == 169512729575727
   end
 end

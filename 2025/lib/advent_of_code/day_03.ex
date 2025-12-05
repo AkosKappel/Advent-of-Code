@@ -10,8 +10,8 @@ defmodule AdventOfCode.Day03 do
     end)
   end
 
-  def part1(args) do
-    args
+  def part1(input) do
+    input
     |> parse()
     |> Enum.map(&max_two_digit/1)
     |> Enum.sum()
@@ -26,8 +26,8 @@ defmodule AdventOfCode.Day03 do
     end
   end
 
-  def part2(args) do
-    args
+  def part2(input) do
+    input
     |> parse()
     |> Enum.map(&max_k_digit/1)
     |> Enum.map(&String.to_integer/1)
