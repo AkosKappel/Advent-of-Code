@@ -28,16 +28,14 @@ defmodule AdventOfCode.Day05 do
     {ranges, ids} = parse(input)
 
     ids
-    |> Enum.filter(fn id ->
-      Enum.any?(ranges, fn range -> in_range?(range, id) end)
-    end)
+    |> Enum.filter(fn id -> Enum.any?(ranges, &in_range?(&1, id)) end)
     |> Enum.count()
   end
 
   def part2(input) do
-    {ranges, _ids} = parse(input)
-
-    ranges
+    input
+    |> parse()
+    |> elem(0)
     |> merge()
     |> size()
   end
@@ -60,7 +58,6 @@ defmodule AdventOfCode.Day05 do
           end
       end
     end)
-    |> Enum.reverse()
   end
 
   defp size(ranges) do

@@ -7,8 +7,8 @@ defmodule AdventOfCode.Day04 do
 
   def part1(input) do
     grid = parse(input)
-    h = length(grid)
-    w = grid |> hd() |> length()
+    h = height(grid)
+    w = width(grid)
 
     for y <- 0..(h - 1),
         x <- 0..(w - 1),
@@ -19,14 +19,19 @@ defmodule AdventOfCode.Day04 do
   end
 
   def part2(input) do
-    grid = parse(input)
-    {count, _final_grid} = peel(grid, 0)
-    count
+    input
+    |> parse()
+    |> peel()
+    |> elem(0)
   end
 
-  defp peel(grid, removed_total) do
-    h = length(grid)
-    w = length(hd(grid))
+  defp height(grid), do: length(grid)
+
+  defp width(grid), do: length(hd(grid))
+
+  defp peel(grid, removed_total \\ 0) do
+    h = height(grid)
+    w = width(grid)
 
     accessible =
       for y <- 0..(h - 1),

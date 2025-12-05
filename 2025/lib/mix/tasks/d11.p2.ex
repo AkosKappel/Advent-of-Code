@@ -5,7 +5,7 @@ defmodule Mix.Tasks.D11.P2 do
 
   @shortdoc "Day 11 Part 2"
   def run(args) do
-    input = AdventOfCode.Input.get!(1, 2025)
+    input = AdventOfCode.Input.get!(11, 2025)
 
     if Enum.member?(args, "-b"),
       do: Benchee.run(%{part_2: fn -> input |> part2() end}),
