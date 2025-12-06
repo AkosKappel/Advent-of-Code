@@ -8,8 +8,8 @@ defmodule AdventOfCode.Day06Test do
 
   @example1 String.trim("""
             123 328  51 64
-            45 64  387 23
-            6 98  215 314
+             45 64  387 23
+              6 98  215 314
             *   +   *   +
             """)
 
@@ -36,6 +36,6 @@ defmodule AdventOfCode.Day06Test do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result == nil
+    assert result == 11744693538946
   end
 end
