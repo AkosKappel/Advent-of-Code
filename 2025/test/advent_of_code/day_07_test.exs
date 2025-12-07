@@ -6,25 +6,42 @@ defmodule AdventOfCode.Day07Test do
   @day 7
   @year 2025
 
-  @example1 ""
+  @example1 String.trim("""
+            .......S.......
+            ...............
+            .......^.......
+            ...............
+            ......^.^......
+            ...............
+            .....^.^.^.....
+            ...............
+            ....^.^...^....
+            ...............
+            ...^.^...^.^...
+            ...............
+            ..^...^.....^..
+            ...............
+            .^.^.^.^.^...^.
+            ...............
+            """)
 
   test "part1 example1" do
     result = part1(@example1)
 
-    assert result == nil
+    assert result == 21
   end
 
   test "part1" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part1(input)
 
-    assert result == nil
+    assert result == 1490
   end
 
   test "part2 example1" do
     result = part2(@example1)
 
-    assert result == nil
+    assert result == 40
   end
 
   test "part2" do
