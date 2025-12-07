@@ -38,10 +38,10 @@ defmodule AdventOfCode.Day07 do
   end
 
   def part1(input) do
-    {initial_beams_set, all_splitters} = parse(input)
+    {initial_beams, all_splitters} = parse(input)
 
     {_final_beams, total_collisions} =
-      Enum.reduce(all_splitters, {initial_beams_set, 0}, fn splitters, {beams, num_collisions} ->
+      Enum.reduce(all_splitters, {initial_beams, 0}, fn splitters, {beams, num_collisions} ->
         colliding_beams = MapSet.intersection(beams, splitters)
         passing_beams = MapSet.difference(beams, splitters)
 
@@ -61,15 +61,16 @@ defmodule AdventOfCode.Day07 do
   end
 
   def part2(input) do
-    {initial_beams_set, all_splitters} = parse(input)
+    {initial_beams, all_splitters} = parse(input)
 
-    beams =
-      Enum.reduce(initial_beams_set, %{}, fn pos, acc ->
+    # Transform to map as {position => count}
+    initial_beams =
+      Enum.reduce(initial_beams, %{}, fn pos, acc ->
         Map.update(acc, pos, 1, &(&1 + 1))
       end)
 
-    {_final_beams, total_collisions} =
-      Enum.reduce(all_splitters, {beams, 0}, fn splitters, {beams, num_collisions} ->
+    {final_beams, _total_collisions} =
+      Enum.reduce(all_splitters, {initial_beams, 0}, fn splitters, {beams, num_collisions} ->
         colliding_beams =
           beams
           |> Enum.filter(fn {pos, _count} -> MapSet.member?(splitters, pos) end)
@@ -97,6 +98,8 @@ defmodule AdventOfCode.Day07 do
         {new_beams, num_collisions + num_new_collisions}
       end)
 
-    total_collisions + 1
+    final_beams
+    |> Map.values()
+    |> Enum.reduce(0, &(&1 + &2))
   end
 end
