@@ -38,23 +38,65 @@ defmodule AdventOfCode.Day07 do
   end
 
   def part1(input) do
-    {beams, all_splitters} = parse(input)
+    {initial_beams_set, all_splitters} = parse(input)
 
-    Enum.reduce(all_splitters, {beams, 0}, fn splitters, {beams, num_collisions} ->
-      colliding_beams = MapSet.intersection(beams, splitters)
-      passing_beams = MapSet.difference(beams, splitters)
+    {_final_beams, total_collisions} =
+      Enum.reduce(all_splitters, {initial_beams_set, 0}, fn splitters, {beams, num_collisions} ->
+        colliding_beams = MapSet.intersection(beams, splitters)
+        passing_beams = MapSet.difference(beams, splitters)
 
-      split_beams =
-        colliding_beams
-        |> MapSet.to_list()
-        |> Enum.map(fn x -> MapSet.new([x - 1, x + 1]) end)
-        |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+        split_beams =
+          colliding_beams
+          |> MapSet.to_list()
+          |> Enum.map(&MapSet.new([&1 - 1, &1 + 1]))
+          |> Enum.reduce(MapSet.new(), &MapSet.union/2)
 
-      {MapSet.union(split_beams, passing_beams), num_collisions + MapSet.size(colliding_beams)}
-    end)
-    |> elem(1)
+        num_new_collisions = MapSet.size(colliding_beams)
+        new_beans = MapSet.union(split_beams, passing_beams)
+
+        {new_beans, num_collisions + num_new_collisions}
+      end)
+
+    total_collisions
   end
 
-  def part2(_input) do
+  def part2(input) do
+    {initial_beams_set, all_splitters} = parse(input)
+
+    beams =
+      Enum.reduce(initial_beams_set, %{}, fn pos, acc ->
+        Map.update(acc, pos, 1, &(&1 + 1))
+      end)
+
+    {_final_beams, total_collisions} =
+      Enum.reduce(all_splitters, {beams, 0}, fn splitters, {beams, num_collisions} ->
+        colliding_beams =
+          beams
+          |> Enum.filter(fn {pos, _count} -> MapSet.member?(splitters, pos) end)
+
+        passing_beams =
+          beams
+          |> Enum.reject(fn {pos, _count} -> MapSet.member?(splitters, pos) end)
+          |> Enum.reduce(%{}, fn {pos, count}, acc ->
+            Map.update(acc, pos, count, &(&1 + count))
+          end)
+
+        split_beams =
+          Enum.reduce(colliding_beams, %{}, fn {pos, count}, acc ->
+            acc
+            |> Map.update(pos - 1, count, &(&1 + count))
+            |> Map.update(pos + 1, count, &(&1 + count))
+          end)
+
+        new_beams =
+          Map.merge(passing_beams, split_beams, fn _pos, c1, c2 -> c1 + c2 end)
+
+        num_new_collisions =
+          Enum.reduce(colliding_beams, 0, fn {_pos, count}, acc -> acc + count end)
+
+        {new_beams, num_collisions + num_new_collisions}
+      end)
+
+    total_collisions + 1
   end
 end

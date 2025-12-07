@@ -16,26 +16,26 @@ defmodule AdventOfCode.Day06Test do
   test "part1 example1" do
     result = part1(@example1)
 
-    assert result == 4277556
+    assert result == 4_277_556
   end
 
   test "part1" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part1(input)
 
-    assert result == 5361735137219
+    assert result == 5_361_735_137_219
   end
 
   test "part2 example1" do
     result = part2(@example1)
 
-    assert result == 3263827
+    assert result == 3_263_827
   end
 
   test "part2" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result == 11744693538946
+    assert result == 11_744_693_538_946
   end
 end

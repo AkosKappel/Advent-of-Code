@@ -29,13 +29,13 @@ defmodule AdventOfCode.Day03Test do
   test "part2 example1" do
     result = part2(@example1)
 
-    assert result == 3121910778619
+    assert result == 3_121_910_778_619
   end
 
   test "part2" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result == 169512729575727
+    assert result == 169_512_729_575_727
   end
 end
