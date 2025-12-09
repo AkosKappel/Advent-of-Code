@@ -33,13 +33,13 @@ defmodule AdventOfCode.Day09Test do
   test "part2 example" do
     result = part2(@example)
 
-    assert result == nil
+    assert result == 24
   end
 
   test "part2" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part2(input)
 
-    assert result == nil
+    assert result == 1_665_679_194
   end
 end
