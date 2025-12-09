@@ -6,32 +6,32 @@ defmodule AdventOfCode.Day09Test do
   @day 9
   @year 2025
 
-  @example1 String.trim("""
-            7,1
-            11,1
-            11,7
-            9,7
-            9,5
-            2,5
-            2,3
-            7,3
-            """)
+  @example String.trim("""
+           7,1
+           11,1
+           11,7
+           9,7
+           9,5
+           2,5
+           2,3
+           7,3
+           """)
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
-    assert result == nil
+    assert result == 50
   end
 
   test "part1" do
     input = AdventOfCode.Input.get!(@day, @year)
     result = part1(input)
 
-    assert result == nil
+    assert result == 4_756_718_172
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == nil
   end
