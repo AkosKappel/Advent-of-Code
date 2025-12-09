@@ -6,22 +6,22 @@ defmodule AdventOfCode.Day05Test do
   @day 5
   @year 2025
 
-  @example1 String.trim("""
-            3-5
-            10-14
-            16-20
-            12-18
+  @example String.trim("""
+           3-5
+           10-14
+           16-20
+           12-18
 
-            1
-            5
-            8
-            11
-            17
-            32
-            """)
+           1
+           5
+           8
+           11
+           17
+           32
+           """)
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
     assert result == 3
   end
@@ -33,8 +33,8 @@ defmodule AdventOfCode.Day05Test do
     assert result == 652
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == 14
   end

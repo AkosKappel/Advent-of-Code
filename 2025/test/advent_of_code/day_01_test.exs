@@ -6,21 +6,21 @@ defmodule AdventOfCode.Day01Test do
   @day 1
   @year 2025
 
-  @example1 String.trim("""
-            L68
-            L30
-            R48
-            L5
-            R60
-            L55
-            L1
-            L99
-            R14
-            L82
-            """)
+  @example String.trim("""
+           L68
+           L30
+           R48
+           L5
+           R60
+           L55
+           L1
+           L99
+           R14
+           L82
+           """)
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
     assert result == 3
   end
@@ -32,8 +32,8 @@ defmodule AdventOfCode.Day01Test do
     assert result == 1120
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == 6
   end

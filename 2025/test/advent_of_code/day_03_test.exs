@@ -6,15 +6,15 @@ defmodule AdventOfCode.Day03Test do
   @day 3
   @year 2025
 
-  @example1 String.trim("""
-            987654321111111
-            811111111111119
-            234234234234278
-            818181911112111
-            """)
+  @example String.trim("""
+           987654321111111
+           811111111111119
+           234234234234278
+           818181911112111
+           """)
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
     assert result == 357
   end
@@ -26,8 +26,8 @@ defmodule AdventOfCode.Day03Test do
     assert result == 17074
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == 3_121_910_778_619
   end

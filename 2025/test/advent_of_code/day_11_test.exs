@@ -6,10 +6,10 @@ defmodule AdventOfCode.Day11Test do
   @day 11
   @year 2025
 
-  @example1 ""
+  @example ""
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
     assert result == nil
   end
@@ -21,8 +21,8 @@ defmodule AdventOfCode.Day11Test do
     assert result == nil
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == nil
   end

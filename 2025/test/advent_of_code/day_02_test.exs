@@ -6,10 +6,10 @@ defmodule AdventOfCode.Day02Test do
   @day 2
   @year 2025
 
-  @example1 "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
+  @example "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
     assert result == 1_227_775_554
   end
@@ -21,8 +21,8 @@ defmodule AdventOfCode.Day02Test do
     assert result == 28_844_599_675
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == 4_174_379_265
   end

@@ -6,21 +6,21 @@ defmodule AdventOfCode.Day04Test do
   @day 4
   @year 2025
 
-  @example1 String.trim("""
-            ..@@.@@@@.
-            @@@.@.@.@@
-            @@@@@.@.@@
-            @.@@@@..@.
-            @@.@@@@.@@
-            .@@@@@@@.@
-            .@.@.@.@@@
-            @.@@@.@@@@
-            .@@@@@@@@.
-            @.@.@@@.@.
-            """)
+  @example String.trim("""
+           ..@@.@@@@.
+           @@@.@.@.@@
+           @@@@@.@.@@
+           @.@@@@..@.
+           @@.@@@@.@@
+           .@@@@@@@.@
+           .@.@.@.@@@
+           @.@@@.@@@@
+           .@@@@@@@@.
+           @.@.@@@.@.
+           """)
 
-  test "part1 example1" do
-    result = part1(@example1)
+  test "part1 example" do
+    result = part1(@example)
 
     assert result == 13
   end
@@ -32,8 +32,8 @@ defmodule AdventOfCode.Day04Test do
     assert result == 1346
   end
 
-  test "part2 example1" do
-    result = part2(@example1)
+  test "part2 example" do
+    result = part2(@example)
 
     assert result == 43
   end
