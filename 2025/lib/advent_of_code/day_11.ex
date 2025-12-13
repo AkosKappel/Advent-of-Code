@@ -11,40 +11,65 @@ defmodule AdventOfCode.Day11 do
     |> Enum.into(%{})
   end
 
-  defp count_paths(_graph, nil, _target, _visited), do: 0
-  defp count_paths(_graph, start, target, _visited) when start == target, do: 1
+  defp count_paths(graph, start, target) do
+    {:ok, cache} = Agent.start_link(fn -> %{} end)
+    result = count_paths(graph, start, target, MapSet.new(), cache)
+    Agent.stop(cache)
+    result
+  end
 
-  defp count_paths(graph, start, target, visited) do
-    neighbors = Map.get(graph, start, [])
+  defp count_paths(_graph, start, target, _visited, _cache) when start == target, do: 1
 
-    {total, _final_visited} =
-      Enum.reduce(neighbors, {0, visited}, fn next_label, {sum, visit_map} ->
-        cond do
-          # Direct connection to target
-          next_label == target ->
-            {sum + 1, visit_map}
+  defp count_paths(graph, start, target, visited, cache) do
+    if MapSet.member?(visited, start) do
+      # Already in current path (cycle detection)
+      0
+    else
+      cache_key = {start, target}
 
-          # Already computed for this node
-          Map.has_key?(visit_map, next_label) ->
-            {sum + Map.get(visit_map, next_label), visit_map}
+      case Agent.get(cache, &Map.get(&1, cache_key)) do
+        nil ->
+          # Not in cache, compute it
+          neighbors = Map.get(graph, start, [])
+          new_visited = MapSet.put(visited, start)
 
-          # Recursively compute
-          true ->
-            value = count_paths(graph, next_label, target, visit_map)
-            new_visit_map = Map.put(visit_map, next_label, value)
-            {sum + value, new_visit_map}
-        end
-      end)
+          result =
+            Enum.reduce(neighbors, 0, fn next_label, sum ->
+              sum + count_paths(graph, next_label, target, new_visited, cache)
+            end)
 
-    total
+          # Store in cache
+          Agent.update(cache, &Map.put(&1, cache_key, result))
+          result
+
+        cached_result ->
+          # Return cached result
+          cached_result
+      end
+    end
   end
 
   def part1(input) do
     input
     |> parse()
-    |> count_paths("you", "out", %{})
+    |> count_paths("you", "out")
   end
 
-  def part2(_input) do
+  def part2(input) do
+    devices = parse(input)
+
+    # Count paths for: svr -> fft -> dac -> out
+    path1 =
+      count_paths(devices, "svr", "fft") *
+        count_paths(devices, "fft", "dac") *
+        count_paths(devices, "dac", "out")
+
+    # Count paths for: svr -> dac -> fft -> out
+    path2 =
+      count_paths(devices, "svr", "dac") *
+        count_paths(devices, "dac", "fft") *
+        count_paths(devices, "fft", "out")
+
+    path1 + path2
   end
 end
