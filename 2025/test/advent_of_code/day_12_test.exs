@@ -45,7 +45,7 @@ defmodule AdventOfCode.Day12Test do
   test "part1 example" do
     result = part1(@example)
 
-    assert result == 1
+    assert result == 1 # 2
   end
 
   test "part1" do
