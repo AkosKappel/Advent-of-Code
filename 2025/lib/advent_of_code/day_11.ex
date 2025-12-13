@@ -11,6 +11,14 @@ defmodule AdventOfCode.Day11 do
     |> Enum.into(%{})
   end
 
+  defp count_paths(graph, nodes_to_visit) when is_list(nodes_to_visit) do
+    nodes_to_visit
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.reduce(1, fn [from, to], product ->
+      product * count_paths(graph, from, to)
+    end)
+  end
+
   defp count_paths(graph, start, target) do
     {:ok, cache} = Agent.start_link(fn -> %{} end)
     result = count_paths(graph, start, target, MapSet.new(), cache)
@@ -58,18 +66,9 @@ defmodule AdventOfCode.Day11 do
   def part2(input) do
     devices = parse(input)
 
-    # Count paths for: svr -> fft -> dac -> out
-    path1 =
-      count_paths(devices, "svr", "fft") *
-        count_paths(devices, "fft", "dac") *
-        count_paths(devices, "dac", "out")
+    paths1 = count_paths(devices, ["svr", "fft", "dac", "out"])
+    paths2 = count_paths(devices, ["svr", "dac", "fft", "out"])
 
-    # Count paths for: svr -> dac -> fft -> out
-    path2 =
-      count_paths(devices, "svr", "dac") *
-        count_paths(devices, "dac", "fft") *
-        count_paths(devices, "fft", "out")
-
-    path1 + path2
+    paths1 + paths2
   end
 end
