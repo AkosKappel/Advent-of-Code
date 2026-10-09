@@ -1,12 +1,46 @@
 # Advent of Code
 
-Stars collected by *Ákos Kappel*
+My solutions to [Advent of Code](https://adventofcode.com) puzzles, written in a different language every year.
 
-<hr>
+**374 / 374 stars** across 8 years and 8 languages. Every solution is covered by tests against the puzzle examples and my own input.
 
-## 2018 - Go <img src='./misc/go.svg' alt="Go" width="32" height="32" />
+| Year | Language | Stars | Tests |
+| :---: | --- | :---: | --- |
+| [2018](./2018) | <img src='./misc/go.svg' alt='' width='16' height='16' /> Go | 50 ⭐ | [![2018 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2018.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2018.yml) |
+| [2019](./2019) | <img src='./misc/java.svg' alt='' width='16' height='16' /> Java | 50 ⭐ | [![2019 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2019.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2019.yml) |
+| [2020](./2020) | <img src='./misc/kotlin.svg' alt='' width='16' height='16' /> Kotlin | 50 ⭐ | [![2020 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2020.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2020.yml) |
+| [2021](./2021) | <img src='./misc/python.svg' alt='' width='16' height='16' /> Python | 50 ⭐ | [![2021 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2021.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2021.yml) |
+| [2022](./2022) | <img src='./misc/typescript.svg' alt='' width='16' height='16' /> TypeScript | 50 ⭐ | [![2022 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2022.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2022.yml) |
+| [2023](./2023) | <img src='./misc/javascript.svg' alt='' width='16' height='16' /> JavaScript | 50 ⭐ | [![2023 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2023.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2023.yml) |
+| [2024](./2024) | <img src='./misc/csharp.svg' alt='' width='16' height='16' /> C# | 50 ⭐ | [![2024 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2024.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2024.yml) |
+| [2025](./2025) | <img src='./misc/elixir.svg' alt='' width='16' height='16' /> Elixir | 24 ⭐ | [![2025 tests](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2025.yml/badge.svg)](https://github.com/AkosKappel/Advent-of-Code/actions/workflows/2025.yml) |
 
-<table style="text-align: center;">
+## Running the tests
+
+Each year is a self-contained project. Every day has two kinds of tests:
+
+- **Example tests** run the samples from the puzzle description. They are fast, and CI runs only these.
+- **Solution tests** run my full puzzle input. Some of them take a while.
+
+From inside a year's folder, run all tests with the project's usual test command, or only the example tests with:
+
+| Year | Example tests only |
+| :---: | --- |
+| 2018 | `go test ./... -run //Example` |
+| 2019 | `mvn test -Dtest='*Test*#testExample*'` |
+| 2020 | `./gradlew test --tests '*example*'` |
+| 2021 | `cd tests && PYTHONPATH=.. python -m pytest -k example` |
+| 2022 | `npx jest -t example` |
+| 2023 | `npx jest -t example` |
+| 2024 | `dotnet test --filter 'Name~Example'` |
+| 2025 | `mix test --only test:'test part1 example' --only test:'test part2 example'` |
+
+## Puzzles
+
+<details>
+<summary><b>2018</b> · Go · 50 ⭐</summary>
+
+<table>
   <tr>
     <td>
       <b>Day 1</b><br>
@@ -144,9 +178,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2019 - Java <img src='./misc/java.svg' alt="Java" width="32" height="32" />
+<details>
+<summary><b>2019</b> · Java · 50 ⭐</summary>
 
 <table style="text-align: center; width: 1200px;">
   <tr>
@@ -286,9 +321,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2020 - Kotlin <img src='misc/kotlin.svg' alt="Kotlin" width="32" height="32" />
+<details>
+<summary><b>2020</b> · Kotlin · 50 ⭐</summary>
 
 <table style="text-align: center; width: 1200px;">
   <tr>
@@ -428,9 +464,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2021 - Python <img src='misc/python.svg' alt="Python" width="32" height="32" />
+<details>
+<summary><b>2021</b> · Python · 50 ⭐</summary>
 
 <table style="text-align: center; width: 1200px;">
   <tr>
@@ -570,9 +607,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2022 - TypeScript <img src='misc/typescript.svg' alt="TypeScript" width="32" height="32" />
+<details>
+<summary><b>2022</b> · TypeScript · 50 ⭐</summary>
 
 <table style="text-align: center; width: 1200px;">
   <tr>
@@ -712,9 +750,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2023 - JavaScript <img src='misc/javascript.svg' alt="JavaScript" width="32" height="32" />
+<details>
+<summary><b>2023</b> · JavaScript · 50 ⭐</summary>
 
 <table>
   <tr>
@@ -854,9 +893,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2024 - C# <img src='misc/csharp.svg' alt="C#" width="32" height="32" />
+<details>
+<summary><b>2024</b> · C# · 50 ⭐</summary>
 
 <table style="text-align: center; width: 1200px;">
   <tr>
@@ -996,9 +1036,10 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
+</details>
 
-## 2025 - Elixir <img src='misc/elixir.svg' alt="Elixir" width="32" height="32" />
+<details>
+<summary><b>2025</b> · Elixir · 24 ⭐</summary>
 
 <table style="text-align: center; width: 1200px;">
   <tr>
@@ -1067,5 +1108,4 @@ Stars collected by *Ákos Kappel*
   </tr>
 </table>
 
-<hr>
-
+</details>
