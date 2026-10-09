@@ -1,0 +1,24 @@
+name: 2018 · Go
+
+on:
+  push:
+    branches: [main]
+    paths: ['2018/**', '.github/workflows/2018.yml']
+  pull_request:
+    paths: ['2018/**', '.github/workflows/2018.yml']
+  workflow_dispatch:
+
+jobs:
+  example-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2018
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: 2018/go.mod
+          # No dependencies, so nothing to cache
+          cache: false
+      - run: go test ./... -run //Example

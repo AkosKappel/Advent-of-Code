@@ -1,0 +1,25 @@
+name: 2025 · Elixir
+
+on:
+  push:
+    branches: [main]
+    paths: ['2025/**', '.github/workflows/2025.yml']
+  pull_request:
+    paths: ['2025/**', '.github/workflows/2025.yml']
+  workflow_dispatch:
+
+jobs:
+  example-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2025
+    steps:
+      - uses: actions/checkout@v5
+      - uses: erlef/setup-beam@v1
+        with:
+          # Day 12 needs String.count/2, added in Elixir 1.19
+          elixir-version: '1.19'
+          otp-version: '28'
+      - run: mix deps.get
+      - run: mix test --only test:'test part1 example' --only test:'test part2 example'

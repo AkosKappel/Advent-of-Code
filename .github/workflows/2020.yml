@@ -1,0 +1,24 @@
+name: 2020 · Kotlin
+
+on:
+  push:
+    branches: [main]
+    paths: ['2020/**', '.github/workflows/2020.yml']
+  pull_request:
+    paths: ['2020/**', '.github/workflows/2020.yml']
+  workflow_dispatch:
+
+jobs:
+  example-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2020
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: gradle
+      - run: ./gradlew test --tests '*example*'

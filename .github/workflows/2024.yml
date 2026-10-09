@@ -1,0 +1,22 @@
+name: 2024 · C#
+
+on:
+  push:
+    branches: [main]
+    paths: ['2024/**', '.github/workflows/2024.yml']
+  pull_request:
+    paths: ['2024/**', '.github/workflows/2024.yml']
+  workflow_dispatch:
+
+jobs:
+  example-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2024
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+      - run: dotnet test --filter 'Name~Example'
