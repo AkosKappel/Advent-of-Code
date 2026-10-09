@@ -1,125 +1,47 @@
-# Advent of Code Elixir Starter
+# Advent of Code 2025 · Elixir
 
-A batteries included starter pack for participating in [Advent of Code](https://www.adventofcode.com) using Elixir!
+My solutions to [Advent of Code 2025](https://adventofcode.com/2025), 24 of 24 stars. Part of the [Advent of Code](../README.md) collection.
 
-## Usage
+**Toolchain:** Elixir 1.19 on OTP 28 (see `.tool-versions`)
 
-There are 25 modules, 25 tests, and 50 mix tasks.
+Solutions live in `lib/advent_of_code/`, with one Mix task per part in `lib/mix/tasks/`. Inputs are cached in `inputs/`.
 
-1. Fill in the tests with the example solutions.
-1. Write your implementation.
-1. Fill in the final problem inputs into the mix task and run `mix d01.p1`!
-    - Benchmark your solution by passing the `-b` flag, `mix d01.p1 -b`
-
-```elixir
-defmodule AdventOfCode.Day01 do
-  def part1(input) do
-  end
-
-  def part2(input) do
-  end
-end
-```
-
-```elixir
-defmodule AdventOfCode.Day01Test do
-  use ExUnit.Case
-
-  import AdventOfCode.Day01
- # Make sure to remove to run your test.
-  test "part1" do
-    input = AdventOfCode.Input.get!(1, 2025)
-    result = part1(input)
-
-    assert result == nil
-  end
- # Make sure to remove to run your test.
-  test "part2" do
-    input = AdventOfCode.Input.get!(1, 2025)
-    result = part2(input)
-
-    assert result == nil
-  end
-end
-```
-
-```elixir
-defmodule Mix.Tasks.D01.P1 do
-  use Mix.Task
-
-  import AdventOfCode.Day01
-
-  @shortdoc "Day 01 Part 1"
-  def run(args) do
-    input = AdventOfCode.Input.get!(1, 2020)
-
-    if Enum.member?(args, "-b"),
-      do: Benchee.run(%{part_1: fn -> input |> part1() end}),
-      else:
-        input
-        |> part1()
-        |> IO.inspect(label: "Part 1 Results")
-  end
-end
-```
-
-### Optional Automatic Input Retriever
-
-This starter comes with a module that will automatically get your inputs so you
-don't have to mess with copy/pasting. Don't worry, it automatically caches your
-inputs to your machine so you don't have to worry about slamming the Advent of
-Code server. You will need to configure it with your cookie and make sure to
-enable it. You can do this by creating a `config/secrets.exs` file containing
-the following:
-
-```elixir
-import Config
-
-config :advent_of_code, AdventOfCode.Input,
-  allow_network?: true,
-  session_cookie: "..." # yours will be longer
-```
-
-After which, you can retrieve your inputs using the module:
-
-```elixir
-day = 1
-year = 2020
-AdventOfCode.Input.get!(day, year)
-# or just have it auto-detect the current year
-AdventOfCode.Input.get!(7)
-# and if your input somehow gets mangled and you need a fresh one:
-AdventOfCode.Input.delete!(7, 2019)
-# and the next time you `get!` it will download a fresh one -- use this sparingly!
-```
-
-## Installation
+## Run a day
 
 ```bash
-# clone
-$ git clone git@github.com:mhanberg/advent-of-code-elixir-starter.git advent-of-code
-$ cd advent-of-code
-
-# Reinitialize your git repo
-$ rm -rf .git && rm -rf .github
-$ git init
+mix deps.get
+mix d05.p1         # part 1
+mix d05.p2         # part 2
+mix d05.p1 -b      # benchmark with Benchee
 ```
-### Get started coding with zero configuration
 
-#### Using Visual Studio Code
+If an input is missing, it is downloaded using the session cookie in the `ADVENT_OF_CODE_SESSION_COOKIE` environment variable.
 
-1. [Install Docker Desktop](https://www.docker.com/products/docker-desktop)
-1. Open project directory in VS Code
-1. Press F1, and select `Remote-Containers: Reopen in Container...`
-1. Wait a few minutes as it pulls image down and builds Dev Conatiner Docker image (this should only need to happen once unless you modify the Dockerfile)
-    1. You can see progress of the build by clicking `Starting Dev Container (show log): Building image` that appears in bottom right corner
-    1. During the build process it will also automatically run `mix deps.get`
-1. Once complete VS Code will connect your running Dev Container and will feel like your doing local development
-1. If you would like to use a specific version of Elixir change the `VARIANT` version in `.devcontainer/devcontainer.json`
-1. If you would like more information about VS Code Dev Containers check out the [dev container documentation](https://code.visualstudio.com/docs/remote/create-dev-container/?WT.mc_id=AZ-MVP-5003399)
+## Tests
 
-#### Compatible with Github Codespaces
-1. If you dont have Github Codespaces beta access, sign up for the beta https://github.com/features/codespaces/signup
-1. On GitHub, navigate to the main page of the repository.
-1. Under the repository name, use the  Code drop-down menu, and select Open with Codespaces.
-1. If you already have a codespace for the branch, click  New codespace.
+Tests check each day's answers for my own input and, where the puzzle provides them, for its examples. CI runs only the example tests, because some solution tests are slow.
+
+```bash
+mix test                                                                       # all tests
+mix test --only test:'test part1 example' --only test:'test part2 example'     # example tests only
+mix test test/advent_of_code/day_05_test.exs                                   # one day
+```
+
+Project setup based on [mhanberg/advent-of-code-elixir-starter](https://github.com/mhanberg/advent-of-code-elixir-starter).
+
+## Days
+
+| Day | Puzzle | Solution | Tests |
+| ---: | --- | --- | --- |
+| 1 | [Secret Entrance](https://adventofcode.com/2025/day/1) | [day_01.ex](lib/advent_of_code/day_01.ex) | [day_01_test.exs](test/advent_of_code/day_01_test.exs) |
+| 2 | [Gift Shop](https://adventofcode.com/2025/day/2) | [day_02.ex](lib/advent_of_code/day_02.ex) | [day_02_test.exs](test/advent_of_code/day_02_test.exs) |
+| 3 | [Lobby](https://adventofcode.com/2025/day/3) | [day_03.ex](lib/advent_of_code/day_03.ex) | [day_03_test.exs](test/advent_of_code/day_03_test.exs) |
+| 4 | [Printing Department](https://adventofcode.com/2025/day/4) | [day_04.ex](lib/advent_of_code/day_04.ex) | [day_04_test.exs](test/advent_of_code/day_04_test.exs) |
+| 5 | [Cafeteria](https://adventofcode.com/2025/day/5) | [day_05.ex](lib/advent_of_code/day_05.ex) | [day_05_test.exs](test/advent_of_code/day_05_test.exs) |
+| 6 | [Trash Compactor](https://adventofcode.com/2025/day/6) | [day_06.ex](lib/advent_of_code/day_06.ex) | [day_06_test.exs](test/advent_of_code/day_06_test.exs) |
+| 7 | [Laboratories](https://adventofcode.com/2025/day/7) | [day_07.ex](lib/advent_of_code/day_07.ex) | [day_07_test.exs](test/advent_of_code/day_07_test.exs) |
+| 8 | [Playground](https://adventofcode.com/2025/day/8) | [day_08.ex](lib/advent_of_code/day_08.ex) | [day_08_test.exs](test/advent_of_code/day_08_test.exs) |
+| 9 | [Movie Theater](https://adventofcode.com/2025/day/9) | [day_09.ex](lib/advent_of_code/day_09.ex) | [day_09_test.exs](test/advent_of_code/day_09_test.exs) |
+| 10 | [Factory](https://adventofcode.com/2025/day/10) | [day_10.ex](lib/advent_of_code/day_10.ex) | [day_10_test.exs](test/advent_of_code/day_10_test.exs) |
+| 11 | [Reactor](https://adventofcode.com/2025/day/11) | [day_11.ex](lib/advent_of_code/day_11.ex) | [day_11_test.exs](test/advent_of_code/day_11_test.exs) |
+| 12 | [Christmas Tree Farm](https://adventofcode.com/2025/day/12) | [day_12.ex](lib/advent_of_code/day_12.ex) | [day_12_test.exs](test/advent_of_code/day_12_test.exs) |
