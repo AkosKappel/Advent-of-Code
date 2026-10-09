@@ -15,7 +15,7 @@ jobs:
       run:
         working-directory: 2025
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: erlef/setup-beam@v1
         with:
           version-file: 2025/.tool-versions
