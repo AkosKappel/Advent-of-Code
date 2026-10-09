@@ -187,7 +187,7 @@
     </header>
 
     <div class="wall" id="wall" role="group" aria-label="Puzzles by year and day" aria-describedby="caption"></div>
-    <p class="caption" id="caption">Each door is one puzzle, and the fill shows how long my solution is. Point at a door, or use the arrow keys, to see the puzzle.</p>
+    <p class="caption" id="caption">Each door is one puzzle, and the fill shows how long my solution is. Hover over a door to preview its puzzle, and click it to keep it selected. The arrow keys work too.</p>
 
     <div class="detail" id="detail" aria-live="polite">
       <p class="empty">Pick a door to see the puzzle and my solution.</p>
@@ -263,12 +263,17 @@
         door.style.setProperty('--fill', Math.max(0.06, Math.sqrt(puzzle.lines / maxLines)).toFixed(3));
         door.style.setProperty('--delay', `${(d + yi * 2) * 18}ms`);
         door.addEventListener('mouseenter', () => show(yi, d));
-        door.addEventListener('focus', () => show(yi, d));
-        door.addEventListener('click', () => show(yi, d));
+        door.addEventListener('focus', () => pin(yi, d));
+        door.addEventListener('click', () => pin(yi, d));
         doors[yi][d] = door;
         wall.append(place(door, yi + 2, d + 1));
       }
     });
+
+    // Hovering previews a door, clicking keeps it selected after the pointer leaves the wall
+    let pinned = null;
+    const pin = (yi, d) => { pinned = { yi, d }; show(yi, d); };
+    wall.addEventListener('mouseleave', () => { if (pinned) show(pinned.yi, pinned.d); });
 
     // One tab stop for the whole wall, arrow keys move between doors
     let current = { yi: years.length - 1, d: 1 };
