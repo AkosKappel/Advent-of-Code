@@ -2,7 +2,9 @@
 
 My solutions to [Advent of Code](https://adventofcode.com) puzzles, written in a different language every year.
 
-**374 / 374 stars** across 8 years and 8 languages. Every solution is covered by tests against the puzzle examples and my own input.
+**[Browse them all on the dashboard](https://akoskappel.github.io/Advent-of-Code/)**, an advent calendar of every puzzle with links to its solution and tests.
+
+**374 / 374 stars** across 8 years and 8 languages. Every solution is tested against my own input and, where the puzzle provides them, its examples.
 
 | Year | Language | Stars | Tests |
 | :---: | --- | :---: | --- |
@@ -34,6 +36,10 @@ From inside a year's folder, run all tests with the project's usual test command
 | 2023 | `npx jest -t example` |
 | 2024 | `dotnet test --filter 'Name~Example'` |
 | 2025 | `mix test --only test:'test part1 example' --only test:'test part2 example'` |
+
+## Dashboard
+
+The dashboard is generated from this README and the solution files by `site/build.py`, and GitHub Actions deploys it on every push to `main`. To build it locally, run `python3 site/build.py` and open `_site/index.html`.
 
 ## Puzzles
 
@@ -907,7 +913,7 @@ From inside a year's folder, run all tests with the project's usual test command
     </td>
     <td>
       <b>Day 2</b><br>
-      <a href="https://adventofcode.com/2024/day/2">RedNosed Reports</a><br>
+      <a href="https://adventofcode.com/2024/day/2">Red-Nosed Reports</a><br>
       <span>⭐⭐</span>
     </td>
     <td>

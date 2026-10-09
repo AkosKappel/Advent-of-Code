@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advent of Code · Ákos Kappel</title>
+  <meta name="description" content="Every Advent of Code puzzle from 2018 to 2025, solved in a different language each year.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f4c95d' d='M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7.3L12 17.8 5.8 21.5l1.6-7.3L2 9.5l7.1-.6z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #16203a;
+      --surface: #1d2a4a;
+      --line: #2e3c60;
+      --text: #e6ecf5;
+      --muted: #8d9ab3;
+      --gold: #f4c95d;
+      --pass: #6fcf97;
+      --fail: #ff8a80;
+      --go: #3fc5e6;
+      --java: #e0944a;
+      --kotlin: #e36ccf;
+      --python: #9db7d6;
+      --typescript: #4c7ff0;
+      --javascript: #f1e05a;
+      --csharp: #47b85a;
+      --elixir: #b07fd6;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        color-scheme: light;
+        --bg: #f3f6fb;
+        --surface: #ffffff;
+        --line: #d5dceb;
+        --text: #16203a;
+        --muted: #55627d;
+        --gold: #a8740f;
+        --pass: #1e7b45;
+        --fail: #c0392b;
+        --go: #00a0c6;
+        --java: #b07219;
+        --kotlin: #c2369f;
+        --python: #5d7fa3;
+        --typescript: #2f6fe0;
+        --javascript: #c9b400;
+        --csharp: #178600;
+        --elixir: #6e4a7e;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Bricolage Grotesque", system-ui, sans-serif;
+      font-size: 1.0625rem;
+      line-height: 1.5;
+      font-variant-numeric: tabular-nums;
+    }
+    a { color: inherit; text-underline-offset: 0.2em; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+    a:hover { text-decoration-color: currentColor; }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    main { max-width: 76rem; margin: 0 auto; padding: 3.5rem 1.5rem 2rem; }
+
+    header { max-width: 42rem; margin-bottom: 2.5rem; }
+    h1 {
+      font-size: clamp(2.75rem, 7vw, 4.75rem);
+      font-weight: 800;
+      font-variation-settings: "opsz" 96;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin: 0 0 1rem;
+    }
+    h1 .star { color: var(--gold); }
+    .lede { font-size: 1.25rem; color: var(--muted); margin: 0; }
+    .lede strong { color: var(--text); font-weight: 600; }
+
+    /* The calendar: years are rows and days are columns. Phones swap the axes. */
+    .wall {
+      --label: 8.5rem;
+      display: grid;
+      grid-template-columns: var(--label) repeat(25, minmax(0, 1fr));
+      gap: 4px;
+    }
+    .wall > * { grid-row: var(--r); grid-column: var(--c); }
+    .day-label { font-size: 0.75rem; color: var(--muted); text-align: center; align-self: end; padding-bottom: 0.25rem; }
+    .year-label {
+      display: flex; flex-direction: column; justify-content: center;
+      padding-left: 0.75rem;
+      border-left: 3px solid var(--lang);
+      line-height: 1.2;
+      text-decoration: none;
+    }
+    .year-label:hover b { text-decoration: underline; }
+    .year-label b { font-weight: 600; }
+    .year-label span { font-size: 0.875rem; color: var(--muted); }
+
+    .door {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      padding: 0;
+      border: 1px solid color-mix(in srgb, var(--lang) 45%, transparent);
+      border-radius: 4px 4px 2px 2px;
+      background: color-mix(in srgb, var(--lang) 12%, transparent);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .door::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: var(--lang);
+      transform: scaleY(var(--fill));
+      transform-origin: bottom;
+      animation: rise 700ms cubic-bezier(.2, .7, .2, 1) both;
+      animation-delay: var(--delay);
+    }
+    .door.current { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+    .closed {
+      aspect-ratio: 3 / 4;
+      border: 1px dashed var(--line);
+      border-radius: 4px 4px 2px 2px;
+    }
+    @keyframes rise { from { transform: scaleY(0); } }
+
+    .caption { color: var(--muted); font-size: 0.9375rem; margin: 0.75rem 0 0; }
+
+    .detail {
+      margin-top: 1.75rem;
+      min-height: 7.5rem;
+      padding: 1.25rem 1.5rem;
+      border-left: 3px solid var(--lang, var(--line));
+      background: var(--surface);
+      border-radius: 0 6px 6px 0;
+    }
+    .detail p { margin: 0; }
+    .detail .when { color: var(--muted); }
+    .detail h2 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; margin: 0.15rem 0 0.35rem; }
+    .detail .stars { color: var(--gold); letter-spacing: 0.1em; }
+    .detail .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 0.75rem; }
+    .detail .empty { color: var(--muted); }
+
+    section.years { margin-top: 4rem; }
+    section.years h2 { font-size: 1.75rem; font-weight: 800; margin: 0 0 1rem; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 34rem; }
+    th, td { text-align: left; padding: 0.7rem 1rem 0.7rem 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    th { font-weight: 600; color: var(--muted); font-size: 0.9375rem; }
+    td.num, th.num { text-align: right; padding-right: 2rem; }
+    .swatch { display: inline-block; width: 0.7em; height: 0.7em; border-radius: 2px; background: var(--lang); margin-right: 0.5em; }
+    .status::before { content: ""; display: inline-block; width: 0.55em; height: 0.55em; border-radius: 50%; margin-right: 0.45em; background: var(--muted); vertical-align: 0.05em; }
+    .status.pass::before { background: var(--pass); }
+    .status.fail::before { background: var(--fail); }
+    .status.running::before { background: var(--gold); }
+
+    footer { margin-top: 3rem; color: var(--muted); font-size: 0.9375rem; }
+
+    @media (max-width: 720px) {
+      main { padding: 2.5rem 1rem 1.5rem; }
+      .wall {
+        --label: 2rem;
+        grid-template-columns: var(--label) repeat(8, minmax(0, 1fr));
+      }
+      .wall > * { grid-row: var(--c); grid-column: var(--r); }
+      .day-label { align-self: center; text-align: right; padding: 0 0.5rem 0 0; }
+      .year-label { padding: 0 0 0.35rem; border-left: 0; border-bottom: 3px solid var(--lang); align-items: center; }
+      .year-label span { display: none; }
+      .year-label b { font-size: 0.75rem; }
+      .door, .closed { aspect-ratio: 5 / 2; }
+      .door::after { transform: scaleX(var(--fill)); transform-origin: left; }
+      @keyframes rise { from { transform: scaleX(0); } }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .door::after { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Advent of Code <span class="star" aria-hidden="true">★</span></h1>
+      <p class="lede" id="lede"></p>
+    </header>
+
+    <div class="wall" id="wall" role="group" aria-label="Puzzles by year and day" aria-describedby="caption"></div>
+    <p class="caption" id="caption">Each door is one puzzle, and the fill shows how long my solution is. Point at a door, or use the arrow keys, to see the puzzle.</p>
+
+    <div class="detail" id="detail" aria-live="polite">
+      <p class="empty">Pick a door to see the puzzle and my solution.</p>
+    </div>
+
+    <section class="years" aria-labelledby="years-title">
+      <h2 id="years-title">Year by year</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Year</th><th>Language</th><th class="num">Stars</th><th class="num">Lines of code</th><th>Example tests</th></tr>
+          </thead>
+          <tbody id="years"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer id="footer"></footer>
+  </main>
+
+  <script>
+    const DATA = /*DATA*/null;
+    const REPO = 'AkosKappel/Advent-of-Code';
+    const GITHUB = `https://github.com/${REPO}`;
+    const LANG_VAR = { 'Go': 'go', 'Java': 'java', 'Kotlin': 'kotlin', 'Python': 'python', 'TypeScript': 'typescript', 'JavaScript': 'javascript', 'C#': 'csharp', 'Elixir': 'elixir' };
+
+    const el = (tag, props = {}, ...children) => {
+      const node = Object.assign(document.createElement(tag), props);
+      node.append(...children);
+      return node;
+    };
+    const langColor = (language) => `var(--${LANG_VAR[language]})`;
+    const place = (node, row, col) => { node.style.setProperty('--r', row); node.style.setProperty('--c', col); return node; };
+
+    const years = DATA.years;
+    const allDays = years.flatMap((y) => y.days);
+    const totalStars = allDays.reduce((sum, p) => sum + p.stars, 0);
+    const maxLines = Math.max(...allDays.map((p) => p.lines));
+    const languages = years.map((y) => y.language);
+
+    document.getElementById('lede').innerHTML =
+      `<strong>${totalStars} stars</strong> over ${years.length} Decembers. Each year I solved every puzzle in a new language, ` +
+      `from ${languages[0]} in ${years[0].year} to ${languages.at(-1)} in ${years.at(-1).year}.`;
+
+    // Calendar wall
+    const wall = document.getElementById('wall');
+    const doors = [];
+    wall.append(place(el('div'), 1, 1));
+    for (let d = 1; d <= 25; d++) {
+      wall.append(place(el('div', { className: 'day-label', textContent: d, ariaHidden: 'true' }), 1, d + 1));
+    }
+    years.forEach((y, yi) => {
+      const label = el('a', { className: 'year-label', href: `${GITHUB}/tree/main/${y.year}` },
+        el('b', { textContent: y.year }), el('span', { textContent: y.language }));
+      label.style.setProperty('--lang', langColor(y.language));
+      wall.append(place(label, yi + 2, 1));
+
+      doors[yi] = [];
+      for (let d = 1; d <= 25; d++) {
+        const puzzle = y.days.find((p) => p.day === d);
+        if (!puzzle) {
+          wall.append(place(el('div', { className: 'closed', ariaHidden: 'true' }), yi + 2, d + 1));
+          continue;
+        }
+        const door = el('button', {
+          className: 'door',
+          type: 'button',
+          tabIndex: -1,
+          ariaLabel: `${y.year} day ${d}: ${puzzle.title}, ${puzzle.lines} lines`,
+        });
+        door.style.setProperty('--lang', langColor(y.language));
+        // Square root keeps short solutions visible next to the longest ones
+        door.style.setProperty('--fill', Math.max(0.06, Math.sqrt(puzzle.lines / maxLines)).toFixed(3));
+        door.style.setProperty('--delay', `${(d + yi * 2) * 18}ms`);
+        door.addEventListener('mouseenter', () => show(yi, d));
+        door.addEventListener('focus', () => show(yi, d));
+        door.addEventListener('click', () => show(yi, d));
+        doors[yi][d] = door;
+        wall.append(place(door, yi + 2, d + 1));
+      }
+    });
+
+    // One tab stop for the whole wall, arrow keys move between doors
+    let current = { yi: years.length - 1, d: 1 };
+    doors[current.yi][current.d].tabIndex = 0;
+
+    const transposed = window.matchMedia('(max-width: 720px)');
+    wall.addEventListener('keydown', (event) => {
+      const step = {
+        ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0],
+      }[event.key];
+      if (!step) return;
+      event.preventDefault();
+      const [dy, dd] = transposed.matches ? [step[1], step[0]] : step;
+      const yi = Math.min(Math.max(current.yi + dy, 0), years.length - 1);
+      const lastDay = years[yi].days.at(-1).day;
+      const d = Math.min(Math.max(current.d + dd, 1), lastDay);
+      doors[yi][d].focus();
+    });
+
+    const detail = document.getElementById('detail');
+    function show(yi, d) {
+      doors[current.yi][current.d].classList.remove('current');
+      doors[current.yi][current.d].tabIndex = -1;
+      current = { yi, d };
+      const door = doors[yi][d];
+      door.classList.add('current');
+      door.tabIndex = 0;
+
+      const y = years[yi];
+      const p = y.days.find((x) => x.day === d);
+      detail.style.setProperty('--lang', langColor(y.language));
+      detail.replaceChildren(
+        el('p', { className: 'when', textContent: `${y.year}, day ${d}` }),
+        el('h2', { textContent: p.title }),
+        el('p', {},
+          el('span', { className: 'stars', textContent: '★'.repeat(p.stars), ariaLabel: `${p.stars} stars` }),
+          ` ${p.lines} lines of ${y.language}`),
+        el('p', { className: 'links' },
+          el('a', { href: `https://adventofcode.com/${y.year}/day/${d}`, textContent: 'Read the puzzle' }),
+          el('a', { href: `${GITHUB}/blob/main/${p.src}`, textContent: 'View solution' }),
+          el('a', { href: `${GITHUB}/blob/main/${p.test}`, textContent: 'View tests' })),
+      );
+    }
+
+    // Year table with live CI status
+    const tbody = document.getElementById('years');
+    const statusLinks = {};
+    years.forEach((y) => {
+      const status = el('a', { className: 'status', href: `${GITHUB}/actions/workflows/${y.year}.yml`, textContent: 'Checking' });
+      const row = el('tr', {},
+        el('td', {}, el('a', { href: `${GITHUB}/tree/main/${y.year}`, textContent: y.year })),
+        el('td', {}, el('span', { className: 'swatch' }), y.language),
+        el('td', { className: 'num', textContent: y.days.reduce((s, p) => s + p.stars, 0) }),
+        el('td', { className: 'num', textContent: y.days.reduce((s, p) => s + p.lines, 0).toLocaleString('en') }),
+        el('td', {}, status));
+      row.style.setProperty('--lang', langColor(y.language));
+      tbody.append(row);
+      statusLinks[y.year] = status;
+    });
+    loadStatuses();
+
+    // One request for all years: unauthenticated API calls allow 60 per hour
+    async function loadStatuses() {
+      let runs;
+      try {
+        const response = await fetch(`https://api.github.com/repos/${REPO}/actions/runs?branch=main&per_page=100`);
+        if (!response.ok) throw new Error(response.status);
+        runs = (await response.json()).workflow_runs;
+      } catch {
+        runs = null;
+      }
+      for (const [year, node] of Object.entries(statusLinks)) {
+        // Runs come newest first
+        const run = runs?.find((r) => r.path === `.github/workflows/${year}.yml`);
+        showStatus(node, run, runs === null);
+      }
+    }
+
+    function showStatus(node, run, unavailable) {
+      if (unavailable || !run) {
+        node.textContent = 'See runs on GitHub';
+      } else if (run.status !== 'completed') {
+        node.textContent = 'Running';
+        node.classList.add('running');
+      } else {
+        const passed = run.conclusion === 'success';
+        node.textContent = passed ? 'Passing' : 'Failing';
+        node.classList.add(passed ? 'pass' : 'fail');
+        node.href = run.html_url;
+      }
+    }
+
+    document.getElementById('footer').innerHTML =
+      `Generated from commit <a href="${GITHUB}/commit/${DATA.commit}">${DATA.commit}</a> on ${DATA.built}. ` +
+      `Source on <a href="${GITHUB}">GitHub</a>.`;
+  </script>
+</body>
+</html>
