@@ -23,5 +23,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    // ./gradlew run -Pday=5
+    val day = (findProperty("day") as String? ?: "1").padStart(2, '0')
+    mainClass.set("Day${day}Kt")
 }

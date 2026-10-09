@@ -13,7 +13,5 @@ else if (args.Length == 1 && args[0].Contains("all", StringComparison.CurrentCul
 else
 {
     var indexes = args.Select(arg => uint.TryParse(arg, out var index) ? index : uint.MaxValue);
-    Console.WriteLine(indexes);
-
     await Solver.Solve(indexes.Where(i => i < uint.MaxValue));
 }

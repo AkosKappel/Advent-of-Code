@@ -16,14 +16,15 @@ if (!DAY) {
 
 const day = require('./src/day' + DAY);
 
-aocLoader(YEAR, DAY, process.env.AOC_SESSION).then((data) => {
-  // Save input to inputs/input{DAY}.txt
-  const inputPath = path.join(__dirname, 'inputs', `input${DAY}.txt`);
-  fs.writeFile(inputPath, data, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
+const inputPath = path.join(__dirname, 'inputs', `input${DAY}.txt`);
+const input = fs.existsSync(inputPath)
+  ? Promise.resolve(fs.readFileSync(inputPath, 'utf8'))
+  : aocLoader(YEAR, DAY, process.env.AOC_SESSION).then((data) => {
+      fs.writeFileSync(inputPath, data);
+      return data;
+    });
+
+input.then((data) => {
 
   // Run the solution part specified
   if (PART) {

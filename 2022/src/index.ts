@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import * as https from 'https';
 
-const cookie = `session=${fs.readFileSync(`${__dirname}/../cookie`)}`;
-
 const year = '2022';
 const day = parseInt(process.argv[2], 10);
 if (Number.isNaN(day) || day < 1 || day > 25) {
@@ -14,8 +12,6 @@ const type = process.argv[2].slice(-1) === '+' ? 'second' : 'first';
 const file = `./day${day.toString().padStart(2, '0')}.ts`;
 const callback = require(file)[type];
 
-const headers = { cookie };
-
 const inputFile = `${__dirname}/../input/day${day
   .toString()
   .padStart(2, '0')}.txt`;
@@ -24,6 +20,7 @@ try {
   const rawData = fs.readFileSync(inputFile, 'utf8');
   console.log(callback(rawData));
 } catch (e) {
+  const headers = { cookie: `session=${fs.readFileSync(`${__dirname}/../cookie`)}` };
   https.get(
     `https://adventofcode.com/${year}/day/${day}/input`,
     { headers },
