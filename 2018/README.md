@@ -52,4 +52,4 @@ go test ./day05                   # one day
 | 22 | [Mode Maze](https://adventofcode.com/2018/day/22) | [main.go](day22/main.go) | [main_test.go](day22/main_test.go) |
 | 23 | [Experimental Emergency Teleportation](https://adventofcode.com/2018/day/23) | [main.go](day23/main.go) | [main_test.go](day23/main_test.go) |
 | 24 | [Immune System Simulator 20XX](https://adventofcode.com/2018/day/24) | [main.go](day24/main.go) | [main_test.go](day24/main_test.go) |
-| 25 | [FourDimensional Adventure](https://adventofcode.com/2018/day/25) | [main.go](day25/main.go) | [main_test.go](day25/main_test.go) |
+| 25 | [Four-Dimensional Adventure](https://adventofcode.com/2018/day/25) | [main.go](day25/main.go) | [main_test.go](day25/main_test.go) |

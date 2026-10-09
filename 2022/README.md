@@ -41,7 +41,7 @@ Project setup based on [atme/advent-of-code](https://github.com/atme/advent-of-c
 | 7 | [No Space Left On Device](https://adventofcode.com/2022/day/7) | [day07.ts](src/day07.ts) | [day07.test.ts](tests/day07.test.ts) |
 | 8 | [Treetop Tree House](https://adventofcode.com/2022/day/8) | [day08.ts](src/day08.ts) | [day08.test.ts](tests/day08.test.ts) |
 | 9 | [Rope Bridge](https://adventofcode.com/2022/day/9) | [day09.ts](src/day09.ts) | [day09.test.ts](tests/day09.test.ts) |
-| 10 | [CathodeRay Tube](https://adventofcode.com/2022/day/10) | [day10.ts](src/day10.ts) | [day10.test.ts](tests/day10.test.ts) |
+| 10 | [Cathode-Ray Tube](https://adventofcode.com/2022/day/10) | [day10.ts](src/day10.ts) | [day10.test.ts](tests/day10.test.ts) |
 | 11 | [Monkey in the Middle](https://adventofcode.com/2022/day/11) | [day11.ts](src/day11.ts) | [day11.test.ts](tests/day11.test.ts) |
 | 12 | [Hill Climbing Algorithm](https://adventofcode.com/2022/day/12) | [day12.ts](src/day12.ts) | [day12.test.ts](tests/day12.test.ts) |
 | 13 | [Distress Signal](https://adventofcode.com/2022/day/13) | [day13.ts](src/day13.ts) | [day13.test.ts](tests/day13.test.ts) |

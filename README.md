@@ -178,7 +178,7 @@ The dashboard is generated from this README and the solution files by `site/buil
     </td>
     <td>
       <b>Day 25</b><br>
-      <a href="https://adventofcode.com/2018/day/25">FourDimensional Adventure</a><br>
+      <a href="https://adventofcode.com/2018/day/25">Four-Dimensional Adventure</a><br>
       <span>⭐⭐</span>
     </td>
   </tr>
@@ -252,7 +252,7 @@ The dashboard is generated from this README and the solution files by `site/buil
     </td>
     <td>
       <b>Day 12</b><br>
-      <a href="https://adventofcode.com/2019/day/12">The NBody Problem</a><br>
+      <a href="https://adventofcode.com/2019/day/12">The N-Body Problem</a><br>
       <span>⭐⭐</span>
     </td>
     <td>
@@ -284,7 +284,7 @@ The dashboard is generated from this README and the solution files by `site/buil
     </td>
     <td>
       <b>Day 18</b><br>
-      <a href="https://adventofcode.com/2019/day/18">ManyWorlds Interpretation</a><br>
+      <a href="https://adventofcode.com/2019/day/18">Many-Worlds Interpretation</a><br>
       <span>⭐⭐</span>
     </td>
     <td>
@@ -669,7 +669,7 @@ The dashboard is generated from this README and the solution files by `site/buil
     </td>
     <td>
       <b>Day 10</b><br>
-      <a href="https://adventofcode.com/2022/day/10">CathodeRay Tube</a><br>
+      <a href="https://adventofcode.com/2022/day/10">Cathode-Ray Tube</a><br>
       <span>⭐⭐</span>
     </td>
   </tr>

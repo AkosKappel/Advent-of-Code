@@ -39,13 +39,13 @@ mvn test -Dtest='Day05Test*'                               # one day
 | 9 | [Sensor Boost](https://adventofcode.com/2019/day/9) | [Day09.java](src/main/java/aoc/Day09.java) | [Day09Test.java](src/test/java/aoc/Day09Test.java) |
 | 10 | [Monitoring Station](https://adventofcode.com/2019/day/10) | [Day10.java](src/main/java/aoc/Day10.java) | [Day10Test.java](src/test/java/aoc/Day10Test.java) |
 | 11 | [Space Police](https://adventofcode.com/2019/day/11) | [Day11.java](src/main/java/aoc/Day11.java) | [Day11Test.java](src/test/java/aoc/Day11Test.java) |
-| 12 | [The NBody Problem](https://adventofcode.com/2019/day/12) | [Day12.java](src/main/java/aoc/Day12.java) | [Day12Test.java](src/test/java/aoc/Day12Test.java) |
+| 12 | [The N-Body Problem](https://adventofcode.com/2019/day/12) | [Day12.java](src/main/java/aoc/Day12.java) | [Day12Test.java](src/test/java/aoc/Day12Test.java) |
 | 13 | [Care Package](https://adventofcode.com/2019/day/13) | [Day13.java](src/main/java/aoc/Day13.java) | [Day13Test.java](src/test/java/aoc/Day13Test.java) |
 | 14 | [Space Stoichiometry](https://adventofcode.com/2019/day/14) | [Day14.java](src/main/java/aoc/Day14.java) | [Day14Test.java](src/test/java/aoc/Day14Test.java) |
 | 15 | [Oxygen System](https://adventofcode.com/2019/day/15) | [Day15.java](src/main/java/aoc/Day15.java) | [Day15Test.java](src/test/java/aoc/Day15Test.java) |
 | 16 | [Flawed Frequency Transmission](https://adventofcode.com/2019/day/16) | [Day16.java](src/main/java/aoc/Day16.java) | [Day16Test.java](src/test/java/aoc/Day16Test.java) |
 | 17 | [Set and Forget](https://adventofcode.com/2019/day/17) | [Day17.java](src/main/java/aoc/Day17.java) | [Day17Test.java](src/test/java/aoc/Day17Test.java) |
-| 18 | [ManyWorlds Interpretation](https://adventofcode.com/2019/day/18) | [Day18.java](src/main/java/aoc/Day18.java) | [Day18Test.java](src/test/java/aoc/Day18Test.java) |
+| 18 | [Many-Worlds Interpretation](https://adventofcode.com/2019/day/18) | [Day18.java](src/main/java/aoc/Day18.java) | [Day18Test.java](src/test/java/aoc/Day18Test.java) |
 | 19 | [Tractor Beam](https://adventofcode.com/2019/day/19) | [Day19.java](src/main/java/aoc/Day19.java) | [Day19Test.java](src/test/java/aoc/Day19Test.java) |
 | 20 | [Donut Maze](https://adventofcode.com/2019/day/20) | [Day20.java](src/main/java/aoc/Day20.java) | [Day20Test.java](src/test/java/aoc/Day20Test.java) |
 | 21 | [Springdroid Adventure](https://adventofcode.com/2019/day/21) | [Day21.java](src/main/java/aoc/Day21.java) | [Day21Test.java](src/test/java/aoc/Day21Test.java) |
