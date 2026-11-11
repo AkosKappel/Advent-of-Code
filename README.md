@@ -2,7 +2,7 @@
 
 My solutions to [Advent of Code](https://adventofcode.com) puzzles, written in a different language every year.
 
-**[Browse them all on the dashboard](https://akoskappel.github.io/Advent-of-Code/)**, an advent calendar of every puzzle with links to its solution and tests.
+**[Browse them all on the dashboard](https://aoc.akoskappel.dev/)**, an advent calendar of every puzzle with links to its solution and tests.
 
 **374 / 374 stars** across 8 years and 8 languages. Every solution is tested against my own input and, where the puzzle provides them, its examples.
 
